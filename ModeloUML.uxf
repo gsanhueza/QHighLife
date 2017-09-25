@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="14.2">
+  <help_text>// Idea:
+// Un visualizador que use una clase abstracta Model como "interfaz" con el modelo.
+// Tres implementaciones de método "run" (Template Pattern)
+// Una clase Grid que abstraiga la implementación de grilla (útil para CPU)
+// 
+// Para GPU podemos hacer una Grid de entrada con datos iniciales y un Grid
+// de salida vacío. Así, en paralelo se lee el Grid de entrada concurrentemente, y
+// cada thread escribe su valor en su Grid de salida (modelo CREW).
+</help_text>
+  <zoom_level>20</zoom_level>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>200</x>
+      <y>180</y>
+      <w>400</w>
+      <h>440</h>
+    </coordinates>
+    <panel_attributes>QHighLife
+--
+- m_model : Model
+--
++ update() : void</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>780</x>
+      <y>740</y>
+      <w>320</w>
+      <h>120</h>
+    </coordinates>
+    <panel_attributes>CPUModel
+--
+--
++ run() : void</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1180</x>
+      <y>740</y>
+      <w>320</w>
+      <h>120</h>
+    </coordinates>
+    <panel_attributes>CUDAModel
+--
+--
++ run() : void</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1580</x>
+      <y>740</y>
+      <w>320</w>
+      <h>120</h>
+    </coordinates>
+    <panel_attributes>OpenCLModel
+--
+--
++ run() : void</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1020</x>
+      <y>180</y>
+      <w>640</w>
+      <h>440</h>
+    </coordinates>
+    <panel_attributes>/Model/
+--
+# m_width : unsigned int
+# m_height : unsigned int
+# m_initialSet : Grid
+# m_grid : Grid
+--
+/+ run() : void/
++ getGrid() : bool[]
++ setGrid(bool[]) : void</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>580</x>
+      <y>200</y>
+      <w>480</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;220.0;10.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>920</x>
+      <y>600</y>
+      <w>400</w>
+      <h>180</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>180.0;10.0;10.0;70.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1380</x>
+      <y>600</y>
+      <w>400</w>
+      <h>180</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;180.0;70.0</additional_attributes>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1320</x>
+      <y>600</y>
+      <w>60</w>
+      <h>180</h>
+    </coordinates>
+    <panel_attributes>lt=&lt;&lt;-</panel_attributes>
+    <additional_attributes>10.0;10.0;10.0;70.0</additional_attributes>
+  </element>
+  <element>
+    <id>UMLClass</id>
+    <coordinates>
+      <x>1900</x>
+      <y>180</y>
+      <w>800</w>
+      <h>440</h>
+    </coordinates>
+    <panel_attributes>Grid
+--
+- m_width : unsigned int
+- m_height : unsigned int
+- m_grid : bool[]
+--
++ getAt(uint x, uint y) : bool
++ setAt(uint x, uint y, bool val) : void
+ </panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <id>Relation</id>
+    <coordinates>
+      <x>1640</x>
+      <y>200</y>
+      <w>300</w>
+      <h>60</h>
+    </coordinates>
+    <panel_attributes>lt=-&gt;</panel_attributes>
+    <additional_attributes>10.0;10.0;130.0;10.0</additional_attributes>
+  </element>
+</diagram>
