@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <author>Gabriel Sanhueza</author>
- <class>QShaderViewer</class>
- <widget class="QMainWindow" name="QShaderViewer">
+ <class>QHighLife</class>
+ <widget class="QMainWindow" name="QHighLife">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -12,18 +12,10 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>QShaderViewer</string>
-  </property>
-  <property name="windowIcon">
-   <iconset>
-    <normaloff>../resources/icon.png</normaloff>../resources/icon.png</iconset>
+   <string>QHighLife</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="0">
-     <widget class="OGLWidget" name="openGLWidget"/>
-    </item>
-   </layout>
+   <layout class="QGridLayout" name="gridLayout"/>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -38,9 +30,9 @@
     <property name="title">
      <string>&amp;File</string>
     </property>
-    <addaction name="actionLoadGeometry"/>
-    <addaction name="actionLoadVertex"/>
-    <addaction name="actionLoadFragment"/>
+    <addaction name="actionLoadCPUModel"/>
+    <addaction name="actionLoadCUDAModel"/>
+    <addaction name="actionLoadOpenCLModel"/>
     <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
@@ -66,28 +58,28 @@
     <string>&amp;About...</string>
    </property>
   </action>
-  <action name="actionLoadGeometry">
+  <action name="actionLoadCPUModel">
    <property name="checkable">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
    <property name="text">
-    <string>Load &amp;geometry file</string>
+    <string>Load &amp;CPU Model</string>
    </property>
   </action>
-  <action name="actionLoadVertex">
+  <action name="actionLoadCUDAModel">
    <property name="checkable">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
    <property name="text">
-    <string>Load &amp;vertex shader</string>
+    <string>Load C&amp;UDA Model</string>
    </property>
   </action>
-  <action name="actionLoadFragment">
+  <action name="actionLoadOpenCLModel">
    <property name="checkable">
-    <bool>true</bool>
+    <bool>false</bool>
    </property>
    <property name="text">
-    <string>Load &amp;fragment shader</string>
+    <string>Load &amp;OpenCL Model</string>
    </property>
   </action>
   <action name="actionExit">
@@ -96,23 +88,12 @@
    </property>
   </action>
  </widget>
- <customwidgets>
-  <customwidget>
-   <class>OGLWidget</class>
-   <extends>QOpenGLWidget</extends>
-   <header>src/oglwidget.h</header>
-   <slots>
-    <slot>receiveModel(Model)</slot>
-    <slot>keyPressed(QKeyEvent*)</slot>
-   </slots>
-  </customwidget>
- </customwidgets>
  <resources/>
  <connections>
   <connection>
    <sender>actionExit</sender>
    <signal>triggered()</signal>
-   <receiver>QShaderViewer</receiver>
+   <receiver>QHighLife</receiver>
    <slot>close()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -126,73 +107,9 @@
    </hints>
   </connection>
   <connection>
-   <sender>actionLoadGeometry</sender>
-   <signal>triggered()</signal>
-   <receiver>QShaderViewer</receiver>
-   <slot>loadGeometryClicked()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>639</x>
-     <y>359</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionLoadVertex</sender>
-   <signal>triggered()</signal>
-   <receiver>QShaderViewer</receiver>
-   <slot>loadVertexClicked()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>639</x>
-     <y>359</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionLoadFragment</sender>
-   <signal>triggered()</signal>
-   <receiver>QShaderViewer</receiver>
-   <slot>loadFragmentClicked()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>639</x>
-     <y>359</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>QShaderViewer</sender>
-   <signal>emitModel(Model)</signal>
-   <receiver>openGLWidget</receiver>
-   <slot>receiveModel(Model)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>639</x>
-     <y>359</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>639</x>
-     <y>363</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
    <sender>actionTutorial</sender>
    <signal>triggered()</signal>
-   <receiver>QShaderViewer</receiver>
+   <receiver>QHighLife</receiver>
    <slot>loadTutorialClicked()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -208,7 +125,7 @@
   <connection>
    <sender>actionAbout</sender>
    <signal>triggered()</signal>
-   <receiver>QShaderViewer</receiver>
+   <receiver>QHighLife</receiver>
    <slot>loadAboutClicked()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -221,25 +138,8 @@
     </hint>
    </hints>
   </connection>
-  <connection>
-   <sender>QShaderViewer</sender>
-   <signal>keyPressed(QKeyEvent*)</signal>
-   <receiver>openGLWidget</receiver>
-   <slot>keyPressed(QKeyEvent*)</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>639</x>
-     <y>359</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>639</x>
-     <y>363</y>
-    </hint>
-   </hints>
-  </connection>
  </connections>
  <slots>
-  <signal>keyPressed(QKeyEvent*)</signal>
   <slot>loadTutorialClicked()</slot>
   <slot>loadAboutClicked()</slot>
  </slots>

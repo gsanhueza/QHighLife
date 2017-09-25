@@ -1,9 +1,11 @@
-QT      += widgets
+QT      +=  widgets
 
-TARGET   = qhighlife
-TEMPLATE = app
+TARGET   =  qhighlife
+TEMPLATE =  app
 
 FORMS   +=  qhighlife.ui \
+            about.ui \
+            tutorial.ui \
 
 SOURCES +=  src/main.cpp \
 
