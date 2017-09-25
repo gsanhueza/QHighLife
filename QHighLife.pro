@@ -14,7 +14,7 @@ SOURCES +=  src/main.cpp \
             src/grid.cpp \
             src/model.cpp \
             src/cpumodel.cpp \
-#             src/openclmodel.cl \
+            src/openclmodel.cpp \
 
 HEADERS +=  src/qhighlife.h \
             src/tutorial.h \
@@ -23,7 +23,7 @@ HEADERS +=  src/qhighlife.h \
             src/model.h \
             src/cpumodel.h \
 #             src/cudamodel.h \
-#             src/openclmodel.h \
+            src/openclmodel.h \
 
 # # CUDA_SOURCES += src/cudamodel.cu \
 # #
@@ -34,8 +34,8 @@ HEADERS +=  src/qhighlife.h \
 # # INCLUDEPATH  += $$CUDA_DIR/include
 # # QMAKE_LIBDIR += $$CUDA_DIR/lib64     # Note I'm using a 64 bits Operating system
 # #
-# # # libs used in your code
-# # LIBS += -lcudart -lcuda
+# libs used in your code
+LIBS += -lcuda -lOpenCL
 # #
 # # # GPU architecture
 # # # CUDA_ARCH     = sm_20                # Yeah! I've a new device. Adjust with your compute capability
