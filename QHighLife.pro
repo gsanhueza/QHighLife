@@ -8,5 +8,10 @@ FORMS   +=  qhighlife.ui \
             tutorial.ui \
 
 SOURCES +=  src/main.cpp \
+            src/qhighlife.cpp \
+            src/tutorial.cpp \
+            src/about.cpp \
 
-# HEADERS +=  src/qshaderviewer.h \
+HEADERS +=  src/qhighlife.h \
+            src/tutorial.h \
+            src/about.h \
