@@ -16,7 +16,7 @@ SOURCES +=  src/main.cpp \
             src/cpumodel.cpp \
             src/cudamodel.cpp \
             src/openclmodel.cpp \
-            src/highlife.cpp
+            src/highlife_opencl.cpp
 
 HEADERS +=  src/qhighlife.h \
             src/tutorial.h \

@@ -51,6 +51,24 @@ public slots:
      */
     void loadAboutClicked();
 
+    /**
+     * @brief Receiver of a Qt signal when the File -> Load CPU Model action is clicked in the window.
+     *
+     */
+    void loadCPUModelClicked();
+
+    /**
+     * @brief Receiver of a Qt signal when the File -> Load CUDA Model action is clicked in the window.
+     *
+     */
+    void loadCUDAModelClicked();
+
+    /**
+     * @brief Receiver of a Qt signal when the File -> Load OpenCL Model action is clicked in the window.
+     *
+     */
+    void loadOpenCLModelClicked();
+
 private:
     Ui::QHighLife *ui;
     Tutorial *m_tutorial;

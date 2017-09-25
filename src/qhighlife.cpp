@@ -25,6 +25,21 @@ QHighLife::~QHighLife()
     delete ui;
 }
 
+void QHighLife::loadCPUModelClicked()
+{
+    ui->statusbar->showMessage("TODO: CPU implementation loaded.");
+}
+
+void QHighLife::loadCUDAModelClicked()
+{
+    ui->statusbar->showMessage("TODO: CUDA implementation loaded.");
+}
+
+void QHighLife::loadOpenCLModelClicked()
+{
+    ui->statusbar->showMessage("TODO: OpenCL implementation loaded.");
+}
+
 void QHighLife::loadTutorialClicked()
 {
     m_tutorial->show();

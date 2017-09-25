@@ -12,7 +12,7 @@ public:
     virtual void run() = 0;
 
 protected:
-    Grid m_grid;
+    Grid *m_grid;
 
 };
 
