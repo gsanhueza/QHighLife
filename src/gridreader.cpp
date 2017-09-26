@@ -9,7 +9,7 @@ GridReader::~GridReader()
 {
 }
 
-bool GridReader::loadFile (QString filepath)
+bool GridReader::loadFile (Grid *grid, QString filepath)
 {
     if (filepath == "")
     {
@@ -18,7 +18,10 @@ bool GridReader::loadFile (QString filepath)
 
     QFile file(filepath);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        std::cout << "Can't open " << filepath.toStdString() << std::endl;
         return false;
+    }
 
     QTextStream in(&file);
     while (!in.atEnd()) {

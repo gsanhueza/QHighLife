@@ -5,10 +5,7 @@
 #include <QStringRef>
 #include <QTextStream>
 
-#include <vector>
-#include <sstream>
-
-using namespace std;
+#include "grid.h"
 
 class GridReader
 {
@@ -16,7 +13,7 @@ public:
     GridReader();
     ~GridReader();
 
-    bool loadFile(QString filepath); // FIXME Necesito recibir por referencia una variable para guardar lo que lei
+    bool loadFile(Grid *grid, QString filepath);
 };
 
 #endif

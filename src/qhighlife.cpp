@@ -29,9 +29,15 @@ QHighLife::~QHighLife()
 void QHighLife::loadGridClicked()
 {
     QString filepath = QFileDialog::getOpenFileName(this, tr("Grid files"), ".", tr("Grid Files (GRID) (*.grid)"));
-    ui->statusbar->showMessage("TODO: " + filepath);
 
-    // TODO Hacer que el modelo tenga estos datos
+    if (m_model->loadGrid(filepath))
+    {
+        ui->statusbar->showMessage("File loaded.");
+    }
+    else
+    {
+        ui->statusbar->showMessage("Cannot load file.");
+    }
 }
 
 void QHighLife::loadCPUModelClicked()
