@@ -1,5 +1,4 @@
 #include "grid.h"
-#include <iostream>
 
 Grid::Grid(unsigned int width, unsigned int height) :
     m_height(height),

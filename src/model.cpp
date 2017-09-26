@@ -13,11 +13,11 @@ Model::~Model()
 
 void Model::setLoadedGrid(QVector<QString> data)
 {
-    for (int i = 0; i < data.size(); i++)                   // Each line has its width
+    for (int j = 0; j < data.size(); j++)
     {
-        for (int j = 0; j < data.at(i).size(); j++)
+        for (int i = 0; i < data.at(j).size(); i++)
         {
-            m_grid->setAt(i, j, (data.at(i).at(j) == QChar('1')));
+            m_grid->setAt(i, j, (data.at(j).at(i) == QChar('1')));
         }
     }
 }

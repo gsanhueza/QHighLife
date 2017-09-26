@@ -15,25 +15,10 @@ CPUModel::~CPUModel()
 // TODO Implementar CPU
 void CPUModel::run()
 {
-    Grid result(m_grid->getWidth(), m_grid->getHeight());
-
-    for (unsigned int i = 0; i < result.getWidth(); i++)
-    {
-        for (unsigned int j = 0; j < result.getHeight(); j++)
-        {
-            bool isAlive = m_grid->getAt(i, j);
-            if (isAlive)
-            {
-                result.setAt(i, j, not isAlive);
-            }
-        }
-    }
-    *m_grid = result;
-
     // TODO Sacar check
-    for (unsigned int i = 0; i < m_grid->getWidth(); i++)
+    for (unsigned int j = 0; j < m_grid->getHeight(); j++)
     {
-        for (unsigned int j = 0; j < m_grid->getHeight(); j++)
+        for (unsigned int i = 0; i < m_grid->getWidth(); i++)
         {
             std::cout << m_grid->getAt(i, j);
         }
