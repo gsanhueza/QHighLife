@@ -14,6 +14,7 @@ public:
 
     virtual void run() = 0;
     virtual void setLoadedGrid(QVector<QString> data);
+    Grid* getGrid();
 
 protected:
     Grid *m_grid = nullptr;

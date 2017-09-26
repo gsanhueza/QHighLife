@@ -98,4 +98,6 @@ void QHighLife::loadRunClicked()
 {
     ui->statusbar->showMessage("TODO: Run implementation");
     m_model->run();
+
+    emit sendGrid(m_model->getGrid());
 }
