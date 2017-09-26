@@ -14,12 +14,8 @@
   <property name="windowTitle">
    <string>QHighLife</string>
   </property>
-  <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="0">
-     <widget class="Canvas" name="widget" native="true"/>
-    </item>
-   </layout>
+  <widget class="Canvas" name="canvas">
+   <layout class="QGridLayout" name="gridLayout"/>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">

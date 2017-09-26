@@ -26,5 +26,9 @@ void Canvas::doPainting()
     pen.setBrush(Qt::red);
     painter.setPen(pen);
 
-    painter.drawLine(QPoint(10, 10), QPoint(20, 30));
+    // TODO Detectar tamaños respecto a model (que loadGrid emita señal de la grilla, y aquí el slot receiveGrid lee la información)
+    // TODO Generar tamaños de células
+    // TODO Dibujarlas
+
+    painter.drawLine(QPoint(10, 10), QPoint(200, 30));
 }
