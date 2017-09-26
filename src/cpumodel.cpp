@@ -31,5 +31,5 @@ void CPUModel::run()
     }
     *m_grid = result;
 
-    cout << "CPUModel run at (4, 2): " << boolalpha << m_grid->getAt(4, 2) << endl;
+    cout << "CPUModel run at (4, 1): " << boolalpha << m_grid->getAt(4, 1) << endl;
 }

@@ -7,7 +7,6 @@ Model::Model(unsigned int width, unsigned int height)
 
 Model::~Model()
 {
-    delete m_grid;
 }
 
 bool Model::loadGrid(QString filepath)
