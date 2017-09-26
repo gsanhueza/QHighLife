@@ -9,7 +9,7 @@ QHighLife::QHighLife(QWidget *parent) :
     m_model(nullptr)
 {
     ui->setupUi(this);
-    ui->statusbar->showMessage("Select your desired implementation in the File menu. Then, load your initial grid.");
+    ui->statusbar->showMessage("Load your initial grid in the File menu, select your desired implementation in Model, and run it.");
 
     int screenWidth = QApplication::desktop()->width();
     int screenHeight = QApplication::desktop()->height();
@@ -30,13 +30,19 @@ void QHighLife::loadGridClicked()
 {
     QString filepath = QFileDialog::getOpenFileName(this, tr("Grid files"), ".", tr("Grid Files (.grid) (*.grid)"));
 
-    if (m_model->loadGrid(filepath))
+    if (m_gridreader.loadFile(filepath))
     {
         ui->statusbar->showMessage("File loaded.");
+        ui->actionLoadCPUModel->setEnabled(true);
+        ui->actionLoadCUDAModel->setEnabled(true);
+        ui->actionLoadOpenCLModel->setEnabled(true);
     }
     else
     {
         ui->statusbar->showMessage("Cannot load file.");
+        ui->actionLoadCPUModel->setDisabled(true);
+        ui->actionLoadCUDAModel->setDisabled(true);
+        ui->actionLoadOpenCLModel->setDisabled(true);
     }
 }
 
@@ -48,9 +54,7 @@ void QHighLife::loadCPUModelClicked()
         delete m_model;
         m_model = nullptr;
     }
-    m_model = new CPUModel(5, 3); // FIXME Necesito inicializar el modelo con algun tamaño de grilla
-
-    m_model->run(); // FIXME Sacar de aqui
+    m_model = new CPUModel(m_gridreader.getDetectedWidth(), m_gridreader.getDetectedHeight());
 }
 
 void QHighLife::loadCUDAModelClicked()
@@ -61,9 +65,7 @@ void QHighLife::loadCUDAModelClicked()
         delete m_model;
         m_model = nullptr;
     }
-    m_model = new CUDAModel(5, 3);
-
-    m_model->run();
+    m_model = new CUDAModel(m_gridreader.getDetectedWidth(), m_gridreader.getDetectedHeight());
 }
 
 void QHighLife::loadOpenCLModelClicked()
@@ -74,9 +76,7 @@ void QHighLife::loadOpenCLModelClicked()
         delete m_model;
         m_model = nullptr;
     }
-    m_model = new OpenCLModel(5, 3);
-
-    m_model->run();
+    m_model = new OpenCLModel(m_gridreader.getDetectedWidth(), m_gridreader.getDetectedHeight());
 }
 
 void QHighLife::loadTutorialClicked()
@@ -87,4 +87,10 @@ void QHighLife::loadTutorialClicked()
 void QHighLife::loadAboutClicked()
 {
     m_about->show();
+}
+
+void QHighLife::loadRunClicked()
+{
+    ui->statusbar->showMessage("TODO: Run implementation");
+    m_model->run();
 }

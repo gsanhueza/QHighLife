@@ -1,7 +1,9 @@
 #include "gridreader.h"
 #include <iostream>
 
-GridReader::GridReader()
+GridReader::GridReader() :
+    m_detectedWidth(0),
+    m_detectedHeight(0)
 {
 }
 
@@ -9,7 +11,7 @@ GridReader::~GridReader()
 {
 }
 
-bool GridReader::loadFile (Grid *grid, QString filepath)
+bool GridReader::loadFile(QString filepath)
 {
     std::cout << "GRIDREADER: Cargando " << filepath.toStdString() << std::endl;
     if (filepath == "")
@@ -28,7 +30,19 @@ bool GridReader::loadFile (Grid *grid, QString filepath)
     while (!in.atEnd()) {
         QString line = in.readLine();
         std::cout << line.toStdString() << std::endl;
+        m_detectedWidth = line.size();
+        m_detectedHeight++;
     }
 
     return true;
+}
+
+unsigned int GridReader::getDetectedWidth() const
+{
+    return m_detectedWidth;
+}
+
+unsigned int GridReader::getDetectedHeight() const
+{
+    return m_detectedHeight;
 }

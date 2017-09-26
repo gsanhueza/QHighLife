@@ -13,7 +13,13 @@ public:
     GridReader();
     ~GridReader();
 
-    bool loadFile(Grid *grid, QString filepath);
+    bool loadFile(QString filepath);
+    unsigned int getDetectedWidth() const;
+    unsigned int getDetectedHeight() const;
+
+private:
+    unsigned int m_detectedWidth;
+    unsigned int m_detectedHeight;
 };
 
 #endif

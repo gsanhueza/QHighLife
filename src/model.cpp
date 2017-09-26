@@ -12,5 +12,5 @@ Model::~Model()
 
 bool Model::loadGrid(QString filepath)
 {
-    return m_gridreader.loadFile(m_grid, filepath);
+    return m_gridreader.loadFile(filepath);
 }
