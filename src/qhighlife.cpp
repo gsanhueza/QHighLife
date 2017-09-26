@@ -5,7 +5,8 @@ QHighLife::QHighLife(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::QHighLife),
     m_tutorial(new Tutorial),
-    m_about(new About)
+    m_about(new About),
+    m_model(nullptr)
 {
     ui->setupUi(this);
     ui->statusbar->showMessage("Select your desired implementation in the File menu.");
@@ -28,16 +29,34 @@ QHighLife::~QHighLife()
 void QHighLife::loadCPUModelClicked()
 {
     ui->statusbar->showMessage("TODO: CPU implementation loaded.");
+    if (m_model != nullptr)
+    {
+        delete m_model;
+        m_model = nullptr;
+    }
+    m_model = new CPUModel();
 }
 
 void QHighLife::loadCUDAModelClicked()
 {
     ui->statusbar->showMessage("TODO: CUDA implementation loaded.");
+    if (m_model != nullptr)
+    {
+        delete m_model;
+        m_model = nullptr;
+    }
+    m_model = new CUDAModel();
 }
 
 void QHighLife::loadOpenCLModelClicked()
 {
     ui->statusbar->showMessage("TODO: OpenCL implementation loaded.");
+    if (m_model != nullptr)
+    {
+        delete m_model;
+        m_model = nullptr;
+    }
+    m_model = new OpenCLModel();
 }
 
 void QHighLife::loadTutorialClicked()
