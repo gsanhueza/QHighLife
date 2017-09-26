@@ -3,9 +3,9 @@
 
 using namespace std;
 
-CPUModel::CPUModel()
+CPUModel::CPUModel(unsigned int width, unsigned int height) :
+    Model(width, height)
 {
-    m_grid = new Grid(5, 3);
 }
 
 CPUModel::~CPUModel()

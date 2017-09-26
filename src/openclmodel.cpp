@@ -13,7 +13,8 @@
 #include <CL/cl.hpp>
 #endif
 
-OpenCLModel::OpenCLModel()
+OpenCLModel::OpenCLModel(unsigned int width, unsigned int height) :
+    Model(width, height)
 {
 }
 

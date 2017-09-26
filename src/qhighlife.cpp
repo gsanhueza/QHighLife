@@ -34,7 +34,7 @@ void QHighLife::loadCPUModelClicked()
         delete m_model;
         m_model = nullptr;
     }
-    m_model = new CPUModel(); // FIXME Necesito inicializar el modelo con algun tamaño de grilla
+    m_model = new CPUModel(5, 3); // FIXME Necesito inicializar el modelo con algun tamaño de grilla
 
     m_model->run(); // FIXME Sacar de aqui
 }
@@ -47,7 +47,7 @@ void QHighLife::loadCUDAModelClicked()
         delete m_model;
         m_model = nullptr;
     }
-    m_model = new CUDAModel();
+    m_model = new CUDAModel(5, 3);
 
     m_model->run();
 }
@@ -60,7 +60,7 @@ void QHighLife::loadOpenCLModelClicked()
         delete m_model;
         m_model = nullptr;
     }
-    m_model = new OpenCLModel();
+    m_model = new OpenCLModel(5, 3);
 
     m_model->run();
 }

@@ -6,7 +6,7 @@
 class CUDAModel : public Model
 {
 public:
-    CUDAModel();
+    CUDAModel(unsigned int width, unsigned int height);
     ~CUDAModel();
 
     virtual void run();
