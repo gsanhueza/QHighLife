@@ -2,6 +2,9 @@
 #define _CANVAS_H_
 
 #include <QWidget>
+#include <QVector>
+#include <QStringRef>
+#include "gridreader.h"
 
 class Canvas : public QWidget
 {
@@ -10,6 +13,9 @@ class Canvas : public QWidget
 public:
     Canvas(QWidget* parent = nullptr);
     ~Canvas();
+
+public slots:
+    void receiveGridReader(GridReader gridReader);
 
 protected:
     void paintEvent(QPaintEvent *e) override;
