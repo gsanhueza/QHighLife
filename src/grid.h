@@ -11,6 +11,9 @@ public:
     Grid& operator=(const Grid& other);
     bool operator==(const Grid& other) const;
 
+    unsigned int getWidth() const;
+    unsigned int getHeight() const;
+
     bool getAt(unsigned int x, unsigned int y) const;
     void setAt(unsigned int x, unsigned int y, Cell value);
 
