@@ -2,10 +2,8 @@
 
 Model::Model()
 {
-
 }
 
 Model::~Model()
 {
-
 }

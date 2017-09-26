@@ -16,7 +16,6 @@ SOURCES +=  src/main.cpp \
             src/cpumodel.cpp \
             src/cudamodel.cpp \
             src/openclmodel.cpp \
-            src/highlife_opencl.cpp
 
 HEADERS +=  src/qhighlife.h \
             src/tutorial.h \
@@ -28,6 +27,8 @@ HEADERS +=  src/qhighlife.h \
             src/openclmodel.h \
 
 LIBS += -lcuda -lcudart -lOpenCL
+
+#### CUDA Settings ####
 
 CUDA_SOURCES += src/highlife.cu \
 

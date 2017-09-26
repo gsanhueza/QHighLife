@@ -5,6 +5,10 @@
 #include <QMainWindow>
 #include "about.h"
 #include "tutorial.h"
+#include "model.h"
+#include "cpumodel.h"
+#include "cudamodel.h"
+#include "openclmodel.h"
 
 /**
 * @brief Namespace used by qhighlife.ui
@@ -73,6 +77,7 @@ private:
     Ui::QHighLife *ui;
     Tutorial *m_tutorial;
     About *m_about;
+    Model *m_model;
 };
 
 #endif
