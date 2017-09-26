@@ -48,6 +48,8 @@ void QHighLife::loadCUDAModelClicked()
         m_model = nullptr;
     }
     m_model = new CUDAModel();
+
+    m_model->run();
 }
 
 void QHighLife::loadOpenCLModelClicked()
