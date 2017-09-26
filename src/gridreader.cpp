@@ -13,7 +13,6 @@ GridReader::~GridReader()
 
 bool GridReader::loadFile(QString filepath)
 {
-    std::cout << "GRIDREADER: Cargando " << filepath.toStdString() << std::endl;
     if (filepath == "")
     {
         return false;
@@ -22,7 +21,6 @@ bool GridReader::loadFile(QString filepath)
     QFile file(filepath);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-        std::cout << "Can't open " << filepath.toStdString() << std::endl;
         return false;
     }
 

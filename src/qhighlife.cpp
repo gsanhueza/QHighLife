@@ -50,7 +50,7 @@ void QHighLife::loadGridClicked()
 
 void QHighLife::loadCPUModelClicked()
 {
-    ui->statusbar->showMessage("TODO: CPU implementation loaded.");
+    ui->statusbar->showMessage("CPU implementation loaded.");
     if (m_model != nullptr)
     {
         delete m_model;
@@ -64,7 +64,7 @@ void QHighLife::loadCPUModelClicked()
 
 void QHighLife::loadCUDAModelClicked()
 {
-    ui->statusbar->showMessage("TODO: CUDA implementation loaded.");
+    ui->statusbar->showMessage("CUDA implementation loaded.");
     if (m_model != nullptr)
     {
         delete m_model;
@@ -78,7 +78,7 @@ void QHighLife::loadCUDAModelClicked()
 
 void QHighLife::loadOpenCLModelClicked()
 {
-    ui->statusbar->showMessage("TODO: OpenCL implementation loaded.");
+    ui->statusbar->showMessage("OpenCL implementation loaded.");
     if (m_model != nullptr)
     {
         delete m_model;
@@ -102,7 +102,7 @@ void QHighLife::loadAboutClicked()
 
 void QHighLife::loadRunClicked()
 {
-    ui->statusbar->showMessage("TODO: Run implementation");
+    ui->statusbar->showMessage("Implementation is running.");
     m_model->run();
 
     emit sendGrid(m_model->getGrid());

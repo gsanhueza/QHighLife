@@ -3,7 +3,6 @@
 
 #include <QWidget>
 #include <QVector>
-#include <QStringRef>
 #include "grid.h"
 #include "gridreader.h"
 
