@@ -17,6 +17,7 @@ SOURCES +=  src/main.cpp \
             src/cudamodel.cpp \
             src/openclmodel.cpp \
             src/gridreader.cpp \
+            src/canvas.cpp \
 
 HEADERS +=  src/qhighlife.h \
             src/tutorial.h \
@@ -27,6 +28,7 @@ HEADERS +=  src/qhighlife.h \
             src/cudamodel.h \
             src/openclmodel.h \
             src/gridreader.h \
+            src/canvas.h \
 
 LIBS += -lcuda -lcudart -lOpenCL
 

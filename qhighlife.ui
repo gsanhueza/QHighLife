@@ -14,7 +14,7 @@
   <property name="windowTitle">
    <string>QHighLife</string>
   </property>
-  <widget class="QWidget" name="centralwidget">
+  <widget class="Canvas" name="canvas">
    <layout class="QGridLayout" name="gridLayout"/>
   </widget>
   <widget class="QMenuBar" name="menubar">
@@ -121,6 +121,17 @@
    </property>
   </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>Canvas</class>
+   <extends>QWidget</extends>
+   <header>src/canvas.h</header>
+   <container>1</container>
+   <slots>
+    <slot>receiveGridReader(GridReader*)</slot>
+   </slots>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections>
   <connection>
@@ -251,8 +262,25 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>QHighLife</sender>
+   <signal>sendGridReader(GridReader*)</signal>
+   <receiver>canvas</receiver>
+   <slot>receiveGridReader(GridReader*)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>639</x>
+     <y>359</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>639</x>
+     <y>363</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
+  <signal>sendGridReader(GridReader*)</signal>
   <slot>loadTutorialClicked()</slot>
   <slot>loadAboutClicked()</slot>
   <slot>loadCPUModelClicked()</slot>

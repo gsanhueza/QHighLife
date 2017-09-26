@@ -43,6 +43,9 @@ public:
     */
     ~QHighLife();
 
+signals:
+    void sendGridReader(GridReader *gridReader);
+
 public slots:
 
     /**
