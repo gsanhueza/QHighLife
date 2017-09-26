@@ -15,7 +15,7 @@ public:
     bool loadGrid(QString filepath);
 
 protected:
-    Grid *m_grid;
+    Grid *m_grid = nullptr;
     GridReader m_gridreader;
 };
 

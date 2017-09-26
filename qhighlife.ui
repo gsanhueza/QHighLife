@@ -30,11 +30,11 @@
     <property name="title">
      <string>&amp;File</string>
     </property>
-    <addaction name="actionLoadInitialGrid"/>
-    <addaction name="separator"/>
     <addaction name="actionLoadCPUModel"/>
     <addaction name="actionLoadCUDAModel"/>
     <addaction name="actionLoadOpenCLModel"/>
+    <addaction name="separator"/>
+    <addaction name="actionLoadInitialGrid"/>
     <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>

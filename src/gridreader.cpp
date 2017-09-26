@@ -11,6 +11,7 @@ GridReader::~GridReader()
 
 bool GridReader::loadFile (Grid *grid, QString filepath)
 {
+    std::cout << "GRIDREADER: Cargando " << filepath.toStdString() << std::endl;
     if (filepath == "")
     {
         return false;
