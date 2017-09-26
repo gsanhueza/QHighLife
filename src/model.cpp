@@ -1,4 +1,5 @@
 #include "model.h"
+#include <iostream>
 
 Model::Model(unsigned int width, unsigned int height)
 {
@@ -7,9 +8,16 @@ Model::Model(unsigned int width, unsigned int height)
 
 Model::~Model()
 {
+    delete m_grid;
 }
 
-bool Model::loadGrid(QString filepath)
+void Model::setLoadedGrid(QVector<QString> data)
 {
-    return m_gridreader.loadFile(filepath);
+    for (int i = 0; i < data.size(); i++)                   // Each line has its width
+    {
+        for (int j = 0; j < data.at(i).size(); j++)
+        {
+            m_grid->setAt(i, j, (data.at(i).at(j) == QChar('1')));
+        }
+    }
 }

@@ -2,6 +2,7 @@
 #define _MODEL_H_
 
 #include <QStringRef>
+#include <QVector>
 #include "grid.h"
 #include "gridreader.h"
 
@@ -12,11 +13,10 @@ public:
     virtual ~Model();
 
     virtual void run() = 0;
-    bool loadGrid(QString filepath);
+    virtual void setLoadedGrid(QVector<QString> data);
 
 protected:
     Grid *m_grid = nullptr;
-    GridReader m_gridreader;
 };
 
 #endif

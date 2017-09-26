@@ -29,7 +29,7 @@ bool GridReader::loadFile(QString filepath)
     QTextStream in(&file);
     while (!in.atEnd()) {
         QString line = in.readLine();
-        std::cout << line.toStdString() << std::endl;
+        m_data.append(line);
         m_detectedWidth = line.size();
         m_detectedHeight++;
     }
@@ -45,4 +45,9 @@ unsigned int GridReader::getDetectedWidth() const
 unsigned int GridReader::getDetectedHeight() const
 {
     return m_detectedHeight;
+}
+
+QVector<QString> GridReader::getData() const
+{
+    return m_data;
 }
