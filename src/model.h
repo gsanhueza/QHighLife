@@ -6,7 +6,7 @@
 class Model
 {
 public:
-    Model();
+    Model(unsigned int width, unsigned int height);
     virtual ~Model();
 
     virtual void run() = 0;

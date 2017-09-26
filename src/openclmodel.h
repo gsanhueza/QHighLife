@@ -6,7 +6,7 @@
 class OpenCLModel : public Model
 {
 public:
-    OpenCLModel();
+    OpenCLModel(unsigned int width, unsigned int height);
     ~OpenCLModel();
 
     virtual void run();

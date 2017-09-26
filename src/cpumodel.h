@@ -6,7 +6,7 @@
 class CPUModel : public Model
 {
 public:
-    CPUModel();
+    CPUModel(unsigned int width, unsigned int height);
     ~CPUModel();
 
     virtual void run();
