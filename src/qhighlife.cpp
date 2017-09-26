@@ -59,6 +59,8 @@ void QHighLife::loadOpenCLModelClicked()
         m_model = nullptr;
     }
     m_model = new OpenCLModel();
+
+    m_model->run();
 }
 
 void QHighLife::loadTutorialClicked()
