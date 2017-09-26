@@ -16,7 +16,7 @@ public:
     GridReader();
     ~GridReader();
 
-    bool loadFile(QString filepath);
+    bool loadFile(QString filepath); // FIXME Necesito recibir por referencia una variable para guardar lo que lei
 };
 
 #endif
