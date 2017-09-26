@@ -22,6 +22,12 @@ protected:
 
 private:
     void doPainting();
+
+    GridReader m_gridReader;
+    unsigned int m_gridWidth;
+    unsigned int m_gridHeight;
+    unsigned int m_cellWidth;
+    unsigned int m_cellHeight;
 };
 
 #endif

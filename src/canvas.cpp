@@ -27,22 +27,23 @@ void Canvas::doPainting()
     pen.setBrush(Qt::red);
     painter.setPen(pen);
 
-    std::cout << this->width() << std::endl;
-    std::cout << this->height() << std::endl;
-    std::cout << std::endl;
-
-    // TODO Detectar tamaños respecto a model (que loadGrid emita señal de la grilla, y aquí el slot receiveGrid lee la información)
-    // TODO Generar tamaños de células
-    // TODO Dibujarlas
-
-    painter.drawLine(QPoint(10, 10), QPoint(200, 30));
+    QVector<QString> data = m_gridReader.getData();
+    for (int j = 0; j < data.size(); j++)
+    {
+        for (int i = 0; i < data.at(i).size(); i++)
+        {
+            painter.drawRect(i * m_cellWidth, j * m_cellHeight, m_cellWidth, m_cellHeight);
+        }
+    }
 }
 
 void Canvas::receiveGridReader(GridReader gridReader)
 {
-    QVector<QString> data = gridReader.getData();
-    for (QString line : data)
-    {
-        std::cout << line.toStdString() << std::endl;
-    }
+    m_gridReader = gridReader;
+
+    m_gridWidth = gridReader.getDetectedWidth();
+    m_gridHeight = gridReader.getDetectedHeight();
+
+    m_cellWidth = this->width() / m_gridWidth;
+    m_cellHeight = this->height() / m_gridHeight;
 }
