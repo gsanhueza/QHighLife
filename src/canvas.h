@@ -15,7 +15,7 @@ public:
     ~Canvas();
 
 public slots:
-    void receiveGridReader(GridReader gridReader);
+    void receiveGridReader(GridReader *gridReader);
 
 protected:
     void paintEvent(QPaintEvent *e) override;
@@ -23,7 +23,7 @@ protected:
 private:
     void doPainting();
 
-    GridReader m_gridReader;
+    QVector<QString> m_data;
     unsigned int m_gridWidth;
     unsigned int m_gridHeight;
     unsigned int m_cellWidth;

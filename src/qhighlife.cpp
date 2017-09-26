@@ -37,7 +37,7 @@ void QHighLife::loadGridClicked()
         ui->actionLoadCUDAModel->setEnabled(true);
         ui->actionLoadOpenCLModel->setEnabled(true);
 
-        emit sendGridReader(m_gridreader);
+        emit sendGridReader(&m_gridreader);
     }
     else
     {

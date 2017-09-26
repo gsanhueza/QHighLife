@@ -128,7 +128,7 @@
    <header>src/canvas.h</header>
    <container>1</container>
    <slots>
-    <slot>receiveGridReader(GridReader)</slot>
+    <slot>receiveGridReader(GridReader*)</slot>
    </slots>
   </customwidget>
  </customwidgets>
@@ -264,9 +264,9 @@
   </connection>
   <connection>
    <sender>QHighLife</sender>
-   <signal>sendGridReader(GridReader)</signal>
+   <signal>sendGridReader(GridReader*)</signal>
    <receiver>canvas</receiver>
-   <slot>receiveGridReader(GridReader)</slot>
+   <slot>receiveGridReader(GridReader*)</slot>
    <hints>
     <hint type="sourcelabel">
      <x>639</x>
@@ -280,7 +280,7 @@
   </connection>
  </connections>
  <slots>
-  <signal>sendGridReader(GridReader)</signal>
+  <signal>sendGridReader(GridReader*)</signal>
   <slot>loadTutorialClicked()</slot>
   <slot>loadAboutClicked()</slot>
   <slot>loadCPUModelClicked()</slot>

@@ -21,28 +21,26 @@ void Canvas::paintEvent(QPaintEvent *e)
 void Canvas::doPainting()
 {
     QPainter painter(this);
-    QPen pen(Qt::black, 2);
 
-    pen.setStyle(Qt::SolidLine);
-    pen.setBrush(Qt::red);
-    painter.setPen(pen);
-
-    QVector<QString> data = m_gridReader.getData();
-    for (int j = 0; j < data.size(); j++)
+    if (m_data.size() > 0)
     {
-        for (int i = 0; i < data.at(i).size(); i++)
+        for (int j = 0; j < m_data.size(); j++)
         {
-            painter.drawRect(i * m_cellWidth, j * m_cellHeight, m_cellWidth, m_cellHeight);
+            for (int i = 0; i < m_data.at(j).size(); i++)
+            {
+                Qt::GlobalColor color = (m_data.at(j).at(i) == QChar('1')) ? Qt::red : Qt::black;
+                painter.fillRect(i * m_cellWidth, j * m_cellHeight, m_cellWidth, m_cellHeight, color);
+            }
         }
     }
 }
 
-void Canvas::receiveGridReader(GridReader gridReader)
+void Canvas::receiveGridReader(GridReader *gridReader)
 {
-    m_gridReader = gridReader;
+    m_data = gridReader->getData();
 
-    m_gridWidth = gridReader.getDetectedWidth();
-    m_gridHeight = gridReader.getDetectedHeight();
+    m_gridWidth = gridReader->getDetectedWidth();
+    m_gridHeight = gridReader->getDetectedHeight();
 
     m_cellWidth = this->width() / m_gridWidth;
     m_cellHeight = this->height() / m_gridHeight;
