@@ -10,26 +10,18 @@ CPUModel::CPUModel(unsigned int width, unsigned int height) :
 
 CPUModel::~CPUModel()
 {
-    delete m_grid;
 }
 
 // TODO Implementar CPU
 void CPUModel::run()
 {
-    Grid result(m_grid->getWidth(), m_grid->getHeight());
-
-    for (unsigned int i = 0; i < result.getWidth(); i++)
+    // TODO Sacar check
+    for (unsigned int j = 0; j < m_grid->getHeight(); j++)
     {
-        for (unsigned int j = 0; j < result.getHeight(); j++)
+        for (unsigned int i = 0; i < m_grid->getWidth(); i++)
         {
-            bool isAlive = m_grid->getAt(i, j);
-            if (isAlive)
-            {
-                result.setAt(i, j, not isAlive);
-            }
+            std::cout << m_grid->getAt(i, j);
         }
+        std::cout << std::endl;
     }
-    *m_grid = result;
-
-    cout << "CPUModel run at (4, 2): " << boolalpha << m_grid->getAt(4, 2) << endl;
 }

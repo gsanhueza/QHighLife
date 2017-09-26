@@ -22,9 +22,9 @@ Grid::Grid(unsigned int width, unsigned int height) :
 
 Grid::~Grid()
 {
-    if (m_height)
+    for (unsigned int i = 0; i < m_width; ++i)
     {
-        delete [] m_grid[0];
+        delete m_grid[i];
     }
     delete [] m_grid;
 }

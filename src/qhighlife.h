@@ -3,12 +3,14 @@
 
 #include <QDesktopWidget>
 #include <QMainWindow>
+#include <QFileDialog>
 #include "about.h"
 #include "tutorial.h"
 #include "model.h"
 #include "cpumodel.h"
 #include "cudamodel.h"
 #include "openclmodel.h"
+#include "gridreader.h"
 
 /**
 * @brief Namespace used by qhighlife.ui
@@ -56,28 +58,41 @@ public slots:
     void loadAboutClicked();
 
     /**
-     * @brief Receiver of a Qt signal when the File -> Load CPU Model action is clicked in the window.
+     * @brief Receiver of a Qt signal when the File -> Load Grid action is clicked in the window.
+     *
+     */
+    void loadGridClicked();
+
+    /**
+     * @brief Receiver of a Qt signal when the Model -> Load CPU Model action is clicked in the window.
      *
      */
     void loadCPUModelClicked();
 
     /**
-     * @brief Receiver of a Qt signal when the File -> Load CUDA Model action is clicked in the window.
+     * @brief Receiver of a Qt signal when the Model -> Load CUDA Model action is clicked in the window.
      *
      */
     void loadCUDAModelClicked();
 
     /**
-     * @brief Receiver of a Qt signal when the File -> Load OpenCL Model action is clicked in the window.
+     * @brief Receiver of a Qt signal when the Model -> Load OpenCL Model action is clicked in the window.
      *
      */
     void loadOpenCLModelClicked();
+
+    /**
+     * @brief Receiver of a Qt signal when the Run -> Run implementation action is clicked in the window.
+     *
+     */
+    void loadRunClicked();
 
 private:
     Ui::QHighLife *ui;
     Tutorial *m_tutorial;
     About *m_about;
     Model *m_model;
+    GridReader m_gridreader;
 };
 
 #endif
