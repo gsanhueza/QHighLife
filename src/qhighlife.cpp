@@ -58,6 +58,8 @@ void QHighLife::loadCPUModelClicked()
     }
     m_model = new CPUModel(m_gridreader.getDetectedWidth(), m_gridreader.getDetectedHeight());
     m_model->setLoadedGrid(m_gridreader.getData());
+
+    ui->actionRunImplementation->setEnabled(true);
 }
 
 void QHighLife::loadCUDAModelClicked()
@@ -70,6 +72,8 @@ void QHighLife::loadCUDAModelClicked()
     }
     m_model = new CUDAModel(m_gridreader.getDetectedWidth(), m_gridreader.getDetectedHeight());
     m_model->setLoadedGrid(m_gridreader.getData());
+
+    ui->actionRunImplementation->setEnabled(true);
 }
 
 void QHighLife::loadOpenCLModelClicked()
@@ -82,6 +86,8 @@ void QHighLife::loadOpenCLModelClicked()
     }
     m_model = new OpenCLModel(m_gridreader.getDetectedWidth(), m_gridreader.getDetectedHeight());
     m_model->setLoadedGrid(m_gridreader.getData());
+
+    ui->actionRunImplementation->setEnabled(true);
 }
 
 void QHighLife::loadTutorialClicked()
