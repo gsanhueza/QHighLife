@@ -9,7 +9,7 @@ QHighLife::QHighLife(QWidget *parent) :
     m_model(nullptr)
 {
     ui->setupUi(this);
-    ui->statusbar->showMessage("Select your desired implementation in the File menu.");
+    ui->statusbar->showMessage("Select your desired implementation in the File menu. Then, load your initial grid.");
 
     int screenWidth = QApplication::desktop()->width();
     int screenHeight = QApplication::desktop()->height();
@@ -28,7 +28,7 @@ QHighLife::~QHighLife()
 
 void QHighLife::loadGridClicked()
 {
-    QString filepath = QFileDialog::getOpenFileName(this, tr("Grid files"), ".", tr("Grid Files (GRID) (*.grid)"));
+    QString filepath = QFileDialog::getOpenFileName(this, tr("Grid files"), ".", tr("Grid Files (.grid) (*.grid)"));
 
     if (m_model->loadGrid(filepath))
     {

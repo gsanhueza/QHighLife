@@ -34,7 +34,7 @@
     <addaction name="actionLoadCUDAModel"/>
     <addaction name="actionLoadOpenCLModel"/>
     <addaction name="separator"/>
-    <addaction name="actionLoadInitialGrid"/>
+    <addaction name="actionLoadGrid"/>
     <addaction name="separator"/>
     <addaction name="actionExit"/>
    </widget>
@@ -89,9 +89,9 @@
     <string>&amp;Exit</string>
    </property>
   </action>
-  <action name="actionLoadInitialGrid">
+  <action name="actionLoadGrid">
    <property name="text">
-    <string>Load Initial &amp;Grid</string>
+    <string>Load &amp;Grid</string>
    </property>
   </action>
  </widget>
@@ -194,7 +194,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>actionLoadInitialGrid</sender>
+   <sender>actionLoadGrid</sender>
    <signal>triggered()</signal>
    <receiver>QHighLife</receiver>
    <slot>loadGridClicked()</slot>
