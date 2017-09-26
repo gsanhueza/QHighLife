@@ -3,6 +3,7 @@
 
 #include <QDesktopWidget>
 #include <QMainWindow>
+#include <QFileDialog>
 #include "about.h"
 #include "tutorial.h"
 #include "model.h"
@@ -54,6 +55,12 @@ public slots:
      *
      */
     void loadAboutClicked();
+
+    /**
+     * @brief Receiver of a Qt signal when the File -> Load Initial Grid action is clicked in the window.
+     *
+     */
+    void loadGridClicked();
 
     /**
      * @brief Receiver of a Qt signal when the File -> Load CPU Model action is clicked in the window.

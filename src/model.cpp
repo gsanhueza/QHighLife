@@ -9,3 +9,8 @@ Model::~Model()
 {
     delete m_grid;
 }
+
+bool Model::loadGrid(QString filepath)
+{
+    return m_gridreader.loadFile(filepath);
+}

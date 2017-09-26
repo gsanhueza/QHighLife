@@ -30,6 +30,8 @@
     <property name="title">
      <string>&amp;File</string>
     </property>
+    <addaction name="actionLoadInitialGrid"/>
+    <addaction name="separator"/>
     <addaction name="actionLoadCPUModel"/>
     <addaction name="actionLoadCUDAModel"/>
     <addaction name="actionLoadOpenCLModel"/>
@@ -85,6 +87,11 @@
   <action name="actionExit">
    <property name="text">
     <string>&amp;Exit</string>
+   </property>
+  </action>
+  <action name="actionLoadInitialGrid">
+   <property name="text">
+    <string>Load Initial &amp;Grid</string>
    </property>
   </action>
  </widget>
@@ -186,6 +193,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionLoadInitialGrid</sender>
+   <signal>triggered()</signal>
+   <receiver>QHighLife</receiver>
+   <slot>loadGridClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>639</x>
+     <y>359</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>loadTutorialClicked()</slot>
@@ -193,5 +216,6 @@
   <slot>loadCPUModelClicked()</slot>
   <slot>loadCUDAModelClicked()</slot>
   <slot>loadOpenCLModelClicked()</slot>
+  <slot>loadGridClicked()</slot>
  </slots>
 </ui>

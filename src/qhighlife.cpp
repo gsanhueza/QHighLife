@@ -26,6 +26,14 @@ QHighLife::~QHighLife()
     delete ui;
 }
 
+void QHighLife::loadGridClicked()
+{
+    QString filepath = QFileDialog::getOpenFileName(this, tr("Grid files"), ".", tr("Grid Files (GRID) (*.grid)"));
+    ui->statusbar->showMessage("TODO: " + filepath);
+
+    // TODO Hacer que el modelo tenga estos datos
+}
+
 void QHighLife::loadCPUModelClicked()
 {
     ui->statusbar->showMessage("TODO: CPU implementation loaded.");
