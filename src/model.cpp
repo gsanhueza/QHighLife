@@ -21,3 +21,8 @@ void Model::setLoadedGrid(QVector<QString> data)
         }
     }
 }
+
+Grid* Model::getGrid()
+{
+    return m_grid;
+}

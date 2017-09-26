@@ -45,6 +45,7 @@ public:
 
 signals:
     void sendGridReader(GridReader *gridReader);
+    void sendGrid(Grid *grid);
 
 public slots:
 
