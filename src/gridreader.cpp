@@ -1,5 +1,4 @@
 #include "gridreader.h"
-#include <iostream>
 
 GridReader::GridReader() :
     m_detectedWidth(0),

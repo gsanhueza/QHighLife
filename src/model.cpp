@@ -1,7 +1,8 @@
 #include "model.h"
-#include <iostream>
 
-Model::Model(unsigned int width, unsigned int height)
+Model::Model(unsigned int width, unsigned int height) :
+    m_grid(nullptr),
+    out(stdout)
 {
     m_grid = new Grid(width, height);
 }

@@ -3,6 +3,7 @@
 
 #include <QWidget>
 #include <QVector>
+#include <QTextStream>
 #include "grid.h"
 #include "gridreader.h"
 
@@ -30,6 +31,8 @@ private:
     unsigned int m_gridHeight;
     unsigned int m_cellWidth;
     unsigned int m_cellHeight;
+
+    QTextStream out;
 };
 
 #endif

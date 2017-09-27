@@ -2,6 +2,7 @@
 #define _MODEL_H_
 
 #include <QStringRef>
+#include <QTextStream>
 #include <QVector>
 #include "grid.h"
 #include "gridreader.h"
@@ -17,7 +18,8 @@ public:
     Grid* getGrid();
 
 protected:
-    Grid *m_grid = nullptr;
+    Grid *m_grid;
+    QTextStream out;
 };
 
 #endif

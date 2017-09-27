@@ -9,7 +9,7 @@ QHighLife::QHighLife(QWidget *parent) :
     m_model(nullptr)
 {
     ui->setupUi(this);
-    ui->statusbar->showMessage("Load your initial grid in the File menu, select your desired implementation in Model, and run it.");
+    ui->statusbar->showMessage("Load your initial grid in File, select your desired implementation in Model, and Run it.");
 
     int screenWidth = QApplication::desktop()->width();
     int screenHeight = QApplication::desktop()->height();
@@ -102,7 +102,7 @@ void QHighLife::loadAboutClicked()
 
 void QHighLife::loadRunClicked()
 {
-    ui->statusbar->showMessage("Implementation is running.");
+    ui->statusbar->showMessage("Implementation has run.");
     m_model->run();
 
     emit sendGrid(m_model->getGrid());

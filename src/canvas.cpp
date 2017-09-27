@@ -4,7 +4,8 @@
 
 Canvas::Canvas(QWidget* parent) :
     QWidget(parent),
-    m_grid(nullptr)
+    m_grid(nullptr),
+    out(stdout)
 {
 }
 
@@ -44,7 +45,7 @@ void Canvas::doPainting()
         {
             for (unsigned int i = 0; i < m_grid->getWidth(); i++)
             {
-                Qt::GlobalColor color = (m_grid->getAt(i, j)) ? Qt::blue : Qt::green;
+                Qt::GlobalColor color = (m_grid->getAt(i, j)) ? Qt::green : Qt::darkGray;
                 painter.fillRect(i * m_cellWidth, j * m_cellHeight, m_cellWidth, m_cellHeight, color);
             }
         }
@@ -60,6 +61,8 @@ void Canvas::receiveGridReader(GridReader *gridReader)
 
     m_cellWidth = this->width() / m_gridWidth;
     m_cellHeight = this->height() / m_gridHeight;
+
+    out << "Received grid has (width, height) = (" << m_gridWidth << ", " << m_gridHeight << ")" << endl;
 }
 
 void Canvas::receiveGrid(Grid *grid)
