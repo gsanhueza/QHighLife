@@ -64,6 +64,8 @@ void Canvas::receiveGridReader(GridReader *gridReader)
     m_cellHeight = this->height() / m_gridHeight;
 
     out << "Received grid has (width, height) = (" << m_gridWidth << ", " << m_gridHeight << ")" << endl;
+
+    update();
 }
 
 void Canvas::receiveGrid(Grid *grid)
