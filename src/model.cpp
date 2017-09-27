@@ -1,6 +1,6 @@
 #include "model.h"
 
-Model::Model(unsigned int width, unsigned int height) :
+Model::Model(int width, int height) :
     m_grid(nullptr),
     out(stdout)
 {

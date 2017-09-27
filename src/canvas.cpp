@@ -41,9 +41,9 @@ void Canvas::doPainting()
     // Updated (Grid)
     else
     {
-        for (unsigned int j = 0; j < m_grid->getHeight(); j++)
+        for (int j = 0; j < m_grid->getHeight(); j++)
         {
-            for (unsigned int i = 0; i < m_grid->getWidth(); i++)
+            for (int i = 0; i < m_grid->getWidth(); i++)
             {
                 Qt::GlobalColor color = (m_grid->getAt(i, j)) ? Qt::green : Qt::darkGray;
                 painter.fillRect(i * m_cellWidth, j * m_cellHeight, m_cellWidth, m_cellHeight, color);

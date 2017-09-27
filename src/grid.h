@@ -6,21 +6,21 @@ typedef bool Cell;
 class Grid
 {
 public:
-    Grid(unsigned int width, unsigned int height);
+    Grid(int width, int height);
     ~Grid();
     Grid& operator=(const Grid& other);
     bool operator==(const Grid& other) const;
 
-    unsigned int getWidth() const;
-    unsigned int getHeight() const;
+    int getWidth() const;
+    int getHeight() const;
 
-    bool getAt(unsigned int x, unsigned int y) const;
-    void setAt(unsigned int x, unsigned int y, Cell value);
+    bool getAt(int x, int y) const;
+    void setAt(int x, int y, Cell value);
 
 private:
     bool **m_grid;
-    unsigned int m_height;
-    unsigned int m_width;
+    int m_height;
+    int m_width;
 };
 
 #endif

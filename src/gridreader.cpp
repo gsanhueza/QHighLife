@@ -42,12 +42,12 @@ bool GridReader::loadFile(QString filepath)
     return true;
 }
 
-unsigned int GridReader::getDetectedWidth() const
+int GridReader::getDetectedWidth() const
 {
     return m_detectedWidth;
 }
 
-unsigned int GridReader::getDetectedHeight() const
+int GridReader::getDetectedHeight() const
 {
     return m_detectedHeight;
 }
