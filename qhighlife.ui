@@ -59,6 +59,7 @@
      <string>&amp;Run</string>
     </property>
     <addaction name="actionRunImplementation"/>
+    <addaction name="actionRunStressTest"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuModel"/>
@@ -125,6 +126,14 @@
    </property>
    <property name="text">
     <string>&amp;Run implementation</string>
+   </property>
+  </action>
+  <action name="actionRunStressTest">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>Run &amp;stress test</string>
    </property>
   </action>
  </widget>

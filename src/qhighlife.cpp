@@ -46,6 +46,7 @@ void QHighLife::loadGridClicked()
         ui->actionLoadCUDAModel->setDisabled(true);
         ui->actionLoadOpenCLModel->setDisabled(true);
         ui->actionRunImplementation->setDisabled(true);
+        ui->actionRunStressTest->setDisabled(true);
     }
 }
 
@@ -62,6 +63,7 @@ void QHighLife::loadCPUModelClicked()
     m_model->setLoadedGrid(m_gridreader.getData());
 
     ui->actionRunImplementation->setEnabled(true);
+    ui->actionRunStressTest->setEnabled(true);
 }
 
 void QHighLife::loadCUDAModelClicked()
@@ -77,6 +79,7 @@ void QHighLife::loadCUDAModelClicked()
     m_model->setLoadedGrid(m_gridreader.getData());
 
     ui->actionRunImplementation->setEnabled(true);
+    ui->actionRunStressTest->setEnabled(true);
 }
 
 void QHighLife::loadOpenCLModelClicked()
@@ -92,6 +95,7 @@ void QHighLife::loadOpenCLModelClicked()
     m_model->setLoadedGrid(m_gridreader.getData());
 
     ui->actionRunImplementation->setEnabled(true);
+    ui->actionRunStressTest->setEnabled(true);
 }
 
 void QHighLife::loadTutorialClicked()
@@ -110,4 +114,18 @@ void QHighLife::loadRunClicked()
     m_model->run();
 
     emit sendGrid(m_model->getGrid());
+}
+
+void QHighLife::loadRunStressTestClicked()
+{
+    ui->statusbar->showMessage("Stress implementation is running.");
+
+    // TODO Timer to run for 10 seconds, counter
+    m_model->run();
+    m_model->run();
+    m_model->run();
+
+    emit sendGrid(m_model->getGrid());
+
+    ui->statusbar->showMessage("Stress implementation has run.");
 }

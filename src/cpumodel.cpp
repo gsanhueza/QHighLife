@@ -11,11 +11,8 @@ CPUModel::~CPUModel()
 {
 }
 
-// TODO Implementar CPU
 void CPUModel::run()
 {
-    out << "TODO: Implement CPU Model" << endl;
-
     Grid result(m_grid->getWidth(), m_grid->getHeight());
     result = *m_grid;
 

@@ -91,6 +91,12 @@ public slots:
      */
     void loadRunClicked();
 
+    /**
+     * @brief Receiver of a Qt signal when the Run -> Run stress test action is clicked in the window.
+     *
+     */
+    void loadRunStressTestClicked();
+
 private:
     Ui::QHighLife *ui;
     Tutorial *m_tutorial;
