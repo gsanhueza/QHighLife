@@ -311,6 +311,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionRunStressTest</sender>
+   <signal>triggered()</signal>
+   <receiver>QHighLife</receiver>
+   <slot>loadRunStressTestClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>639</x>
+     <y>359</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <signal>sendGrid(Grid*)</signal>
@@ -322,5 +338,6 @@
   <slot>loadOpenCLModelClicked()</slot>
   <slot>loadGridClicked()</slot>
   <slot>loadRunClicked()</slot>
+  <slot>loadRunStressTestClicked()</slot>
  </slots>
 </ui>

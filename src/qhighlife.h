@@ -4,6 +4,7 @@
 #include <QDesktopWidget>
 #include <QMainWindow>
 #include <QFileDialog>
+#include <QTextStream>
 #include "about.h"
 #include "tutorial.h"
 #include "model.h"
@@ -103,6 +104,7 @@ private:
     About *m_about;
     Model *m_model;
     GridReader m_gridreader;
+    QTextStream out;
 };
 
 #endif

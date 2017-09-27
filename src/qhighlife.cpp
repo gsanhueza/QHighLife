@@ -1,12 +1,15 @@
 #include "qhighlife.h"
 #include "ui_qhighlife.h"
 
+#include <chrono>
+
 QHighLife::QHighLife(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::QHighLife),
     m_tutorial(new Tutorial),
     m_about(new About),
-    m_model(nullptr)
+    m_model(nullptr),
+    out(stdout)
 {
     ui->setupUi(this);
     ui->statusbar->showMessage("Load your initial grid in File, select your desired implementation in Model, and Run it.");
@@ -120,12 +123,17 @@ void QHighLife::loadRunStressTestClicked()
 {
     ui->statusbar->showMessage("Stress implementation is running.");
 
-    // TODO Timer to run for 10 seconds, counter
-    m_model->run();
-    m_model->run();
-    m_model->run();
+    std::chrono::time_point<std::chrono::high_resolution_clock> m_start = std::chrono::high_resolution_clock::now();
+    std::chrono::time_point<std::chrono::high_resolution_clock> m_end = m_start + std::chrono::seconds(10);
+    int iterations = 0;
+    while (std::chrono::high_resolution_clock::now() < m_end)
+    {
+        m_model->run();
+        ++iterations;
+    }
 
     emit sendGrid(m_model->getGrid());
+    out << "# of iterations: " << iterations << endl;
 
     ui->statusbar->showMessage("Stress implementation has run.");
 }
