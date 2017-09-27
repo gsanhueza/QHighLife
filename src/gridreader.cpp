@@ -12,17 +12,25 @@ GridReader::~GridReader()
 
 bool GridReader::loadFile(QString filepath)
 {
+    // Clear old data
+    m_data.clear();
+    m_detectedHeight = 0;
+    m_detectedWidth = 0;
+
+    // Assert filepath
     if (filepath == "")
     {
         return false;
     }
 
+    // Open file
     QFile file(filepath);
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         return false;
     }
 
+    // Read content
     QTextStream in(&file);
     while (!in.atEnd()) {
         QString line = in.readLine();

@@ -45,6 +45,7 @@ void QHighLife::loadGridClicked()
         ui->actionLoadCPUModel->setDisabled(true);
         ui->actionLoadCUDAModel->setDisabled(true);
         ui->actionLoadOpenCLModel->setDisabled(true);
+        ui->actionRunImplementation->setDisabled(true);
     }
 }
 

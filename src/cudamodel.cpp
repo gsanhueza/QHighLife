@@ -13,5 +13,6 @@ CUDAModel::~CUDAModel()
 
 void CUDAModel::run()
 {
+    out << "TODO: Implement CUDA Model" << endl;
     cuda_main();
 }

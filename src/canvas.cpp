@@ -54,6 +54,7 @@ void Canvas::doPainting()
 
 void Canvas::receiveGridReader(GridReader *gridReader)
 {
+    m_grid = nullptr;
     m_data = gridReader->getData();
 
     m_gridWidth = gridReader->getDetectedWidth();
