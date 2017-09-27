@@ -126,6 +126,8 @@ void QHighLife::loadRunStressTestClicked()
     std::chrono::time_point<std::chrono::high_resolution_clock> m_start = std::chrono::high_resolution_clock::now();
     std::chrono::time_point<std::chrono::high_resolution_clock> m_end = m_start + std::chrono::seconds(10);
     int iterations = 0;
+
+    // FIXME Quizá haya que cambiar esto a un m_model->runStress(), donde allí esté el timer...
     while (std::chrono::high_resolution_clock::now() < m_end)
     {
         m_model->run();
