@@ -14,6 +14,10 @@
   <property name="windowTitle">
    <string>QHighLife</string>
   </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>../resources/icon.png</normaloff>../resources/icon.png</iconset>
+  </property>
   <widget class="Canvas" name="canvas">
    <layout class="QGridLayout" name="gridLayout"/>
   </widget>
