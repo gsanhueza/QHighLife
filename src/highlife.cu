@@ -10,12 +10,13 @@ __host__ __device__ int getPos(int i, int j, int n)
 }
 
 // Kernel
-__global__ void computeHighLife(bool **grid, bool *result, int width, int height)
+__global__ void computeHighLife(bool *grid, bool *result, int width, int height)
 {
     int i = (blockDim.x * blockIdx.x) + threadIdx.x;
     int j = (blockDim.y * blockIdx.y) + threadIdx.y;
 
-    result[getPos(i, j, width)] = (j >= i);
+    if (i < width and j < height)                           // Caso no-multiplo de 2
+        result[getPos(i, j, width)] = !grid[getPos(i, j, width)];
 
 //     if (grid[threadIdx.x % height][threadIdx.x / height] and not (surroundingAliveCells(i, j) == 2 or surroundingAliveCells(i, j) == 3))
 //     {
@@ -34,14 +35,15 @@ extern "C"
 int cuda_main(Grid *grid)
 {
     // Host data
-    bool **h_grid = grid->getInnerGrid();
+    bool *h_grid   = (bool *)malloc(grid->getWidth() * grid->getHeight() * sizeof(bool));
     bool *h_result = (bool *)malloc(grid->getWidth() * grid->getHeight() * sizeof(bool));
 
-    // Cleaning host result
+    // Filling data
     for (int j = 0; j < grid->getHeight(); j++)
     {
         for (int i = 0; i < grid->getWidth(); i++)
         {
+            h_grid[getPos(i, j, grid->getWidth())] = grid->getAt(i, j);
             h_result[getPos(i, j, grid->getWidth())] = 0;
         }
     }
@@ -49,7 +51,7 @@ int cuda_main(Grid *grid)
     std::cout << "Host is ready." << std::endl;
 
     // Device data
-    bool **d_grid;
+    bool *d_grid;
     cudaMalloc(&d_grid, grid->getWidth() * grid->getHeight() * sizeof(bool));
     bool *d_result;
     cudaMalloc(&d_result, grid->getWidth() * grid->getHeight() * sizeof(bool));
@@ -62,7 +64,8 @@ int cuda_main(Grid *grid)
     // Set grid and bock dimensions
     const int THREADS = grid->getWidth() * grid->getHeight();
     const dim3 THREADS_PER_BLOCK(8, 8);                     // 64 threads per block
-    const dim3 NUM_BLOCKS(grid->getWidth() / THREADS_PER_BLOCK.x, grid->getHeight() / THREADS_PER_BLOCK.y);
+    const dim3 NUM_BLOCKS(  (grid->getWidth() + THREADS_PER_BLOCK.x - 1) / THREADS_PER_BLOCK.x,
+                            (grid->getHeight() + THREADS_PER_BLOCK.y - 1) / THREADS_PER_BLOCK.y);
 
     std::cout << "THREADS = " << THREADS << std::endl;
     std::cout << "THREADS_PER_BLOCK.x = " << THREADS_PER_BLOCK.x << std::endl;
