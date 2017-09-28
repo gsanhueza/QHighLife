@@ -1,14 +1,15 @@
 #include <iostream>
 #include <cuda_runtime.h>
 #include "grid.h"
+#include "stdio.h"
 
 // Kernel
-__global__ void computeHighLife(bool **grid, bool **result, int width, int height)
+__global__ void computeHighLife(bool **grid, bool *result, int width, int height)
 {
-    int i = blockDim.x * blockIdx.x + threadIdx.x;
-    int j = blockDim.y * blockIdx.y + threadIdx.y;
+//     int i = blockDim.x * blockIdx.x + threadIdx.x;
+//     int j = blockDim.y * blockIdx.y + threadIdx.y;
 
-    result[1][0] = false;
+    result[threadIdx.x] = 0;
 //     if (i < getWidth(grid) and j < getHeight(grid) and i >= 0 and j >= 0)
 //     {
 //         setAt(result, i, j, !getAt(grid, i, j));
@@ -19,30 +20,47 @@ __global__ void computeHighLife(bool **grid, bool **result, int width, int heigh
 extern "C"
 int cuda_main(Grid *grid)
 {
-    bool **innerGrid;
-    bool **innerResult;
+    bool **h_grid = (bool **)malloc(grid->getWidth() * grid->getHeight() * sizeof(bool));
+    bool *h_result = (bool *)malloc(grid->getWidth() * grid->getHeight() * sizeof(bool));
+    bool **d_grid;
+    cudaMalloc(&d_grid, grid->getWidth() * grid->getHeight() * sizeof(bool));
+    bool *d_result;
+    cudaMalloc(&d_result, grid->getWidth() * grid->getHeight() * sizeof(bool));
 
-    cudaMallocManaged(&innerGrid, grid->getWidth() * grid->getHeight() * sizeof(bool));
-    cudaMallocManaged(&innerGrid, grid->getWidth() * grid->getHeight() * sizeof(bool));
+    h_grid = grid->getInnerGrid();
 
-    innerGrid = grid->getInnerGrid();
-    innerResult = grid->getInnerGrid();
+    for (int j = 0; j < grid->getHeight(); j++)
+    {
+        for (int i = 0; i < grid->getWidth(); i++)
+        {
+            h_result[j * grid->getHeight() + i] = 1;
+        }
+    }
 
-    int blocksize = 32;
-    dim3 threads(blocksize, blocksize);
-    dim3 cudagrid(grid->getWidth() / threads.x, grid->getHeight() / threads.y);
+    std::cout << "Host listo" << std::endl;
 
-    // FIXME Cuda puede hacer modificaciones (TODO), pero hay que ponerle ojo a los margenes, o hace segfault
-    std::cout << "CUDA can receive a Grid object" << std::endl;
-    std::cout << "mygrid.getAt(1, 0) was = " << std::boolalpha << innerGrid[1][0] << std::endl;
-    std::cout << "result.getAt(1, 0) was = " << std::boolalpha << innerResult[1][0] << std::endl;
-    computeHighLife<<< 1, 1 >>>(innerGrid, innerResult, grid->getWidth(),  grid->getHeight());
-//     computeHighLife<<< cudagrid, threads >>>(innerGrid, innerResult, grid->getWidth(),  grid->getHeight());
-    std::cout << "CUDA can send a Grid object" << std::endl;
-    std::cout << "mygrid.getAt(1, 0) is = " << std::boolalpha << innerGrid[1][0] << std::endl;
-    std::cout << "result.getAt(1, 0) is = " << std::boolalpha << innerResult[1][0] << std::endl;
+    // Copy vectors from host memory to device memory
+    cudaMemcpy(d_grid, h_grid, grid->getWidth() * grid->getHeight() * sizeof(bool), cudaMemcpyHostToDevice);
+
+    int gridSize(grid->getWidth() * grid->getHeight());
+
+    std::cout << "CUDA can receive a Grid object?" << std::endl;
+
+    computeHighLife<<< 1, gridSize >>>(d_grid, d_result, grid->getWidth(), grid->getHeight());
+
+    // h_result contains the result in host memory
+    cudaMemcpy(h_result, d_result, grid->getWidth() * grid->getHeight() * sizeof(bool), cudaMemcpyDeviceToHost);
+
+    std::cout << "CUDA can send a Grid object?" << std::endl;
+
+    for (int j = 0; j < grid->getHeight(); j++)
+    {
+        for (int i = 0; i < grid->getWidth(); i++)
+        {
+            grid->setAt(i, j, h_result[j * grid->getHeight() + i]);
+        }
+    }
 
     // Final result
-    grid->setInnerGrid(innerResult);
     return 0;
 }
