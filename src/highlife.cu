@@ -38,14 +38,19 @@ int cuda_main(Grid *grid)
     bool *d_result;
     cudaMalloc(&d_result, grid->getWidth() * grid->getHeight() * sizeof(bool));
 
+    std::cout << "CUDA: Width  = " << grid->getWidth() << std::endl;
+    std::cout << "CUDA: Height = " << grid->getHeight() << std::endl;
+    std::cout << "Allocating " << grid->getWidth() * grid->getHeight() * sizeof(bool) << " bytes in device. " << std::endl;
     h_grid = grid->getInnerGrid();
 
     for (int j = 0; j < grid->getHeight(); j++)
     {
         for (int i = 0; i < grid->getWidth(); i++)
         {
-            h_result[getPos(i, j, grid->getWidth())] = 0;
+            h_result[getPos(i, j, grid->getWidth())] = 1;
+            std::cout << h_result[getPos(i, j, grid->getWidth())];
         }
+        std::cout << std::endl;
     }
 
     std::cout << "Host listo" << std::endl;
@@ -69,7 +74,9 @@ int cuda_main(Grid *grid)
         for (int i = 0; i < grid->getWidth(); i++)
         {
             grid->setAt(i, j, h_result[getPos(i, j, grid->getWidth())]);
+            std::cout << h_result[getPos(i, j, grid->getWidth())];
         }
+        std::cout << std::endl;
     }
 
     // Final result
