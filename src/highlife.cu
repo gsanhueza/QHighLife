@@ -9,7 +9,12 @@ __global__ void computeHighLife(bool **grid, bool *result, int width, int height
 //     int i = blockDim.x * blockIdx.x + threadIdx.x;
 //     int j = blockDim.y * blockIdx.y + threadIdx.y;
 
-    result[threadIdx.x] = 0;
+//     if (grid[threadIdx.x % height][threadIdx.x / height] and not (surroundingAliveCells(i, j) == 2 or surroundingAliveCells(i, j) == 3))
+//     {
+        //!(grid[threadIdx.x][threadIdx.y]);
+        result[threadIdx.x * height + threadIdx.y] = (threadIdx.y >= threadIdx.x);
+//     }
+
 //     if (i < getWidth(grid) and j < getHeight(grid) and i >= 0 and j >= 0)
 //     {
 //         setAt(result, i, j, !getAt(grid, i, j));
@@ -20,7 +25,7 @@ __global__ void computeHighLife(bool **grid, bool *result, int width, int height
 extern "C"
 int cuda_main(Grid *grid)
 {
-    bool **h_grid = (bool **)malloc(grid->getWidth() * grid->getHeight() * sizeof(bool));
+    bool **h_grid = grid->getInnerGrid();
     bool *h_result = (bool *)malloc(grid->getWidth() * grid->getHeight() * sizeof(bool));
     bool **d_grid;
     cudaMalloc(&d_grid, grid->getWidth() * grid->getHeight() * sizeof(bool));
@@ -42,7 +47,7 @@ int cuda_main(Grid *grid)
     // Copy vectors from host memory to device memory
     cudaMemcpy(d_grid, h_grid, grid->getWidth() * grid->getHeight() * sizeof(bool), cudaMemcpyHostToDevice);
 
-    int gridSize(grid->getWidth() * grid->getHeight());
+    dim3 gridSize(grid->getWidth(), grid->getHeight());
 
     std::cout << "CUDA can receive a Grid object?" << std::endl;
 
