@@ -4,7 +4,7 @@
 #include "stdio.h"
 
 // Helper 2D -> 1D array
-__device__ int getPos(int i, int j, int n)
+__host__ __device__ int getPos(int i, int j, int n)
 {
     return i + n * j;
 }
@@ -18,10 +18,7 @@ __global__ void computeHighLife(bool **grid, bool *result, int width, int height
 //     if (grid[threadIdx.x % height][threadIdx.x / height] and not (surroundingAliveCells(i, j) == 2 or surroundingAliveCells(i, j) == 3))
 //     {
         //!(grid[threadIdx.x][threadIdx.y]);
-        if (threadIdx.x == 10 and threadIdx.y == 1)
-            result[getPos(threadIdx.x, threadIdx.y, width)] = 1;//(threadIdx.y >= threadIdx.x);
-        else
-            result[getPos(threadIdx.x, threadIdx.y, width)] = 0;
+        result[getPos(threadIdx.x, threadIdx.y, width)] = (threadIdx.y >= threadIdx.x);
 //     }
 
 //     if (i < getWidth(grid) and j < getHeight(grid) and i >= 0 and j >= 0)
@@ -47,7 +44,7 @@ int cuda_main(Grid *grid)
     {
         for (int i = 0; i < grid->getWidth(); i++)
         {
-            h_result[j * grid->getHeight() + i] = 1;
+            h_result[getPos(i, j, grid->getWidth())] = 1;
         }
     }
 
@@ -71,7 +68,7 @@ int cuda_main(Grid *grid)
     {
         for (int i = 0; i < grid->getWidth(); i++)
         {
-            grid->setAt(i, j, h_result[j * grid->getHeight() + i]);
+            grid->setAt(i, j, h_result[getPos(i, j, grid->getWidth())]);
         }
     }
 
