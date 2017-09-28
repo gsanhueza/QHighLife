@@ -126,19 +126,11 @@ void QHighLife::loadRunStressTestClicked()
 {
     ui->statusbar->showMessage("Stress implementation is running.");
 
-    std::chrono::time_point<std::chrono::high_resolution_clock> m_start = std::chrono::high_resolution_clock::now();
-    std::chrono::time_point<std::chrono::high_resolution_clock> m_end = m_start + std::chrono::seconds(10);
-    int iterations = 0;
-
-    // FIXME Quizá haya que cambiar esto a un m_model->runStress(), donde allí esté el timer...
-    while (std::chrono::high_resolution_clock::now() < m_end)
-    {
-        m_model->run();
-        ++iterations;
-    }
+    int seconds = 10;
+    int processedCells = m_model->runStressTest(seconds);
+    out << processedCells << " iterations in " << seconds << " seconds." << endl;
 
     emit sendGrid(m_model->getGrid());
-    out << "# of iterations: " << iterations << endl;
 
     ui->statusbar->showMessage("Stress implementation has run.");
 }

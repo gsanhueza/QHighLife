@@ -47,7 +47,7 @@ QMAKE_LIBDIR += $$CUDA_DIR/lib64     # Note I'm using a 64 bits Operating system
 CUDA_ARCH     = sm_20                # Yeah! I've a new device. Adjust with your compute capability
 
 # Here are some NVCC flags I've always used by default.
-NVCCFLAGS     = --compiler-options -fno-strict-aliasing -use_fast_math --ptxas-options=-v -Xcompiler=-fPIC
+NVCCFLAGS     = --compiler-options -fno-strict-aliasing -use_fast_math --ptxas-options=-v -Xcompiler=-fPIC -std=c++11
 
 # Prepare the extra compiler configuration (taken from the nvidia forum - i'm not an expert in this part)
 CUDA_INC = $$join(INCLUDEPATH,' -I','-I',' ')

@@ -14,6 +14,7 @@ public:
     virtual ~Model();
 
     virtual void run() = 0;
+    virtual int runStressTest(int timeInSeconds) = 0;
     virtual void setLoadedGrid(QVector<QString> data);
     Grid* getGrid();
 
