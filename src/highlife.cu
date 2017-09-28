@@ -12,13 +12,13 @@ __host__ __device__ int getPos(int i, int j, int n)
 // Kernel
 __global__ void computeHighLife(bool **grid, bool *result, int width, int height)
 {
-//     int i = blockDim.x * blockIdx.x + threadIdx.x;
-//     int j = blockDim.y * blockIdx.y + threadIdx.y;
+    int i = blockDim.x * blockIdx.x + threadIdx.x;
+    int j = blockDim.y * blockIdx.y + threadIdx.y;
 
 //     if (grid[threadIdx.x % height][threadIdx.x / height] and not (surroundingAliveCells(i, j) == 2 or surroundingAliveCells(i, j) == 3))
 //     {
         //!(grid[threadIdx.x][threadIdx.y]);
-        result[getPos(threadIdx.x, threadIdx.y, width)] = (threadIdx.y >= threadIdx.x);
+        result[getPos(i, j, width)] = (j == i);
 //     }
 
 //     if (i < getWidth(grid) and j < getHeight(grid) and i >= 0 and j >= 0)
@@ -31,38 +31,52 @@ __global__ void computeHighLife(bool **grid, bool *result, int width, int height
 extern "C"
 int cuda_main(Grid *grid)
 {
+    // Host data
     bool **h_grid = grid->getInnerGrid();
     bool *h_result = (bool *)malloc(grid->getWidth() * grid->getHeight() * sizeof(bool));
+
+    // Cleaning host result
+    for (int j = 0; j < grid->getHeight(); j++)
+    {
+        for (int i = 0; i < grid->getWidth(); i++)
+        {
+            h_result[getPos(i, j, grid->getWidth())] = 0;
+        }
+    }
+
+    std::cout << "Host is ready." << std::endl;
+
+    // Device data
     bool **d_grid;
     cudaMalloc(&d_grid, grid->getWidth() * grid->getHeight() * sizeof(bool));
     bool *d_result;
     cudaMalloc(&d_result, grid->getWidth() * grid->getHeight() * sizeof(bool));
 
-    std::cout << "CUDA: Width  = " << grid->getWidth() << std::endl;
-    std::cout << "CUDA: Height = " << grid->getHeight() << std::endl;
-    std::cout << "Allocating " << grid->getWidth() * grid->getHeight() * sizeof(bool) << " bytes in device. " << std::endl;
-    h_grid = grid->getInnerGrid();
-
-    for (int j = 0; j < grid->getHeight(); j++)
-    {
-        for (int i = 0; i < grid->getWidth(); i++)
-        {
-            h_result[getPos(i, j, grid->getWidth())] = 1;
-            std::cout << h_result[getPos(i, j, grid->getWidth())];
-        }
-        std::cout << std::endl;
-    }
-
-    std::cout << "Host listo" << std::endl;
+    std::cout << "Device is initialized." << std::endl;
 
     // Copy vectors from host memory to device memory
     cudaMemcpy(d_grid, h_grid, grid->getWidth() * grid->getHeight() * sizeof(bool), cudaMemcpyHostToDevice);
 
-    dim3 gridSize(grid->getWidth(), grid->getHeight());
+    // Set grid and bock dimensions
+    const int THREADS = grid->getWidth() * grid->getHeight();
+    const dim3 THREADS_PER_BLOCK(8, 8);                     // 64 threads per block
+    const dim3 NUM_BLOCKS(THREADS / THREADS_PER_BLOCK.x, THREADS / THREADS_PER_BLOCK.y);
+
+    std::cout << "THREADS = " << THREADS << std::endl;
+    std::cout << "THREADS_PER_BLOCK.x = " << THREADS_PER_BLOCK.x << std::endl;
+    std::cout << "THREADS_PER_BLOCK.y = " << THREADS_PER_BLOCK.y << std::endl;
+    std::cout << "NUM_BLOCKS.x = " << NUM_BLOCKS.x << std::endl;
+    std::cout << "NUM_BLOCKS.y = " << NUM_BLOCKS.y << std::endl;
+    std::cout << std::endl;
+
+    // TODO Detectar máx threads por 1 bloque
+    cudaDeviceProp deviceProp;
+    cudaGetDeviceProperties(&deviceProp, 0);
+    std::cout << "Max Threads per Block = " << deviceProp.maxThreadsPerBlock << std::endl;
 
     std::cout << "CUDA can receive a Grid object?" << std::endl;
 
-    computeHighLife<<< 1, gridSize >>>(d_grid, d_result, grid->getWidth(), grid->getHeight());
+    computeHighLife<<< NUM_BLOCKS, THREADS_PER_BLOCK>>>(d_grid, d_result, grid->getWidth(), grid->getHeight());
 
     // h_result contains the result in host memory
     cudaMemcpy(h_result, d_result, grid->getWidth() * grid->getHeight() * sizeof(bool), cudaMemcpyDeviceToHost);
