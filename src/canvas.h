@@ -27,10 +27,10 @@ private:
 
     QVector<QString> m_data;
     Grid* m_grid;
-    unsigned int m_gridWidth;
-    unsigned int m_gridHeight;
-    unsigned int m_cellWidth;
-    unsigned int m_cellHeight;
+    int m_gridWidth;
+    int m_gridHeight;
+    int m_cellWidth;
+    int m_cellHeight;
 
     QTextStream out;
 };

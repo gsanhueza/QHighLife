@@ -13,7 +13,7 @@
 #include <CL/cl.hpp>
 #endif
 
-OpenCLModel::OpenCLModel(unsigned int width, unsigned int height) :
+OpenCLModel::OpenCLModel(int width, int height) :
     Model(width, height)
 {
 }
@@ -27,7 +27,7 @@ void OpenCLModel::run()
     out << "TODO: Implement OpenCL Model" << endl;
 
     const int N_ELEMENTS=1024*1024;
-    unsigned int platform_id=0, device_id=0;
+    int platform_id=0, device_id=0;
 
     try{
         std::unique_ptr<int[]> A(new int[N_ELEMENTS]); // Or you can use simple dynamic arrays like: int* A = new int[N_ELEMENTS];

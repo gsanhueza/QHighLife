@@ -2,7 +2,7 @@
 extern "C"
 void cuda_main();
 
-CUDAModel::CUDAModel(unsigned int width, unsigned int height) :
+CUDAModel::CUDAModel(int width, int height) :
     Model(width, height)
 {
 }

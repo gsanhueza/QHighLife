@@ -15,13 +15,13 @@ public:
     ~GridReader();
 
     bool loadFile(QString filepath);
-    unsigned int getDetectedWidth() const;
-    unsigned int getDetectedHeight() const;
+    int getDetectedWidth() const;
+    int getDetectedHeight() const;
     QVector<QString> getData() const;
 
 private:
-    unsigned int m_detectedWidth;
-    unsigned int m_detectedHeight;
+    int m_detectedWidth;
+    int m_detectedHeight;
     QVector<QString> m_data;
 };
 

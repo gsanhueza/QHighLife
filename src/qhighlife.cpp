@@ -1,12 +1,15 @@
 #include "qhighlife.h"
 #include "ui_qhighlife.h"
 
+#include <chrono>
+
 QHighLife::QHighLife(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::QHighLife),
     m_tutorial(new Tutorial),
     m_about(new About),
-    m_model(nullptr)
+    m_model(nullptr),
+    out(stdout)
 {
     ui->setupUi(this);
     ui->statusbar->showMessage("Load your initial grid in File, select your desired implementation in Model, and Run it.");
@@ -46,6 +49,7 @@ void QHighLife::loadGridClicked()
         ui->actionLoadCUDAModel->setDisabled(true);
         ui->actionLoadOpenCLModel->setDisabled(true);
         ui->actionRunImplementation->setDisabled(true);
+        ui->actionRunStressTest->setDisabled(true);
     }
 }
 
@@ -62,6 +66,7 @@ void QHighLife::loadCPUModelClicked()
     m_model->setLoadedGrid(m_gridreader.getData());
 
     ui->actionRunImplementation->setEnabled(true);
+    ui->actionRunStressTest->setEnabled(true);
 }
 
 void QHighLife::loadCUDAModelClicked()
@@ -77,6 +82,7 @@ void QHighLife::loadCUDAModelClicked()
     m_model->setLoadedGrid(m_gridreader.getData());
 
     ui->actionRunImplementation->setEnabled(true);
+    ui->actionRunStressTest->setEnabled(true);
 }
 
 void QHighLife::loadOpenCLModelClicked()
@@ -92,6 +98,7 @@ void QHighLife::loadOpenCLModelClicked()
     m_model->setLoadedGrid(m_gridreader.getData());
 
     ui->actionRunImplementation->setEnabled(true);
+    ui->actionRunStressTest->setEnabled(true);
 }
 
 void QHighLife::loadTutorialClicked()
@@ -110,4 +117,23 @@ void QHighLife::loadRunClicked()
     m_model->run();
 
     emit sendGrid(m_model->getGrid());
+}
+
+void QHighLife::loadRunStressTestClicked()
+{
+    ui->statusbar->showMessage("Stress implementation is running.");
+
+    std::chrono::time_point<std::chrono::high_resolution_clock> m_start = std::chrono::high_resolution_clock::now();
+    std::chrono::time_point<std::chrono::high_resolution_clock> m_end = m_start + std::chrono::seconds(10);
+    int iterations = 0;
+    while (std::chrono::high_resolution_clock::now() < m_end)
+    {
+        m_model->run();
+        ++iterations;
+    }
+
+    emit sendGrid(m_model->getGrid());
+    out << "# of iterations: " << iterations << endl;
+
+    ui->statusbar->showMessage("Stress implementation has run.");
 }

@@ -10,7 +10,7 @@
 class Model
 {
 public:
-    Model(unsigned int width, unsigned int height);
+    Model(int width, int height);
     virtual ~Model();
 
     virtual void run() = 0;
