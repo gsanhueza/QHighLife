@@ -142,27 +142,29 @@ int cuda_main_stress(Grid *grid, int timeInSeconds)
     std::chrono::time_point<std::chrono::high_resolution_clock> m_end = m_start + std::chrono::seconds(timeInSeconds);
     int iterations = 0;
 
+    // Copy vectors from host memory to device memory
+    cudaMemcpy(d_grid, h_grid, grid->getWidth() * grid->getHeight() * sizeof(bool), cudaMemcpyHostToDevice);
+
     while (std::chrono::high_resolution_clock::now() < m_end)
     {
-        // Copy vectors from host memory to device memory
-        cudaMemcpy(d_grid, h_grid, grid->getWidth() * grid->getHeight() * sizeof(bool), cudaMemcpyHostToDevice);
+        // Optimization: We expect d_grid to be READONLY, and d_result to be READWRITE.
+        // We start with d_grid == d_result.
+        // When we finish the computation once, we (theoretically) want to update d_grid. => d_grid will be the same as d_result.
+        // If we (temporarily) use d_result as d_grid in each second computation, we'll get the same "start".
+        // Thus, our final results will be in d_grid. => We have to copy back d_grid to h_result to get the real result.
+        // With this, we can avoid calling cudaMemcpy every iteration.
 
-        // Send kernel
+        // Send kernel: Results will be in d_result
         computeHighLife<<< NUM_BLOCKS, THREADS_PER_BLOCK>>>(d_grid, d_result, grid->getWidth(), grid->getHeight());
-        // Copy results from device memory to host memory
-        cudaMemcpy(h_result, d_result, grid->getWidth() * grid->getHeight() * sizeof(bool), cudaMemcpyDeviceToHost);
 
-        // Update grid
-        for (int j = 0; j < grid->getHeight(); j++)
-        {
-            for (int i = 0; i < grid->getWidth(); i++)
-            {
-                h_grid[getPos(i, j, grid->getWidth())] = h_result[getPos(i, j, grid->getWidth())];
-            }
-        }
+        // Send kernel: Results will be in d_grid
+        computeHighLife<<< NUM_BLOCKS, THREADS_PER_BLOCK>>>(d_result, d_grid, grid->getWidth(), grid->getHeight());
 
-        ++iterations;
+        iterations += 2;
     }
+
+    // Copy results from device memory to host memory. Remember, with the optimization, our final results will be in d_grid for this stress test.
+    cudaMemcpy(h_result, d_grid, grid->getWidth() * grid->getHeight() * sizeof(bool), cudaMemcpyDeviceToHost);
 
     // Update grid
     for (int j = 0; j < grid->getHeight(); j++)
