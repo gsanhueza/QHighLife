@@ -3,6 +3,12 @@
 #include "grid.h"
 #include "stdio.h"
 
+// Helper 2D -> 1D array
+__device__ int getPos(int i, int j, int n)
+{
+    return i + n * j;
+}
+
 // Kernel
 __global__ void computeHighLife(bool **grid, bool *result, int width, int height)
 {
@@ -12,7 +18,10 @@ __global__ void computeHighLife(bool **grid, bool *result, int width, int height
 //     if (grid[threadIdx.x % height][threadIdx.x / height] and not (surroundingAliveCells(i, j) == 2 or surroundingAliveCells(i, j) == 3))
 //     {
         //!(grid[threadIdx.x][threadIdx.y]);
-        result[threadIdx.x * height + threadIdx.y] = (threadIdx.y >= threadIdx.x);
+        if (threadIdx.x == 10 and threadIdx.y == 1)
+            result[getPos(threadIdx.x, threadIdx.y, width)] = 1;//(threadIdx.y >= threadIdx.x);
+        else
+            result[getPos(threadIdx.x, threadIdx.y, width)] = 0;
 //     }
 
 //     if (i < getWidth(grid) and j < getHeight(grid) and i >= 0 and j >= 0)
