@@ -9,6 +9,22 @@ __host__ __device__ int getPos(int i, int j, int n)
     return i + n * j;
 }
 
+__device__ int surroundingAliveCells(bool *grid, int i, int j, int w, int h)
+{
+    int count = 0;
+
+    for (int y = max(0, j - 1); y <= min(j + 1, h - 1); y++)
+    {
+        for (int x = max(0, i - 1); x <= min(i + 1, w - 1); x++)
+        {
+            if (x == i and y == j) continue;                // Self check unrequired
+            count += (grid[getPos(x, y, w)]);               // Count alive cells
+        }
+    }
+
+    return count;
+}
+
 // Kernel
 __global__ void computeHighLife(bool *grid, bool *result, int width, int height)
 {
@@ -16,7 +32,18 @@ __global__ void computeHighLife(bool *grid, bool *result, int width, int height)
     int j = (blockDim.y * blockIdx.y) + threadIdx.y;
 
     if (i < width and j < height)                           // Caso no-multiplo de 2
-        result[getPos(i, j, width)] = !grid[getPos(i, j, width)];
+    {
+        if (grid[getPos(i, j, width)] and not (surroundingAliveCells(grid, i, j, width, height) == 2 or surroundingAliveCells(grid, i, j, width, height) == 3))
+        {
+            result[getPos(i, j, width)] = 0;
+        }
+        else if (not grid[getPos(i, j, width)] and (surroundingAliveCells(grid, i, j, width, height) == 3 or surroundingAliveCells(grid, i, j, width, height) == 6))
+        {
+            result[getPos(i, j, width)] = 1;
+        }
+    }
+
+
 
 //     if (grid[threadIdx.x % height][threadIdx.x / height] and not (surroundingAliveCells(i, j) == 2 or surroundingAliveCells(i, j) == 3))
 //     {
