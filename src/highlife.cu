@@ -12,13 +12,15 @@ __host__ __device__ int getPos(int i, int j, int n)
 // Kernel
 __global__ void computeHighLife(bool **grid, bool *result, int width, int height)
 {
-    int i = blockDim.x * blockIdx.x + threadIdx.x;
-    int j = blockDim.y * blockIdx.y + threadIdx.y;
+    int i = (blockDim.x * blockIdx.x) + threadIdx.x;
+    int j = (blockDim.y * blockIdx.y) + threadIdx.y;
+
+    result[getPos(i, j, width)] = (j >= i);
 
 //     if (grid[threadIdx.x % height][threadIdx.x / height] and not (surroundingAliveCells(i, j) == 2 or surroundingAliveCells(i, j) == 3))
 //     {
         //!(grid[threadIdx.x][threadIdx.y]);
-        result[getPos(i, j, width)] = (j == i);
+
 //     }
 
 //     if (i < getWidth(grid) and j < getHeight(grid) and i >= 0 and j >= 0)
@@ -60,7 +62,7 @@ int cuda_main(Grid *grid)
     // Set grid and bock dimensions
     const int THREADS = grid->getWidth() * grid->getHeight();
     const dim3 THREADS_PER_BLOCK(8, 8);                     // 64 threads per block
-    const dim3 NUM_BLOCKS(THREADS / THREADS_PER_BLOCK.x, THREADS / THREADS_PER_BLOCK.y);
+    const dim3 NUM_BLOCKS(grid->getWidth() / THREADS_PER_BLOCK.x, grid->getHeight() / THREADS_PER_BLOCK.y);
 
     std::cout << "THREADS = " << THREADS << std::endl;
     std::cout << "THREADS_PER_BLOCK.x = " << THREADS_PER_BLOCK.x << std::endl;
