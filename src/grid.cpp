@@ -75,3 +75,13 @@ void Grid::setAt(int x, int y, Cell value)
 {
     m_grid[x][y] = value;
 }
+
+bool** Grid::getInnerGrid() const
+{
+    return m_grid;
+}
+
+void Grid::setInnerGrid(bool **grid)
+{
+    m_grid = grid;
+}

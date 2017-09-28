@@ -17,6 +17,9 @@ public:
     bool getAt(int x, int y) const;
     void setAt(int x, int y, Cell value);
 
+    bool **getInnerGrid() const;
+    void setInnerGrid(bool **grid);
+
 private:
     bool **m_grid;
     int m_height;

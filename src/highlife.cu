@@ -1,196 +1,122 @@
-/**
- * Copyright 1993-2015 NVIDIA Corporation.  All rights reserved.
- *
- * Please refer to the NVIDIA end user license agreement (EULA) associated
- * with this source code for terms and conditions that govern your use of
- * this software. Any use, reproduction, disclosure, or distribution of
- * this software and related documentation outside the terms of the EULA
- * is strictly prohibited.
- *
- */
-
-/**
- * Vector addition: C = A + B.
- *
- * This sample is a very basic sample that implements element by element
- * vector addition. It is the same as the sample illustrating Chapter 2
- * of the programming guide with some additions like error checking.
- */
-
-#include <stdio.h>
-
-// For the CUDA runtime routines (prefixed with "cuda_")
+#include <iostream>
 #include <cuda_runtime.h>
+#include "grid.h"
+#include "stdio.h"
 
-// #include <helper_cuda.h>
-/**
- * CUDA Kernel Device code
- *
- * Computes the vector addition of A and B into C. The 3 vectors have the same
- * number of elements numElements.
- */
-__global__ void vectorAdd(const float *A, const float *B, float *C, int numElements)
+// Helper 2D -> 1D array
+__host__ __device__ int getPos(int i, int j, int n)
 {
-    int i = blockDim.x * blockIdx.x + threadIdx.x;
-
-    if (i < numElements)
-    {
-        C[i] = A[i] + B[i];
-    }
+    return i + n * j;
 }
 
-/**
- * Host main routine
- */
-extern "C"
-int cuda_main()
+__device__ int surroundingAliveCells(bool *grid, int i, int j, int w, int h)
 {
-    // Error code to check return values for CUDA calls
-    cudaError_t err = cudaSuccess;
+    int count = 0;
 
-    // Print the vector length to be used, and compute its size
-    int numElements = 50000;
-    size_t size = numElements * sizeof(float);
-    printf("[Vector addition of %d elements]\n", numElements);
-
-    // Allocate the host input vector A
-    float *h_A = (float *)malloc(size);
-
-    // Allocate the host input vector B
-    float *h_B = (float *)malloc(size);
-
-    // Allocate the host output vector C
-    float *h_C = (float *)malloc(size);
-
-    // Verify that allocations succeeded
-    if (h_A == NULL || h_B == NULL || h_C == NULL)
+    for (int y = max(0, j - 1); y <= min(j + 1, h - 1); y++)
     {
-        fprintf(stderr, "Failed to allocate host vectors!\n");
-        exit(EXIT_FAILURE);
-    }
-
-    // Initialize the host input vectors
-    for (int i = 0; i < numElements; ++i)
-    {
-        h_A[i] = rand()/(float)RAND_MAX;
-        h_B[i] = rand()/(float)RAND_MAX;
-    }
-
-    // Allocate the device input vector A
-    float *d_A = NULL;
-    err = cudaMalloc((void **)&d_A, size);
-
-    if (err != cudaSuccess)
-    {
-        fprintf(stderr, "Failed to allocate device vector A (error code %s)!\n", cudaGetErrorString(err));
-        exit(EXIT_FAILURE);
-    }
-
-    // Allocate the device input vector B
-    float *d_B = NULL;
-    err = cudaMalloc((void **)&d_B, size);
-
-    if (err != cudaSuccess)
-    {
-        fprintf(stderr, "Failed to allocate device vector B (error code %s)!\n", cudaGetErrorString(err));
-        exit(EXIT_FAILURE);
-    }
-
-    // Allocate the device output vector C
-    float *d_C = NULL;
-    err = cudaMalloc((void **)&d_C, size);
-
-    if (err != cudaSuccess)
-    {
-        fprintf(stderr, "Failed to allocate device vector C (error code %s)!\n", cudaGetErrorString(err));
-        exit(EXIT_FAILURE);
-    }
-
-    // Copy the host input vectors A and B in host memory to the device input vectors in
-    // device memory
-    printf("Copy input data from the host memory to the CUDA device\n");
-    err = cudaMemcpy(d_A, h_A, size, cudaMemcpyHostToDevice);
-
-    if (err != cudaSuccess)
-    {
-        fprintf(stderr, "Failed to copy vector A from host to device (error code %s)!\n", cudaGetErrorString(err));
-        exit(EXIT_FAILURE);
-    }
-
-    err = cudaMemcpy(d_B, h_B, size, cudaMemcpyHostToDevice);
-
-    if (err != cudaSuccess)
-    {
-        fprintf(stderr, "Failed to copy vector B from host to device (error code %s)!\n", cudaGetErrorString(err));
-        exit(EXIT_FAILURE);
-    }
-
-    // Launch the Vector Add CUDA Kernel
-    int threadsPerBlock = 256;
-    int blocksPerGrid =(numElements + threadsPerBlock - 1) / threadsPerBlock;
-    printf("CUDA kernel launch with %d blocks of %d threads\n", blocksPerGrid, threadsPerBlock);
-    vectorAdd<<<blocksPerGrid, threadsPerBlock>>>(d_A, d_B, d_C, numElements);
-    err = cudaGetLastError();
-
-    if (err != cudaSuccess)
-    {
-        fprintf(stderr, "Failed to launch vectorAdd kernel (error code %s)!\n", cudaGetErrorString(err));
-        exit(EXIT_FAILURE);
-    }
-
-    // Copy the device result vector in device memory to the host result vector
-    // in host memory.
-    printf("Copy output data from the CUDA device to the host memory\n");
-    err = cudaMemcpy(h_C, d_C, size, cudaMemcpyDeviceToHost);
-
-    if (err != cudaSuccess)
-    {
-        fprintf(stderr, "Failed to copy vector C from device to host (error code %s)!\n", cudaGetErrorString(err));
-        exit(EXIT_FAILURE);
-    }
-
-    // Verify that the result vector is correct
-    for (int i = 0; i < numElements; ++i)
-    {
-        if (fabs(h_A[i] + h_B[i] - h_C[i]) > 1e-5)
+        for (int x = max(0, i - 1); x <= min(i + 1, w - 1); x++)
         {
-            fprintf(stderr, "Result verification failed at element %d!\n", i);
-            exit(EXIT_FAILURE);
+            if (x == i and y == j) continue;                // Self check unrequired
+            count += (grid[getPos(x, y, w)] ? 1 : 0);        // Count alive cells
         }
     }
 
-    printf("Test PASSED\n");
+    return count;
+}
 
-    // Free device global memory
-    err = cudaFree(d_A);
+// Kernel
+__global__ void computeHighLife(bool *grid, bool *result, int width, int height)
+{
+    int i = (blockDim.x * blockIdx.x) + threadIdx.x;
+    int j = (blockDim.y * blockIdx.y) + threadIdx.y;
 
-    if (err != cudaSuccess)
+    if (i < width and j < height)                           // Caso no-multiplo de 2
     {
-        fprintf(stderr, "Failed to free device vector A (error code %s)!\n", cudaGetErrorString(err));
-        exit(EXIT_FAILURE);
+        // Not 2 or 3 cells surrounding this alive cell = Cell dies
+        if (grid[getPos(i, j, width)] and not(surroundingAliveCells(grid, i, j, width, height) == 2 or surroundingAliveCells(grid, i, j, width, height) == 3))
+        {
+            result[getPos(i, j, width)] = 0;                // FIXME Nadie llega aquí
+        }
+        // Dead cell surrounded by 3 or 6 cells = Cell revives
+        else if (not grid[getPos(i, j, width)] and (surroundingAliveCells(grid, i, j, width, height) == 3 or surroundingAliveCells(grid, i, j, width, height) == 6))
+        {
+            result[getPos(i, j, width)] = 1;
+        }
+        else{
+            result[getPos(i, j, width)] = grid[getPos(i, j, width)];
+        }
+    }
+}
+
+// Cuda main
+extern "C"
+int cuda_main(Grid *grid)
+{
+    // Host data
+    bool *h_grid   = (bool *)malloc(grid->getWidth() * grid->getHeight() * sizeof(bool));
+    bool *h_result = (bool *)malloc(grid->getWidth() * grid->getHeight() * sizeof(bool));
+
+    // Filling data
+    for (int j = 0; j < grid->getHeight(); j++)
+    {
+        for (int i = 0; i < grid->getWidth(); i++)
+        {
+            h_grid[getPos(i, j, grid->getWidth())] = grid->getAt(i, j);
+            h_result[getPos(i, j, grid->getWidth())] = 0;
+        }
     }
 
-    err = cudaFree(d_B);
+    std::cout << "Host is ready." << std::endl;
 
-    if (err != cudaSuccess)
+    // Device data
+    bool *d_grid;
+    cudaMalloc(&d_grid, grid->getWidth() * grid->getHeight() * sizeof(bool));
+    bool *d_result;
+    cudaMalloc(&d_result, grid->getWidth() * grid->getHeight() * sizeof(bool));
+
+    std::cout << "Device is initialized." << std::endl;
+
+    // Copy vectors from host memory to device memory
+    cudaMemcpy(d_grid, h_grid, grid->getWidth() * grid->getHeight() * sizeof(bool), cudaMemcpyHostToDevice);
+
+    // Set grid and bock dimensions
+    const int THREADS = grid->getWidth() * grid->getHeight();
+    const dim3 THREADS_PER_BLOCK(8, 8);                     // 64 threads per block
+    const dim3 NUM_BLOCKS(  (grid->getWidth() + THREADS_PER_BLOCK.x - 1) / THREADS_PER_BLOCK.x,
+                            (grid->getHeight() + THREADS_PER_BLOCK.y - 1) / THREADS_PER_BLOCK.y);
+
+    std::cout << "THREADS = " << THREADS << std::endl;
+    std::cout << "THREADS_PER_BLOCK.x = " << THREADS_PER_BLOCK.x << std::endl;
+    std::cout << "THREADS_PER_BLOCK.y = " << THREADS_PER_BLOCK.y << std::endl;
+    std::cout << "NUM_BLOCKS.x = " << NUM_BLOCKS.x << std::endl;
+    std::cout << "NUM_BLOCKS.y = " << NUM_BLOCKS.y << std::endl;
+    std::cout << std::endl;
+
+    // TODO Detectar máx threads por 1 bloque
+    cudaDeviceProp deviceProp;
+    cudaGetDeviceProperties(&deviceProp, 0);
+    std::cout << "Max Threads per Block = " << deviceProp.maxThreadsPerBlock << std::endl;
+
+    std::cout << "CUDA can receive a Grid object?" << std::endl;
+
+    computeHighLife<<< NUM_BLOCKS, THREADS_PER_BLOCK>>>(d_grid, d_result, grid->getWidth(), grid->getHeight());
+
+    // h_result contains the result in host memory
+    cudaMemcpy(h_result, d_result, grid->getWidth() * grid->getHeight() * sizeof(bool), cudaMemcpyDeviceToHost);
+
+    std::cout << "CUDA can send a Grid object?" << std::endl;
+
+    for (int j = 0; j < grid->getHeight(); j++)
     {
-        fprintf(stderr, "Failed to free device vector B (error code %s)!\n", cudaGetErrorString(err));
-        exit(EXIT_FAILURE);
+        for (int i = 0; i < grid->getWidth(); i++)
+        {
+            grid->setAt(i, j, h_result[getPos(i, j, grid->getWidth())]);
+            std::cout << h_result[getPos(i, j, grid->getWidth())];
+        }
+        std::cout << std::endl;
     }
 
-    err = cudaFree(d_C);
-
-    if (err != cudaSuccess)
-    {
-        fprintf(stderr, "Failed to free device vector C (error code %s)!\n", cudaGetErrorString(err));
-        exit(EXIT_FAILURE);
-    }
-
-    // Free host memory
-    free(h_A);
-    free(h_B);
-    free(h_C);
-
-    printf("Done\n");
+    // Final result
     return 0;
 }

@@ -61,9 +61,10 @@ void QHighLife::loadCPUModelClicked()
         delete m_model;
         m_model = nullptr;
     }
-    emit sendGridReader(&m_gridreader);
     m_model = new CPUModel(m_gridreader.getDetectedWidth(), m_gridreader.getDetectedHeight());
     m_model->setLoadedGrid(m_gridreader.getData());
+
+    emit sendGrid(m_model->getGrid());
 
     ui->actionRunImplementation->setEnabled(true);
     ui->actionRunStressTest->setEnabled(true);
@@ -77,9 +78,10 @@ void QHighLife::loadCUDAModelClicked()
         delete m_model;
         m_model = nullptr;
     }
-    emit sendGridReader(&m_gridreader);
     m_model = new CUDAModel(m_gridreader.getDetectedWidth(), m_gridreader.getDetectedHeight());
     m_model->setLoadedGrid(m_gridreader.getData());
+
+    emit sendGrid(m_model->getGrid());
 
     ui->actionRunImplementation->setEnabled(true);
     ui->actionRunStressTest->setEnabled(true);
@@ -93,9 +95,10 @@ void QHighLife::loadOpenCLModelClicked()
         delete m_model;
         m_model = nullptr;
     }
-    emit sendGridReader(&m_gridreader);
     m_model = new OpenCLModel(m_gridreader.getDetectedWidth(), m_gridreader.getDetectedHeight());
     m_model->setLoadedGrid(m_gridreader.getData());
+
+    emit sendGrid(m_model->getGrid());
 
     ui->actionRunImplementation->setEnabled(true);
     ui->actionRunStressTest->setEnabled(true);
@@ -126,6 +129,8 @@ void QHighLife::loadRunStressTestClicked()
     std::chrono::time_point<std::chrono::high_resolution_clock> m_start = std::chrono::high_resolution_clock::now();
     std::chrono::time_point<std::chrono::high_resolution_clock> m_end = m_start + std::chrono::seconds(10);
     int iterations = 0;
+
+    // FIXME Quizá haya que cambiar esto a un m_model->runStress(), donde allí esté el timer...
     while (std::chrono::high_resolution_clock::now() < m_end)
     {
         m_model->run();
