@@ -44,7 +44,7 @@ int cuda_main(Grid *grid)
     {
         for (int i = 0; i < grid->getWidth(); i++)
         {
-            h_result[getPos(i, j, grid->getWidth())] = 1;
+            h_result[getPos(i, j, grid->getWidth())] = 0;
         }
     }
 
