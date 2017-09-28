@@ -14,5 +14,6 @@ CUDAModel::~CUDAModel()
 void CUDAModel::run()
 {
     out << "TODO: Implement CUDA Model" << endl;
+    out << "CUDAMODEL: << m_grid->getAt(0, 0) = " << m_grid->getAt(0, 0) << endl;
     cuda_main(m_grid);
 }
