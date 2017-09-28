@@ -11,6 +11,7 @@ public:
     ~CPUModel();
 
     virtual void run();
+    virtual int runStressTest(int timeInSeconds);
 
 private:
     int surroundingAliveCells(int i, int j);

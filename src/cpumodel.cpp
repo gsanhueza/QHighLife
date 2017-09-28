@@ -36,6 +36,21 @@ void CPUModel::run()
     *m_grid = result;
 }
 
+int CPUModel::runStressTest(int timeInSeconds)
+{
+    std::chrono::time_point<std::chrono::high_resolution_clock> m_start = std::chrono::high_resolution_clock::now();
+    std::chrono::time_point<std::chrono::high_resolution_clock> m_end = m_start + std::chrono::seconds(timeInSeconds);
+    int iterations = 0;
+
+    while (std::chrono::high_resolution_clock::now() < m_end)
+    {
+        run();
+        ++iterations;
+    }
+
+    return iterations;
+}
+
 int CPUModel::surroundingAliveCells(int i, int j)
 {
     int count = 0;

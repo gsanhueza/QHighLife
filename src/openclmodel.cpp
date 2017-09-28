@@ -110,3 +110,9 @@ void OpenCLModel::run()
     std::cout << "Done.\n";
 //     return( EXIT_SUCCESS );
 }
+
+int OpenCLModel::runStressTest(int timeInSeconds)
+{
+    // TODO
+    return 0;
+}

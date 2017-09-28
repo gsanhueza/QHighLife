@@ -10,6 +10,7 @@ public:
     ~OpenCLModel();
 
     virtual void run();
+    virtual int runStressTest(int timeInSeconds);
 };
 
 #endif
