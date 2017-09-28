@@ -18,7 +18,7 @@ __device__ int surroundingAliveCells(bool *grid, int i, int j, int w, int h)
         for (int x = max(0, i - 1); x <= min(i + 1, w - 1); x++)
         {
             if (x == i and y == j) continue;                // Self check unrequired
-            count += (grid[getPos(x, y, w)]);               // Count alive cells
+            count += (grid[getPos(x, y, w)] ? 1 : 0);        // Count alive cells
         }
     }
 
@@ -33,28 +33,20 @@ __global__ void computeHighLife(bool *grid, bool *result, int width, int height)
 
     if (i < width and j < height)                           // Caso no-multiplo de 2
     {
-        if (grid[getPos(i, j, width)] and not (surroundingAliveCells(grid, i, j, width, height) == 2 or surroundingAliveCells(grid, i, j, width, height) == 3))
+        // Not 2 or 3 cells surrounding this alive cell = Cell dies
+        if (grid[getPos(i, j, width)] and not(surroundingAliveCells(grid, i, j, width, height) == 2 or surroundingAliveCells(grid, i, j, width, height) == 3))
         {
-            result[getPos(i, j, width)] = 0;
+            result[getPos(i, j, width)] = 0;                // FIXME Nadie llega aquí
         }
+        // Dead cell surrounded by 3 or 6 cells = Cell revives
         else if (not grid[getPos(i, j, width)] and (surroundingAliveCells(grid, i, j, width, height) == 3 or surroundingAliveCells(grid, i, j, width, height) == 6))
         {
             result[getPos(i, j, width)] = 1;
         }
+        else{
+            result[getPos(i, j, width)] = grid[getPos(i, j, width)];
+        }
     }
-
-
-
-//     if (grid[threadIdx.x % height][threadIdx.x / height] and not (surroundingAliveCells(i, j) == 2 or surroundingAliveCells(i, j) == 3))
-//     {
-        //!(grid[threadIdx.x][threadIdx.y]);
-
-//     }
-
-//     if (i < getWidth(grid) and j < getHeight(grid) and i >= 0 and j >= 0)
-//     {
-//         setAt(result, i, j, !getAt(grid, i, j));
-//     }
 }
 
 // Cuda main
@@ -128,76 +120,3 @@ int cuda_main(Grid *grid)
     // Final result
     return 0;
 }
-
-/*
-
-OLD IDEA
-
-__host__ __device__ bool getAt(Grid *grid, int i, int j)
-{
-    return grid->getAt(i, j);
-}
-
-__host__ __device__ void setAt(Grid *grid, int i, int j, bool value)
-{
-    grid->setAt(i, j, value);
-}
-
-__host__ __device__ int getWidth(Grid *grid)
-{
-    return grid->getWidth();
-}
-
-__host__ __device__ int getHeight(Grid *grid)
-{
-    return grid->getHeight();
-}
-
-// Kernel
-__global__ void computeHighLife(Grid *grid, Grid *result)
-{
-    int i = blockDim.x * blockIdx.x + threadIdx.x;
-    int j = blockDim.y * blockIdx.y + threadIdx.y;
-
-    setAt(result, 1, 0, false);
-//     if (i < getWidth(grid) and j < getHeight(grid) and i >= 0 and j >= 0)
-//     {
-//         setAt(result, i, j, !getAt(grid, i, j));
-//     }
-}
-
-// Cuda main
-extern "C"
-int cuda_main(Grid *grid)
-{
-    Grid *mygrid;
-    Grid *result;
-
-    cudaMallocManaged(&mygrid, sizeof(mygrid));
-    cudaMallocManaged(&result, sizeof(result));
-
-    mygrid = new Grid(grid->getWidth(), grid->getHeight());
-    result = new Grid(grid->getWidth(), grid->getHeight());
-
-    *mygrid = *grid;
-    *result = *grid;
-
-    int blocksize = 32;
-    dim3 threads(blocksize, blocksize);
-    dim3 cudagrid(mygrid->getWidth() / threads.x, mygrid->getHeight() / threads.y);
-
-    // FIXME Cuda puede hacer modificaciones (TODO), pero hay que ponerle ojo a los margenes, o hace segfault
-    std::cout << "CUDA can receive a Grid object" << std::endl;
-    std::cout << &mygrid << std::endl;
-    std::cout << "mygrid.getAt(1, 0) was = " << std::boolalpha << mygrid->getAt(1, 0) << std::endl;
-    std::cout << "result.getAt(1, 0) was = " << std::boolalpha << result->getAt(1, 0) << std::endl;
-    computeHighLife<<< cudagrid, threads >>>(mygrid, result);
-    std::cout << "CUDA can send a Grid object" << std::endl;
-    std::cout << "mygrid.getAt(1, 0) is = " << std::boolalpha << mygrid->getAt(1, 0) << std::endl;
-    std::cout << "result.getAt(1, 0) is = " << std::boolalpha << result->getAt(1, 0) << std::endl;
-
-    // Final result
-    *grid = *result;
-    return 0;
-}
-*/
