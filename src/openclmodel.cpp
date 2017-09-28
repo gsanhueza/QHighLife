@@ -22,21 +22,33 @@ OpenCLModel::~OpenCLModel()
 {
 }
 
+// Helper 2D -> 1D array
+int getPosCL(int i, int j, int n)
+{
+    return i + n * j;
+}
+
 void OpenCLModel::run()
 {
-    out << "TODO: Implement OpenCL Model" << endl;
+    out << "FIXME: Implement OpenCL Model" << endl;
 
-    const int N_ELEMENTS=1024*1024;
     int platform_id=0, device_id=0;
 
     try{
-        std::unique_ptr<int[]> A(new int[N_ELEMENTS]); // Or you can use simple dynamic arrays like: int* A = new int[N_ELEMENTS];
-        std::unique_ptr<int[]> B(new int[N_ELEMENTS]);
-        std::unique_ptr<int[]> C(new int[N_ELEMENTS]);
+//         std::unique_ptr<int[]> A(new int[N_ELEMENTS]); // Or you can use simple dynamic arrays like: int* A = new int[N_ELEMENTS];
+//         std::unique_ptr<int[]> B(new int[N_ELEMENTS]);
+//         std::unique_ptr<int[]> C(new int[N_ELEMENTS]);
 
-        for( int i = 0; i < N_ELEMENTS; ++i ) {
-            A[i] = i;
-            B[i] = i;
+        bool *h_grid   = (bool *)malloc(m_grid->getWidth() * m_grid->getHeight() * sizeof(bool));
+        bool *h_result = (bool *)malloc(m_grid->getWidth() * m_grid->getHeight() * sizeof(bool));
+
+        // Filling data
+        for (int j = 0; j < m_grid->getHeight(); j++)
+        {
+            for (int i = 0; i < m_grid->getWidth(); i++)
+            {
+                h_grid[getPosCL(i, j, m_grid->getWidth())] = m_grid->getAt(i, j);
+            }
         }
 
         // Query for platforms
@@ -54,13 +66,11 @@ void OpenCLModel::run()
         cl::CommandQueue queue = cl::CommandQueue( context, devices[device_id] );   // Select the device.
 
         // Create the memory buffers
-        cl::Buffer bufferA=cl::Buffer(context, CL_MEM_READ_ONLY, N_ELEMENTS * sizeof(int));
-        cl::Buffer bufferB=cl::Buffer(context, CL_MEM_READ_ONLY, N_ELEMENTS * sizeof(int));
-        cl::Buffer bufferC=cl::Buffer(context, CL_MEM_WRITE_ONLY, N_ELEMENTS * sizeof(int));
+        cl::Buffer d_grid=cl::Buffer(context, CL_MEM_READ_ONLY, m_grid->getWidth() * m_grid->getHeight() * sizeof(bool));
+        cl::Buffer d_result=cl::Buffer(context, CL_MEM_WRITE_ONLY, m_grid->getWidth() * m_grid->getHeight() * sizeof(bool));
 
         // Copy the input data to the input buffers using the command queue.
-        queue.enqueueWriteBuffer( bufferA, CL_FALSE, 0, N_ELEMENTS * sizeof(int), A.get() );
-        queue.enqueueWriteBuffer( bufferB, CL_FALSE, 0, N_ELEMENTS * sizeof(int), B.get() );
+        queue.enqueueWriteBuffer( d_grid, CL_FALSE, 0, m_grid->getWidth() * m_grid->getHeight() * sizeof(bool), h_grid );
 
         // Read the program source
         std::ifstream sourceFile("../src/highlife.cl");
@@ -71,32 +81,35 @@ void OpenCLModel::run()
         cl::Program program=cl::Program(context, source);
 
         // Build the program for the devices
+        std::cout << "Test1" << std::endl;
         program.build(devices);
+        std::cout << "Test2" << std::endl;
 
         // Make kernel
-        cl::Kernel vecadd_kernel(program, "vecadd");
+        cl::Kernel highlife_kernel(program, "computeHighLife");
 
         // Set the kernel arguments
-        vecadd_kernel.setArg( 0, bufferA );
-        vecadd_kernel.setArg( 1, bufferB );
-        vecadd_kernel.setArg( 2, bufferC );
+        highlife_kernel.setArg(0, d_grid);
+        highlife_kernel.setArg(1, d_result);
+        highlife_kernel.setArg(2, m_grid->getWidth());
+        highlife_kernel.setArg(3, m_grid->getHeight());
 
         // Execute the kernel
-        cl::NDRange global( N_ELEMENTS );
+        cl::NDRange global( m_grid->getWidth() * m_grid->getHeight() );
         cl::NDRange local( 256 );
-        queue.enqueueNDRangeKernel( vecadd_kernel, cl::NullRange, global, local );
+        queue.enqueueNDRangeKernel( highlife_kernel, cl::NullRange, global, local );
 
         // Copy the output data back to the host
-        queue.enqueueReadBuffer( bufferC, CL_TRUE, 0, N_ELEMENTS * sizeof(int), C.get() );
+        queue.enqueueReadBuffer( d_result, CL_TRUE, 0, m_grid->getWidth() * m_grid->getHeight() * sizeof(bool), h_result );
 
         // Verify the result
         bool result=true;
-        for (int i=0; i<N_ELEMENTS; i ++) {
-            if (C[i] !=A[i]+B[i]) {
-                result=false;
-                break;
-            }
-        }
+//         for (int i=0; i<N_ELEMENTS; i ++) {
+//             if (C[i] !=A[i]+B[i]) {
+//                 result=false;
+//                 break;
+//             }
+//         }
         if (result)
             std::cout<< "Success!\n";
         else
@@ -104,11 +117,9 @@ void OpenCLModel::run()
     }
     catch(cl::Error err) {
         std::cout << "Error: " << err.what() << "(" << err.err() << ")" << std::endl;
-//         return( EXIT_FAILURE );
     }
 
     std::cout << "Done.\n";
-//     return( EXIT_SUCCESS );
 }
 
 int OpenCLModel::runStressTest(int timeInSeconds)
