@@ -1,13 +1,20 @@
-int surroundingAliveCells(global bool *grid, int k, int w, int h)
+// Helper 2D -> 1D array
+int getPos(int i, int j, int n)
+{
+    return i + n * j;
+}
+
+// Neighbour counter
+int surroundingAliveCells(global bool *grid, int i, int j, int w, int h)
 {
     int count = 0;
 
-    for (int y = max(k % w, k - w); y <= min(k + w, w * h - (w - (k % w))); y += w)
+    for (int y = max(0, j - 1); y <= min(j + 1, h - 1); y++)
     {
-        for (int x = max((k / w) * w, k - 1); x <= min(k + 1,(k / w) * w + (w - 1)); x++)
+        for (int x = max(0, i - 1); x <= min(i + 1, w - 1); x++)
         {
-            if (x == y) continue;                // Self check unrequired
-            count += (grid[k] ? 1 : 0);        // Count alive cells
+            if (x == i && y == j) continue;                // Self check unrequired
+            count += (grid[getPos(x, y, w)] ? 1 : 0);        // Count alive cells
         }
     }
 
@@ -20,24 +27,23 @@ kernel void computeHighLife(global bool *grid, global bool *result, int width, i
 //     int i = (blockDim.x * blockIdx.x) + threadIdx.x;
 //     int j = (blockDim.y * blockIdx.y) + threadIdx.y;
 
-    int k = get_global_id(0);
+    int i = (get_local_size(0) * get_group_id(0)) + get_local_id(0);
+    int j = (get_local_size(1) * get_group_id(1)) + get_local_id(1);
 
-    if (k < width * height)                           // Caso no-multiplo de 2
+    if (i < width && j < height)                           // Caso no-multiplo de 2
     {
-//         // Not 2 or 3 cells surrounding this alive cell = Cell dies
-//         if (grid[k] && !(surroundingAliveCells(grid, k, width, height) == 2 || surroundingAliveCells(grid, k, width, height) == 3))
-//         {
-//             result[k] = 0;
-//         }
-//         // Dead cell surrounded by 3 or 6 cells = Cell revives
-//         else if (!grid[k] && (surroundingAliveCells(grid, k, width, height) == 3 || surroundingAliveCells(grid, k, width, height) == 6))
-//         {
-//             result[k] = 1;
-//         }
-//         else{
-//             result[k] = grid[k];
-//         }
-        result[k] = !grid[k];
+        // Not 2 or 3 cells surrounding this alive cell = Cell dies
+        if (grid[getPos(i, j, width)] && !(surroundingAliveCells(grid, i, j, width, height) == 2 || surroundingAliveCells(grid, i, j, width, height) == 3))
+        {
+            result[getPos(i, j, width)] = 0;
+        }
+        // Dead cell surrounded by 3 or 6 cells = Cell revives
+        else if (!grid[getPos(i, j, width)] && (surroundingAliveCells(grid, i, j, width, height) == 3 || surroundingAliveCells(grid, i, j, width, height) == 6))
+        {
+            result[getPos(i, j, width)] = 1;
+        }
+        else{
+            result[getPos(i, j, width)] = grid[getPos(i, j, width)];
+        }
     }
-
 }

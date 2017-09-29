@@ -30,15 +30,10 @@ int getPosCL(int i, int j, int n)
 
 void OpenCLModel::run()
 {
-    out << "FIXME: Implement OpenCL Model" << endl;
-
-    int platform_id=0, device_id=0;
+    int platform_id = 0, device_id = 0;
+    out << "FIXME: Fail when loading replicator33x33" << endl;
 
     try{
-//         std::unique_ptr<int[]> A(new int[N_ELEMENTS]); // Or you can use simple dynamic arrays like: int* A = new int[N_ELEMENTS];
-//         std::unique_ptr<int[]> B(new int[N_ELEMENTS]);
-//         std::unique_ptr<int[]> C(new int[N_ELEMENTS]);
-
         bool *h_grid   = (bool *)malloc(m_grid->getWidth() * m_grid->getHeight() * sizeof(bool));
         bool *h_result = (bool *)malloc(m_grid->getWidth() * m_grid->getHeight() * sizeof(bool));
 
@@ -93,8 +88,8 @@ void OpenCLModel::run()
         highlife_kernel.setArg(3, m_grid->getHeight());
 
         // Execute the kernel
-        cl::NDRange global( m_grid->getWidth() * m_grid->getHeight() );
-        cl::NDRange local( 64 );
+        cl::NDRange global( m_grid->getWidth(), m_grid->getHeight() );
+        cl::NDRange local( 8, 8 );                          // 64 work-items per work-group
         queue.enqueueNDRangeKernel( highlife_kernel, cl::NullRange, global, local );
 
         // Copy the output data back to the host
@@ -118,6 +113,6 @@ void OpenCLModel::run()
 
 int OpenCLModel::runStressTest(int timeInSeconds)
 {
-    // TODO
+    out << "FIXME: Implement OpenCL Model stress test" << endl;
     return 0;
 }
