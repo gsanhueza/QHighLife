@@ -65,14 +65,6 @@ __global__ void computeHighLife(bool *grid, bool *result, int width, int height)
 extern "C"
 void cuda_setup(Grid *grid)
 {
-    // Host data
-    h_grid   = new bool[grid->getWidth() * grid->getHeight()];
-    h_result = new bool[grid->getWidth() * grid->getHeight()];
-
-    // Device data
-    cudaMalloc(&d_grid, grid->getWidth() * grid->getHeight() * sizeof(bool));
-    cudaMalloc(&d_result, grid->getWidth() * grid->getHeight() * sizeof(bool));
-
     // Set grid dimensions
     GRID_SIZE.x = grid->getWidth();
     GRID_SIZE.y = grid->getHeight();
@@ -84,6 +76,13 @@ void cuda_setup(Grid *grid)
     // Set block dimensions
     NUM_BLOCKS.x = (GRID_SIZE.x + THREADS_PER_BLOCK.x - 1) / THREADS_PER_BLOCK.x;
     NUM_BLOCKS.y = (GRID_SIZE.y + THREADS_PER_BLOCK.y - 1) / THREADS_PER_BLOCK.y;
+    // Host data
+    h_grid   = new bool[GRID_SIZE.x * GRID_SIZE.y];
+    h_result = new bool[GRID_SIZE.x * GRID_SIZE.y];
+
+    // Device data
+    cudaMalloc(&d_grid, GRID_SIZE.x * GRID_SIZE.y * sizeof(bool));
+    cudaMalloc(&d_result, GRID_SIZE.x * GRID_SIZE.y * sizeof(bool));
 }
 
 // CUDA main
@@ -91,12 +90,12 @@ extern "C"
 int cuda_main(Grid *grid)
 {
     // Data filling
-    for (int j = 0; j < grid->getHeight(); j++)
+    for (int j = 0; j < GRID_SIZE.y; j++)
     {
-        for (int i = 0; i < grid->getWidth(); i++)
+        for (int i = 0; i < GRID_SIZE.x; i++)
         {
-            h_grid[getPos(i, j, grid->getWidth())] = grid->getAt(i, j);
-            h_result[getPos(i, j, grid->getWidth())] = 0;
+            h_grid[getPos(i, j, GRID_SIZE.x)] = grid->getAt(i, j);
+            h_result[getPos(i, j, GRID_SIZE.x)] = 0;
         }
     }
 
@@ -110,11 +109,11 @@ int cuda_main(Grid *grid)
     cudaMemcpy(h_result, d_result, GRID_SIZE.x * GRID_SIZE.y * sizeof(bool), cudaMemcpyDeviceToHost);
 
     // Update grid
-    for (int j = 0; j < grid->getHeight(); j++)
+    for (int j = 0; j < GRID_SIZE.y; j++)
     {
-        for (int i = 0; i < grid->getWidth(); i++)
+        for (int i = 0; i < GRID_SIZE.x; i++)
         {
-            grid->setAt(i, j, h_result[getPos(i, j, grid->getWidth())]);
+            grid->setAt(i, j, h_result[getPos(i, j, GRID_SIZE.x)]);
         }
     }
 
@@ -125,12 +124,22 @@ int cuda_main(Grid *grid)
 extern "C"
 int cuda_main_stress(Grid *grid, int timeInSeconds)
 {
+    // Data filling
+    for (int j = 0; j < GRID_SIZE.y; j++)
+    {
+        for (int i = 0; i < GRID_SIZE.x; i++)
+        {
+            h_grid[getPos(i, j, GRID_SIZE.x)] = grid->getAt(i, j);
+            h_result[getPos(i, j, GRID_SIZE.x)] = 0;
+        }
+    }
+
+    // Copy vectors from host memory to device memory
+    cudaMemcpy(d_grid, h_grid, GRID_SIZE.x * GRID_SIZE.y * sizeof(bool), cudaMemcpyHostToDevice);
+
     std::chrono::time_point<std::chrono::high_resolution_clock> m_start = std::chrono::high_resolution_clock::now();
     std::chrono::time_point<std::chrono::high_resolution_clock> m_end = m_start + std::chrono::seconds(timeInSeconds);
     int iterations = 0;
-
-    // Copy vectors from host memory to device memory
-    cudaMemcpy(d_grid, h_grid, grid->getWidth() * grid->getHeight() * sizeof(bool), cudaMemcpyHostToDevice);
 
     while (std::chrono::high_resolution_clock::now() < m_end)
     {
@@ -142,10 +151,10 @@ int cuda_main_stress(Grid *grid, int timeInSeconds)
         // With this, we can avoid calling cudaMemcpy every iteration.
 
         // Send kernel: Results will be in d_result
-        computeHighLife<<< NUM_BLOCKS, THREADS_PER_BLOCK>>>(d_grid, d_result, grid->getWidth(), grid->getHeight());
+        computeHighLife<<< NUM_BLOCKS, THREADS_PER_BLOCK>>>(d_grid, d_result, GRID_SIZE.x, GRID_SIZE.y);
 
         // Send kernel: Results will be in d_grid
-        computeHighLife<<< NUM_BLOCKS, THREADS_PER_BLOCK>>>(d_result, d_grid, grid->getWidth(), grid->getHeight());
+        computeHighLife<<< NUM_BLOCKS, THREADS_PER_BLOCK>>>(d_result, d_grid, GRID_SIZE.x, GRID_SIZE.y);
 
         iterations += 2;
     }
@@ -154,11 +163,11 @@ int cuda_main_stress(Grid *grid, int timeInSeconds)
     cudaMemcpy(h_result, d_grid, GRID_SIZE.x * GRID_SIZE.y * sizeof(bool), cudaMemcpyDeviceToHost);
 
     // Update grid
-    for (int j = 0; j < grid->getHeight(); j++)
+    for (int j = 0; j < GRID_SIZE.y; j++)
     {
-        for (int i = 0; i < grid->getWidth(); i++)
+        for (int i = 0; i < GRID_SIZE.x; i++)
         {
-            grid->setAt(i, j, h_result[getPos(i, j, grid->getWidth())]);
+            grid->setAt(i, j, h_result[getPos(i, j, GRID_SIZE.x)]);
         }
     }
 
