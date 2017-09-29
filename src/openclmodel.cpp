@@ -22,9 +22,12 @@ OpenCLModel::~OpenCLModel()
 {
 }
 
+void OpenCLModel::setup()
+{
+}
+
 void OpenCLModel::run()
 {
-    out << "TODO: Implement OpenCL Model" << endl;
 
     const int N_ELEMENTS=1024*1024;
     int platform_id=0, device_id=0;

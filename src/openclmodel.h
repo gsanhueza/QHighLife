@@ -11,6 +11,9 @@ public:
 
     virtual void run();
     virtual int runStressTest(int timeInSeconds);
+
+private:
+    virtual void setup();
 };
 
 #endif
