@@ -12,8 +12,15 @@ public:
     virtual void run();
     virtual int runStressTest(int timeInSeconds);
 
-private:
+protected:
     virtual void setup();
+
+private:
+    int m_platform_id;
+    int m_device_id;
+
+    bool *host_grid;
+    bool *host_result;
 };
 
 #endif

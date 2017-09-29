@@ -30,25 +30,28 @@ int getPosCL(int i, int j, int n)
 
 void OpenCLModel::setup()
 {
+    m_platform_id = 0;
+    m_device_id = 0;
+
+    host_grid   = new bool[m_grid->getWidth() * m_grid->getHeight()];
+    host_result = new bool[m_grid->getWidth() * m_grid->getHeight()];
+
+    // Filling data
+    for (int j = 0; j < m_grid->getHeight(); j++)
+    {
+        for (int i = 0; i < m_grid->getWidth(); i++)
+        {
+            host_grid[getPosCL(i, j, m_grid->getWidth())] = m_grid->getAt(i, j);
+        }
+    }
 }
 
 void OpenCLModel::run()
 {
-    int platform_id = 0, device_id = 0;
-    out << "FIXME: Fail when loading replicator33x33" << endl;
+    setup();
 
     try{
-        bool *h_grid   = (bool *)malloc(m_grid->getWidth() * m_grid->getHeight() * sizeof(bool));
-        bool *h_result = (bool *)malloc(m_grid->getWidth() * m_grid->getHeight() * sizeof(bool));
 
-        // Filling data
-        for (int j = 0; j < m_grid->getHeight(); j++)
-        {
-            for (int i = 0; i < m_grid->getWidth(); i++)
-            {
-                h_grid[getPosCL(i, j, m_grid->getWidth())] = m_grid->getAt(i, j);
-            }
-        }
 
         // Query for platforms
         std::vector<cl::Platform> platforms;
@@ -56,20 +59,20 @@ void OpenCLModel::run()
 
         // Get a list of devices on this platform
         std::vector<cl::Device> devices;
-        platforms[platform_id].getDevices(CL_DEVICE_TYPE_GPU|CL_DEVICE_TYPE_CPU, &devices); // Select the platform.
+        platforms[m_platform_id].getDevices(CL_DEVICE_TYPE_GPU|CL_DEVICE_TYPE_CPU, &devices); // Select the platform.
 
         // Create a context
         cl::Context context(devices);
 
         // Create a command queue
-        cl::CommandQueue queue = cl::CommandQueue( context, devices[device_id] );   // Select the device.
+        cl::CommandQueue queue = cl::CommandQueue( context, devices[m_device_id] );   // Select the device.
 
         // Create the memory buffers
         cl::Buffer d_grid=cl::Buffer(context, CL_MEM_READ_ONLY, m_grid->getWidth() * m_grid->getHeight() * sizeof(bool));
         cl::Buffer d_result=cl::Buffer(context, CL_MEM_WRITE_ONLY, m_grid->getWidth() * m_grid->getHeight() * sizeof(bool));
 
         // Copy the input data to the input buffers using the command queue.
-        queue.enqueueWriteBuffer( d_grid, CL_FALSE, 0, m_grid->getWidth() * m_grid->getHeight() * sizeof(bool), h_grid );
+        queue.enqueueWriteBuffer( d_grid, CL_FALSE, 0, m_grid->getWidth() * m_grid->getHeight() * sizeof(bool), host_grid );
 
         // Read the program source
         std::ifstream sourceFile("../src/highlife.cl");
@@ -124,14 +127,14 @@ void OpenCLModel::run()
         // FIXME END TRIPLICATED
 
         // Copy the output data back to the host
-        queue.enqueueReadBuffer( d_result, CL_TRUE, 0, m_grid->getWidth() * m_grid->getHeight() * sizeof(bool), h_result );
+        queue.enqueueReadBuffer( d_result, CL_TRUE, 0, m_grid->getWidth() * m_grid->getHeight() * sizeof(bool), host_result );
 
         // Set the result
         for (int j = 0; j < m_grid->getHeight(); j++)
         {
             for (int i = 0; i < m_grid->getWidth(); i++)
             {
-                m_grid->setAt(i, j, h_result[getPosCL(i, j, m_grid->getWidth())]);
+                m_grid->setAt(i, j, host_result[getPosCL(i, j, m_grid->getWidth())]);
             }
         }
     }

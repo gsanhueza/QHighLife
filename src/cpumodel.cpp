@@ -32,6 +32,9 @@ void CPUModel::run()
             {
                 m_result->setAt(i, j, true);
             }
+            else {
+                m_result->setAt(i, j, m_grid->getAt(i, j));
+            }
         }
     }
 
