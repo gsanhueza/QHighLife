@@ -14,6 +14,9 @@ public:
     virtual void run();
     virtual int runStressTest(int timeInSeconds);
 
+protected:
+    virtual void setup();
+
 private:
     int surroundingAliveCells(int i, int j);
     Grid *m_result;

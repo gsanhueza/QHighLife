@@ -12,6 +12,9 @@ public:
     virtual void setup();
     virtual void run();
     virtual int runStressTest(int timeInSeconds);
+
+protected:
+    virtual void setup();
 };
 
 #endif
