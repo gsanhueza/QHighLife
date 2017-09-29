@@ -10,6 +10,7 @@ CPUModel::CPUModel(int width, int height) :
 
 CPUModel::~CPUModel()
 {
+    delete m_result;
 }
 
 void CPUModel::setup()

@@ -9,7 +9,7 @@ public:
     CUDAModel(int width, int height);
     ~CUDAModel();
 
-    virtual void setup();
+//     virtual void setup();
     virtual void run();
     virtual int runStressTest(int timeInSeconds);
 

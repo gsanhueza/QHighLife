@@ -10,7 +10,7 @@ public:
     CPUModel(int width, int height);
     ~CPUModel();
 
-    virtual void setup();
+//     virtual void setup();
     virtual void run();
     virtual int runStressTest(int timeInSeconds);
 
