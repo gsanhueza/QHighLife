@@ -81,9 +81,7 @@ void OpenCLModel::run()
         cl::Program program=cl::Program(context, source);
 
         // Build the program for the devices
-        std::cout << "Test1" << std::endl;
         program.build(devices);
-        std::cout << "Test2" << std::endl;
 
         // Make kernel
         cl::Kernel highlife_kernel(program, "computeHighLife");
@@ -96,24 +94,20 @@ void OpenCLModel::run()
 
         // Execute the kernel
         cl::NDRange global( m_grid->getWidth() * m_grid->getHeight() );
-        cl::NDRange local( 256 );
+        cl::NDRange local( 64 );
         queue.enqueueNDRangeKernel( highlife_kernel, cl::NullRange, global, local );
 
         // Copy the output data back to the host
         queue.enqueueReadBuffer( d_result, CL_TRUE, 0, m_grid->getWidth() * m_grid->getHeight() * sizeof(bool), h_result );
 
-        // Verify the result
-        bool result=true;
-//         for (int i=0; i<N_ELEMENTS; i ++) {
-//             if (C[i] !=A[i]+B[i]) {
-//                 result=false;
-//                 break;
-//             }
-//         }
-        if (result)
-            std::cout<< "Success!\n";
-        else
-            std::cout<< "Failed!\n";
+        // Set the result
+        for (int j = 0; j < m_grid->getHeight(); j++)
+        {
+            for (int i = 0; i < m_grid->getWidth(); i++)
+            {
+                m_grid->setAt(i, j, h_result[getPosCL(i, j, m_grid->getWidth())]);
+            }
+        }
     }
     catch(cl::Error err) {
         std::cout << "Error: " << err.what() << "(" << err.err() << ")" << std::endl;
