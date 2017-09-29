@@ -4,6 +4,17 @@
 #include "grid.h"
 #include "stdio.h"
 
+// CUDA variables for setup
+bool *h_grid;
+bool *h_result;
+bool *d_grid;
+bool *d_result;
+
+dim3 GRID_SIZE;
+dim3 THREADS_PER_BLOCK;
+dim3 NUM_BLOCKS;
+
+
 // Helper 2D -> 1D array
 __host__ __device__ int getPos(int i, int j, int n)
 {
@@ -50,54 +61,59 @@ __global__ void computeHighLife(bool *grid, bool *result, int width, int height)
     }
 }
 
+// CUDA setup
+extern "C"
+void cuda_setup(Grid *grid)
+{
+    // Set grid dimensions
+    GRID_SIZE.x = grid->getWidth();
+    GRID_SIZE.y = grid->getHeight();
+
+    // 64 threads per block
+    THREADS_PER_BLOCK.x = 8;
+    THREADS_PER_BLOCK.y = 8;
+
+    // Set block dimensions
+    NUM_BLOCKS.x = (GRID_SIZE.x + THREADS_PER_BLOCK.x - 1) / THREADS_PER_BLOCK.x;
+    NUM_BLOCKS.y = (GRID_SIZE.y + THREADS_PER_BLOCK.y - 1) / THREADS_PER_BLOCK.y;
+    // Host data
+    h_grid   = new bool[GRID_SIZE.x * GRID_SIZE.y];
+    h_result = new bool[GRID_SIZE.x * GRID_SIZE.y];
+
+    // Device data
+    cudaMalloc(&d_grid, GRID_SIZE.x * GRID_SIZE.y * sizeof(bool));
+    cudaMalloc(&d_result, GRID_SIZE.x * GRID_SIZE.y * sizeof(bool));
+}
+
 // CUDA main
 extern "C"
 int cuda_main(Grid *grid)
 {
-    // Host data
-    bool *h_grid   = (bool *)malloc(grid->getWidth() * grid->getHeight() * sizeof(bool));
-    bool *h_result = (bool *)malloc(grid->getWidth() * grid->getHeight() * sizeof(bool));
-
-    // Filling data
-    for (int j = 0; j < grid->getHeight(); j++)
+    // Data filling
+    for (int j = 0; j < GRID_SIZE.y; j++)
     {
-        for (int i = 0; i < grid->getWidth(); i++)
+        for (int i = 0; i < GRID_SIZE.x; i++)
         {
-            h_grid[getPos(i, j, grid->getWidth())] = grid->getAt(i, j);
-            h_result[getPos(i, j, grid->getWidth())] = 0;
+            h_grid[getPos(i, j, GRID_SIZE.x)] = grid->getAt(i, j);
+            h_result[getPos(i, j, GRID_SIZE.x)] = 0;
         }
     }
 
-    std::cout << "Host is ready." << std::endl;
-
-    // Device data
-    bool *d_grid;
-    cudaMalloc(&d_grid, grid->getWidth() * grid->getHeight() * sizeof(bool));
-    bool *d_result;
-    cudaMalloc(&d_result, grid->getWidth() * grid->getHeight() * sizeof(bool));
-
-    std::cout << "Device is initialized." << std::endl;
-
-    // Set grid and block dimensions
-    const int THREADS = grid->getWidth() * grid->getHeight();
-    const dim3 THREADS_PER_BLOCK(8, 8);                     // 64 threads per block
-    const dim3 NUM_BLOCKS(  (grid->getWidth() + THREADS_PER_BLOCK.x - 1) / THREADS_PER_BLOCK.x,
-                            (grid->getHeight() + THREADS_PER_BLOCK.y - 1) / THREADS_PER_BLOCK.y);
-
     // Copy vectors from host memory to device memory
-    cudaMemcpy(d_grid, h_grid, grid->getWidth() * grid->getHeight() * sizeof(bool), cudaMemcpyHostToDevice);
+    cudaMemcpy(d_grid, h_grid, GRID_SIZE.x * GRID_SIZE.y * sizeof(bool), cudaMemcpyHostToDevice);
 
     // Send kernel
-    computeHighLife<<< NUM_BLOCKS, THREADS_PER_BLOCK>>>(d_grid, d_result, grid->getWidth(), grid->getHeight());
+    computeHighLife<<< NUM_BLOCKS, THREADS_PER_BLOCK>>>(d_grid, d_result, GRID_SIZE.x, GRID_SIZE.y);
+
     // Copy results from device memory to host memory
-    cudaMemcpy(h_result, d_result, grid->getWidth() * grid->getHeight() * sizeof(bool), cudaMemcpyDeviceToHost);
+    cudaMemcpy(h_result, d_result, GRID_SIZE.x * GRID_SIZE.y * sizeof(bool), cudaMemcpyDeviceToHost);
 
     // Update grid
-    for (int j = 0; j < grid->getHeight(); j++)
+    for (int j = 0; j < GRID_SIZE.y; j++)
     {
-        for (int i = 0; i < grid->getWidth(); i++)
+        for (int i = 0; i < GRID_SIZE.x; i++)
         {
-            grid->setAt(i, j, h_result[getPos(i, j, grid->getWidth())]);
+            grid->setAt(i, j, h_result[getPos(i, j, GRID_SIZE.x)]);
         }
     }
 
@@ -108,46 +124,26 @@ int cuda_main(Grid *grid)
 extern "C"
 int cuda_main_stress(Grid *grid, int timeInSeconds)
 {
-    // Host data
-    bool *h_grid   = (bool *)malloc(grid->getWidth() * grid->getHeight() * sizeof(bool));
-    bool *h_result = (bool *)malloc(grid->getWidth() * grid->getHeight() * sizeof(bool));
-
-    // Filling data
-    for (int j = 0; j < grid->getHeight(); j++)
+    // Data filling
+    for (int j = 0; j < GRID_SIZE.y; j++)
     {
-        for (int i = 0; i < grid->getWidth(); i++)
+        for (int i = 0; i < GRID_SIZE.x; i++)
         {
-            h_grid[getPos(i, j, grid->getWidth())] = grid->getAt(i, j);
-            h_result[getPos(i, j, grid->getWidth())] = 0;
+            h_grid[getPos(i, j, GRID_SIZE.x)] = grid->getAt(i, j);
+            h_result[getPos(i, j, GRID_SIZE.x)] = 0;
         }
     }
 
-    std::cout << "Host is ready." << std::endl;
-
-    // Device data
-    bool *d_grid;
-    cudaMalloc(&d_grid, grid->getWidth() * grid->getHeight() * sizeof(bool));
-    bool *d_result;
-    cudaMalloc(&d_result, grid->getWidth() * grid->getHeight() * sizeof(bool));
-
-    std::cout << "Device is initialized." << std::endl;
-
-    // Set grid and block dimensions
-    const int THREADS = grid->getWidth() * grid->getHeight();
-    const dim3 THREADS_PER_BLOCK(8, 8);                     // 64 threads per block
-    const dim3 NUM_BLOCKS(  (grid->getWidth() + THREADS_PER_BLOCK.x - 1) / THREADS_PER_BLOCK.x,
-        (grid->getHeight() + THREADS_PER_BLOCK.y - 1) / THREADS_PER_BLOCK.y);
+    // Copy vectors from host memory to device memory
+    cudaMemcpy(d_grid, h_grid, GRID_SIZE.x * GRID_SIZE.y * sizeof(bool), cudaMemcpyHostToDevice);
 
     std::chrono::time_point<std::chrono::high_resolution_clock> m_start = std::chrono::high_resolution_clock::now();
     std::chrono::time_point<std::chrono::high_resolution_clock> m_end = m_start + std::chrono::seconds(timeInSeconds);
     int iterations = 0;
 
-    // Copy vectors from host memory to device memory
-    cudaMemcpy(d_grid, h_grid, grid->getWidth() * grid->getHeight() * sizeof(bool), cudaMemcpyHostToDevice);
-
     while (std::chrono::high_resolution_clock::now() < m_end)
     {
-        // Optimization: We expect d_grid to be READONLY, and d_result to be READWRITE.
+        // Optimization: We expect d_grid to be READONLY, and d_result to be WRITEONLY.
         // We start with d_grid == d_result.
         // When we finish the computation once, we (theoretically) want to update d_grid. => d_grid will be the same as d_result.
         // If we (temporarily) use d_result as d_grid in each second computation, we'll get the same "start".
@@ -155,23 +151,23 @@ int cuda_main_stress(Grid *grid, int timeInSeconds)
         // With this, we can avoid calling cudaMemcpy every iteration.
 
         // Send kernel: Results will be in d_result
-        computeHighLife<<< NUM_BLOCKS, THREADS_PER_BLOCK>>>(d_grid, d_result, grid->getWidth(), grid->getHeight());
+        computeHighLife<<< NUM_BLOCKS, THREADS_PER_BLOCK>>>(d_grid, d_result, GRID_SIZE.x, GRID_SIZE.y);
 
         // Send kernel: Results will be in d_grid
-        computeHighLife<<< NUM_BLOCKS, THREADS_PER_BLOCK>>>(d_result, d_grid, grid->getWidth(), grid->getHeight());
+        computeHighLife<<< NUM_BLOCKS, THREADS_PER_BLOCK>>>(d_result, d_grid, GRID_SIZE.x, GRID_SIZE.y);
 
         iterations += 2;
     }
 
-    // Copy results from device memory to host memory. Remember, with the optimization, our final results will be in d_grid for this stress test.
-    cudaMemcpy(h_result, d_grid, grid->getWidth() * grid->getHeight() * sizeof(bool), cudaMemcpyDeviceToHost);
+    // Copy results from device memory to host memory (Check note above to see why our results are in d_grid instead of d_result.)
+    cudaMemcpy(h_result, d_grid, GRID_SIZE.x * GRID_SIZE.y * sizeof(bool), cudaMemcpyDeviceToHost);
 
     // Update grid
-    for (int j = 0; j < grid->getHeight(); j++)
+    for (int j = 0; j < GRID_SIZE.y; j++)
     {
-        for (int i = 0; i < grid->getWidth(); i++)
+        for (int i = 0; i < GRID_SIZE.x; i++)
         {
-            grid->setAt(i, j, h_result[getPos(i, j, grid->getWidth())]);
+            grid->setAt(i, j, h_result[getPos(i, j, GRID_SIZE.x)]);
         }
     }
 

@@ -5,6 +5,9 @@ void cuda_main(Grid *grid);
 extern "C"
 int cuda_main_stress(Grid *grid, int timeInSeconds);
 
+extern "C"
+void cuda_setup(Grid *grid);
+
 CUDAModel::CUDAModel(int width, int height) :
     Model(width, height)
 {
@@ -12,6 +15,11 @@ CUDAModel::CUDAModel(int width, int height) :
 
 CUDAModel::~CUDAModel()
 {
+}
+
+void CUDAModel::setup()
+{
+    cuda_setup(m_grid);
 }
 
 void CUDAModel::run()

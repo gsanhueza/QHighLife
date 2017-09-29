@@ -3,7 +3,8 @@
 using namespace std;
 
 CPUModel::CPUModel(int width, int height) :
-    Model(width, height)
+    Model(width, height),
+    m_result(new Grid(width, height))
 {
 }
 
@@ -11,11 +12,12 @@ CPUModel::~CPUModel()
 {
 }
 
+void CPUModel::setup()
+{
+}
+
 void CPUModel::run()
 {
-    Grid result(m_grid->getWidth(), m_grid->getHeight());
-    result = *m_grid;
-
     for (int j = 0; j < m_grid->getHeight(); j++)
     {
         for (int i = 0; i < m_grid->getWidth(); i++)
@@ -23,17 +25,20 @@ void CPUModel::run()
             // Not 2 or 3 cells surrounding this alive cell = Cell dies
             if (m_grid->getAt(i, j) and not (surroundingAliveCells(i, j) == 2 or surroundingAliveCells(i, j) == 3))
             {
-                result.setAt(i, j, false);
+                m_result->setAt(i, j, false);
             }
             // Dead cell surrounded by 3 or 6 cells = Cell revives
             else if (not m_grid->getAt(i, j) and (surroundingAliveCells(i, j) == 3 or surroundingAliveCells(i, j) == 6))
             {
-                result.setAt(i, j, true);
+                m_result->setAt(i, j, true);
+            }
+            else {
+                m_result->setAt(i, j, m_grid->getAt(i, j));
             }
         }
     }
 
-    *m_grid = result;
+    *m_grid = *m_result;
 }
 
 int CPUModel::runStressTest(int timeInSeconds)

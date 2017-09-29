@@ -10,11 +10,13 @@ public:
     CPUModel(int width, int height);
     ~CPUModel();
 
+    virtual void setup();
     virtual void run();
     virtual int runStressTest(int timeInSeconds);
 
 private:
     int surroundingAliveCells(int i, int j);
+    Grid *m_result;
 };
 
 #endif
