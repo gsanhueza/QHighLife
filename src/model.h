@@ -19,6 +19,8 @@ public:
     Grid* getGrid();
 
 protected:
+    virtual void setup() = 0;
+
     Grid *m_grid;
     QTextStream out;
 };

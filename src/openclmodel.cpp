@@ -28,6 +28,10 @@ int getPosCL(int i, int j, int n)
     return i + n * j;
 }
 
+void OpenCLModel::setup()
+{
+}
+
 void OpenCLModel::run()
 {
     int platform_id = 0, device_id = 0;
