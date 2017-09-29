@@ -81,6 +81,10 @@ void OpenCLModel::run()
         // Make kernel
         cl::Kernel highlife_kernel(program, "computeHighLife");
 
+        // Set kernel dimensions
+        cl::NDRange global( m_grid->getWidth(), m_grid->getHeight() );
+        cl::NDRange local( 8, 8 );                          // 64 work-items per work-group
+
         // Set the kernel arguments
         highlife_kernel.setArg(0, d_grid);
         highlife_kernel.setArg(1, d_result);
@@ -88,9 +92,32 @@ void OpenCLModel::run()
         highlife_kernel.setArg(3, m_grid->getHeight());
 
         // Execute the kernel
-        cl::NDRange global( m_grid->getWidth(), m_grid->getHeight() );
-        cl::NDRange local( 8, 8 );                          // 64 work-items per work-group
         queue.enqueueNDRangeKernel( highlife_kernel, cl::NullRange, global, local );
+
+        // FIXME START DUPLICATED
+
+        // Set the kernel arguments
+        highlife_kernel.setArg(0, d_result);
+        highlife_kernel.setArg(1, d_grid);
+        highlife_kernel.setArg(2, m_grid->getWidth());
+        highlife_kernel.setArg(3, m_grid->getHeight());
+
+        // Execute the kernel
+        queue.enqueueNDRangeKernel( highlife_kernel, cl::NullRange, global, local );
+
+        // FIXME END DUPLICATED
+
+        // FIXME START TRIPLICATED
+        // Set the kernel arguments
+        highlife_kernel.setArg(0, d_grid);
+        highlife_kernel.setArg(1, d_result);
+        highlife_kernel.setArg(2, m_grid->getWidth());
+        highlife_kernel.setArg(3, m_grid->getHeight());
+
+        // Execute the kernel
+        queue.enqueueNDRangeKernel( highlife_kernel, cl::NullRange, global, local );
+
+        // FIXME END TRIPLICATED
 
         // Copy the output data back to the host
         queue.enqueueReadBuffer( d_result, CL_TRUE, 0, m_grid->getWidth() * m_grid->getHeight() * sizeof(bool), h_result );

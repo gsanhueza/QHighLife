@@ -27,8 +27,11 @@ kernel void computeHighLife(global bool *grid, global bool *result, int width, i
 //     int i = (blockDim.x * blockIdx.x) + threadIdx.x;
 //     int j = (blockDim.y * blockIdx.y) + threadIdx.y;
 
-    int i = (get_local_size(0) * get_group_id(0)) + get_local_id(0);
-    int j = (get_local_size(1) * get_group_id(1)) + get_local_id(1);
+//     int i = (get_local_size(0) * get_group_id(0)) + get_local_id(0);
+//     int j = (get_local_size(1) * get_group_id(1)) + get_local_id(1);
+
+    int i = get_global_id(0);
+    int j = get_global_id(1);
 
     if (i < width && j < height)                           // Caso no-multiplo de 2
     {
