@@ -83,6 +83,15 @@ void cuda_setup(Grid *grid)
     // Device data
     cudaMalloc(&d_grid, GRID_SIZE.x * GRID_SIZE.y * sizeof(bool));
     cudaMalloc(&d_result, GRID_SIZE.x * GRID_SIZE.y * sizeof(bool));
+
+}
+
+// CUDA cleanup routine
+extern "C"
+void cuda_cleanup()
+{
+    delete h_grid;
+    delete h_result;
 }
 
 // CUDA main

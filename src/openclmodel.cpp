@@ -13,6 +13,8 @@ OpenCLModel::OpenCLModel(int width, int height) :
 
 OpenCLModel::~OpenCLModel()
 {
+    delete host_grid;
+    delete host_result;
 }
 
 // Helper 2D -> 1D array
