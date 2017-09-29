@@ -29,15 +29,6 @@ void OpenCLModel::setup()
     host_grid   = new bool[m_grid->getWidth() * m_grid->getHeight()];
     host_result = new bool[m_grid->getWidth() * m_grid->getHeight()];
 
-    // Filling data
-    for (int j = 0; j < m_grid->getHeight(); j++)
-    {
-        for (int i = 0; i < m_grid->getWidth(); i++)
-        {
-            host_grid[getPosCL(i, j, m_grid->getWidth())] = m_grid->getAt(i, j);
-        }
-    }
-
     // Query for platforms
     cl::Platform::get(&platforms);
 
@@ -54,9 +45,6 @@ void OpenCLModel::setup()
     buffer_grid   = cl::Buffer(context, CL_MEM_READ_ONLY, m_grid->getWidth() * m_grid->getHeight() * sizeof(bool));
     buffer_result = cl::Buffer(context, CL_MEM_WRITE_ONLY, m_grid->getWidth() * m_grid->getHeight() * sizeof(bool));
 
-    // Copy the input data to the input buffers using the command queue.
-    queue.enqueueWriteBuffer( buffer_grid, CL_FALSE, 0, m_grid->getWidth() * m_grid->getHeight() * sizeof(bool), host_grid );
-
     // Read the program source
     std::ifstream sourceFile("../src/highlife.cl");
     std::string sourceCode( std::istreambuf_iterator<char>(sourceFile), (std::istreambuf_iterator<char>()));
@@ -71,7 +59,17 @@ void OpenCLModel::setup()
 
 void OpenCLModel::run()
 {
-    setup();
+    // Filling data
+    for (int j = 0; j < m_grid->getHeight(); j++)
+    {
+        for (int i = 0; i < m_grid->getWidth(); i++)
+        {
+            host_grid[getPosCL(i, j, m_grid->getWidth())] = m_grid->getAt(i, j);
+        }
+    }
+
+    // Copy the input data to the input buffers using the command queue.
+    queue.enqueueWriteBuffer( buffer_grid, CL_FALSE, 0, m_grid->getWidth() * m_grid->getHeight() * sizeof(bool), host_grid );
 
     // Make kernel
     cl::Kernel highlife_kernel(program, "computeHighLife");
@@ -102,8 +100,6 @@ void OpenCLModel::run()
             m_grid->setAt(i, j, host_result[getPosCL(i, j, m_grid->getWidth())]);
         }
     }
-
-
 }
 
 int OpenCLModel::runStressTest(int timeInSeconds)

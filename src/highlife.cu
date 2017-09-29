@@ -66,18 +66,8 @@ extern "C"
 void cuda_setup(Grid *grid)
 {
     // Host data
-    h_grid   = (bool *)malloc(grid->getWidth() * grid->getHeight() * sizeof(bool));
-    h_result = (bool *)malloc(grid->getWidth() * grid->getHeight() * sizeof(bool));
-
-    // Data filling
-    for (int j = 0; j < grid->getHeight(); j++)
-    {
-        for (int i = 0; i < grid->getWidth(); i++)
-        {
-            h_grid[getPos(i, j, grid->getWidth())] = grid->getAt(i, j);
-            h_result[getPos(i, j, grid->getWidth())] = 0;
-        }
-    }
+    h_grid   = new bool[grid->getWidth() * grid->getHeight()];
+    h_result = new bool[grid->getWidth() * grid->getHeight()];
 
     // Device data
     cudaMalloc(&d_grid, grid->getWidth() * grid->getHeight() * sizeof(bool));
@@ -100,7 +90,15 @@ void cuda_setup(Grid *grid)
 extern "C"
 int cuda_main(Grid *grid)
 {
-    cuda_setup(grid);
+    // Data filling
+    for (int j = 0; j < grid->getHeight(); j++)
+    {
+        for (int i = 0; i < grid->getWidth(); i++)
+        {
+            h_grid[getPos(i, j, grid->getWidth())] = grid->getAt(i, j);
+            h_result[getPos(i, j, grid->getWidth())] = 0;
+        }
+    }
 
     // Copy vectors from host memory to device memory
     cudaMemcpy(d_grid, h_grid, GRID_SIZE.x * GRID_SIZE.y * sizeof(bool), cudaMemcpyHostToDevice);
@@ -127,8 +125,6 @@ int cuda_main(Grid *grid)
 extern "C"
 int cuda_main_stress(Grid *grid, int timeInSeconds)
 {
-    cuda_setup(grid);
-
     std::chrono::time_point<std::chrono::high_resolution_clock> m_start = std::chrono::high_resolution_clock::now();
     std::chrono::time_point<std::chrono::high_resolution_clock> m_end = m_start + std::chrono::seconds(timeInSeconds);
     int iterations = 0;

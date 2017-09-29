@@ -10,11 +10,9 @@ public:
     CPUModel(int width, int height);
     ~CPUModel();
 
+    virtual void setup();
     virtual void run();
     virtual int runStressTest(int timeInSeconds);
-
-protected:
-    virtual void setup();
 
 private:
     int surroundingAliveCells(int i, int j);
