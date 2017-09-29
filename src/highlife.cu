@@ -134,7 +134,7 @@ int cuda_main_stress(Grid *grid, int timeInSeconds)
 
     while (std::chrono::high_resolution_clock::now() < m_end)
     {
-        // Optimization: We expect d_grid to be READONLY, and d_result to be READWRITE.
+        // Optimization: We expect d_grid to be READONLY, and d_result to be WRITEONLY.
         // We start with d_grid == d_result.
         // When we finish the computation once, we (theoretically) want to update d_grid. => d_grid will be the same as d_result.
         // If we (temporarily) use d_result as d_grid in each second computation, we'll get the same "start".
@@ -150,8 +150,8 @@ int cuda_main_stress(Grid *grid, int timeInSeconds)
         iterations += 2;
     }
 
-    // Copy results from device memory to host memory
-    cudaMemcpy(h_result, d_result, GRID_SIZE.x * GRID_SIZE.y * sizeof(bool), cudaMemcpyDeviceToHost);
+    // Copy results from device memory to host memory (Check note above to see why our results are in d_grid instead of d_result.)
+    cudaMemcpy(h_result, d_grid, GRID_SIZE.x * GRID_SIZE.y * sizeof(bool), cudaMemcpyDeviceToHost);
 
     // Update grid
     for (int j = 0; j < grid->getHeight(); j++)

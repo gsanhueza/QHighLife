@@ -42,8 +42,8 @@ void OpenCLModel::setup()
     queue = cl::CommandQueue( context, devices[m_device_id] );   // Select the device.
 
     // Create the memory buffers
-    buffer_grid   = cl::Buffer(context, CL_MEM_READ_ONLY, m_grid->getWidth() * m_grid->getHeight() * sizeof(bool));
-    buffer_result = cl::Buffer(context, CL_MEM_WRITE_ONLY, m_grid->getWidth() * m_grid->getHeight() * sizeof(bool));
+    buffer_grid   = cl::Buffer(context, CL_MEM_READ_WRITE, m_grid->getWidth() * m_grid->getHeight() * sizeof(bool));
+    buffer_result = cl::Buffer(context, CL_MEM_READ_WRITE, m_grid->getWidth() * m_grid->getHeight() * sizeof(bool));
 
     // Read the program source
     std::ifstream sourceFile("../src/highlife.cl");
@@ -78,7 +78,7 @@ void OpenCLModel::run()
     cl::NDRange global( m_grid->getWidth(), m_grid->getHeight() );
     cl::NDRange local( 8, 8 );                          // 64 workitems per workgroup
 
-    /* START_LAUNCH_KERNEL */
+    // Here are the kernel execution steps
     // Set the kernel arguments
     highlife_kernel.setArg(0, buffer_grid);
     highlife_kernel.setArg(1, buffer_result);
@@ -87,7 +87,6 @@ void OpenCLModel::run()
 
     // Execute the kernel
     queue.enqueueNDRangeKernel( highlife_kernel, cl::NullRange, global, local );
-    /* END_LAUNCH_KERNEL */
 
     // Copy the output data back to the host
     queue.enqueueReadBuffer( buffer_result, CL_TRUE, 0, m_grid->getWidth() * m_grid->getHeight() * sizeof(bool), host_result );
@@ -104,6 +103,70 @@ void OpenCLModel::run()
 
 int OpenCLModel::runStressTest(int timeInSeconds)
 {
-    out << "FIXME: Implement OpenCL Model stress test" << endl;
-    return 0;
+    // Filling data
+    for (int j = 0; j < m_grid->getHeight(); j++)
+    {
+        for (int i = 0; i < m_grid->getWidth(); i++)
+        {
+            host_grid[getPosCL(i, j, m_grid->getWidth())] = m_grid->getAt(i, j);
+        }
+    }
+
+    // Copy the input data to the input buffers using the command queue.
+    queue.enqueueWriteBuffer( buffer_grid, CL_FALSE, 0, m_grid->getWidth() * m_grid->getHeight() * sizeof(bool), host_grid );
+
+    // Make kernel
+    cl::Kernel highlife_kernel(program, "computeHighLife");
+
+    // Set kernel dimensions
+    cl::NDRange global( m_grid->getWidth(), m_grid->getHeight() );
+    cl::NDRange local( 8, 8 );                          // 64 workitems per workgroup
+
+    std::chrono::time_point<std::chrono::high_resolution_clock> m_start = std::chrono::high_resolution_clock::now();
+    std::chrono::time_point<std::chrono::high_resolution_clock> m_end = m_start + std::chrono::seconds(timeInSeconds);
+    int iterations = 0;
+
+    while (std::chrono::high_resolution_clock::now() < m_end)
+    {
+        // Optimization: We expect buffer_grid to be READONLY, and buffer_result to be WRITEONLY.
+        // We start with buffer_grid == buffer_result.
+        // When we finish the computation once, we (theoretically) want to update buffer_grid. => buffer_grid will be the same as buffer_result.
+        // If we (temporarily) use buffer_result as buffer_grid in each second computation, we'll get the same "start".
+        // Thus, our final results will be in buffer_grid. => We have to copy back buffer_grid to h_result to get the real result.
+        // With this, we can avoid calling cudaMemcpy every iteration.
+
+        // Set the kernel arguments, part 1
+        highlife_kernel.setArg(0, buffer_grid);
+        highlife_kernel.setArg(1, buffer_result);
+        highlife_kernel.setArg(2, m_grid->getWidth());
+        highlife_kernel.setArg(3, m_grid->getHeight());
+
+        // Execute the kernel, part 1
+        queue.enqueueNDRangeKernel( highlife_kernel, cl::NullRange, global, local );
+
+        // Set the kernel arguments, part 2
+        highlife_kernel.setArg(0, buffer_result);
+        highlife_kernel.setArg(1, buffer_grid);
+        highlife_kernel.setArg(2, m_grid->getWidth());
+        highlife_kernel.setArg(3, m_grid->getHeight());
+
+        // Execute the kernel, part 2
+        queue.enqueueNDRangeKernel( highlife_kernel, cl::NullRange, global, local );
+
+        iterations += 2;
+    }
+
+    // Copy the output data back to the host (Check note above to see why our results are in buffer_grid instead of buffer_result.)
+    queue.enqueueReadBuffer( buffer_grid, CL_TRUE, 0, m_grid->getWidth() * m_grid->getHeight() * sizeof(bool), host_result );
+
+    // Set the result
+    for (int j = 0; j < m_grid->getHeight(); j++)
+    {
+        for (int i = 0; i < m_grid->getWidth(); i++)
+        {
+            m_grid->setAt(i, j, host_result[getPosCL(i, j, m_grid->getWidth())]);
+        }
+    }
+
+    return iterations;
 }
