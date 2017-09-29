@@ -18,6 +18,8 @@ void CPUModel::setup()
 
 void CPUModel::run()
 {
+    setup();
+
     for (int j = 0; j < m_grid->getHeight(); j++)
     {
         for (int i = 0; i < m_grid->getWidth(); i++)
