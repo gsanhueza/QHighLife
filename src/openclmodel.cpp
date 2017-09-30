@@ -135,7 +135,7 @@ int OpenCLModel::runStressTest(int timeInSeconds)
         // When we finish the computation once, we (theoretically) want to update buffer_grid. => buffer_grid will be the same as buffer_result.
         // If we (temporarily) use buffer_result as buffer_grid in each second computation, we'll get the same "start".
         // Thus, our final results will be in buffer_grid. => We have to copy back buffer_grid to h_result to get the real result.
-        // With this, we can avoid calling cudaMemcpy every iteration.
+        // With this, we can avoid calling enqueueReadBuffer every iteration.
 
         // Set the kernel arguments, part 1
         highlife_kernel.setArg(0, buffer_grid);
