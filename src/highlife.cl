@@ -7,18 +7,29 @@ int getPos(int i, int j, int n)
 // Neighbour counter
 int surroundingAliveCells(global bool *grid, int i, int j, int w, int h)
 {
-    int count = 0;
+    // Positions
+    int Nx = i;
+    int Ex = (i + 1) % w;
+    int Sx = i;
+    int Wx = (i + w - 1) % w;
 
-    for (int y = max(0, j - 1); y <= min(j + 1, h - 1); y++)
-    {
-        for (int x = max(0, i - 1); x <= min(i + 1, w - 1); x++)
-        {
-            if (x == i && y == j) continue;             // Self check unrequired
-            count += (grid[getPos(x, y, w)]);           // Count alive cells
-        }
-    }
+    int Ny = (j + h - 1) % h;
+    int Ey = j;
+    int Sy = (j + 1) % h;
+    int Wy = j;
 
-    return count;
+    // Cell values
+    int N = grid[getPos(Nx, Ny, w)];
+    int E = grid[getPos(Ex, Ey, w)];
+    int S = grid[getPos(Sx, Sy, w)];
+    int W = grid[getPos(Wx, Wy, w)];
+
+    int NW = grid[getPos(Wx, Ny, w)];
+    int NE = grid[getPos(Ex, Ny, w)];
+    int SW = grid[getPos(Wx, Sy, w)];
+    int SE = grid[getPos(Ex, Sy, w)];
+
+    return NW + N + NE + W + E + SW + S + SE;
 }
 
 // Kernel
