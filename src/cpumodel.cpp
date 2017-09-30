@@ -59,15 +59,30 @@ int CPUModel::runStressTest(int timeInSeconds)
 
 int CPUModel::surroundingAliveCells(int i, int j)
 {
-    int count = 0;
+    int h = m_grid->getHeight();
+    int w = m_grid->getWidth();
 
-    for (int y = std::max(0, j - 1); y <= std::min(j + 1, m_grid->getHeight() - 1); y++)
-    {
-        for (int x = std::max(0, i - 1); x <= std::min(i + 1, m_grid->getWidth() - 1); x++)
-        {
-            if (x == i and y == j) continue;                // Self check unrequired
-            count += (m_grid->getAt(x, y) ? 1 : 0);         // Count alive cells
-        }
-    }
-    return count;
+    // Positions
+    int Nx = i;
+    int Ex = (i + 1) % w;
+    int Sx = i;
+    int Wx = (i + w - 1) % w;
+
+    int Ny = (j + h - 1) % h;
+    int Ey = j;
+    int Sy = (j + 1) % h;
+    int Wy = j;
+
+    // Cell values
+    int N = m_grid->getAt(Nx, Ny);
+    int E = m_grid->getAt(Ex, Ey);
+    int S = m_grid->getAt(Sx, Sy);
+    int W = m_grid->getAt(Wx, Wy);
+
+    int NW = m_grid->getAt(Wx, Ny);
+    int NE = m_grid->getAt(Ex, Ny);
+    int SW = m_grid->getAt(Wx, Sy);
+    int SE = m_grid->getAt(Ex, Sy);
+
+    return NW + N + NE + W + E + SW + S + SE;
 }
