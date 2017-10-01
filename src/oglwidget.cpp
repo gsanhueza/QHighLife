@@ -36,9 +36,9 @@ void OGLWidget::setupVertexAttribs()
     m_vbo.bind();
     QOpenGLFunctions *f = QOpenGLContext::currentContext()->functions();
     f->glEnableVertexAttribArray(0); // Vertex
-    f->glEnableVertexAttribArray(1); // Normal
+    f->glEnableVertexAttribArray(1); // Alive
     // glVertexAttribPointer(GLuint index​, GLint size​, GLenum type​, GLboolean normalized​, GLsizei stride​, const GLvoid * pointer​);
-    // index = Vertex(0) or Normal(1), can be more if needed
+    // index = Vertex(0) or Alive(1), can be more if needed
     // size = Coordinates(x, y) => 2
     // type = GL_INT, as that's the type of each coordinate
     // normalized = false, as there's no need to normalize here
@@ -64,7 +64,6 @@ void OGLWidget::generateGLProgram()
         "varying vec2 isAlive;\n"
         "uniform mat4 projMatrix;\n"
         "uniform mat4 modelViewMatrix;\n"
-        "uniform mat3 normalMatrix;\n"
         "void main() {\n"
         "   isAlive = alive;"
         "   gl_Position = projMatrix * modelViewMatrix * vec4(vertex, 0.0, 1.0);\n"
@@ -83,7 +82,6 @@ void OGLWidget::generateGLProgram()
     m_program->bind();
     m_modelViewMatrixLoc = m_program->uniformLocation("modelViewMatrix");
     m_projMatrixLoc = m_program->uniformLocation("projMatrix");
-    m_normalMatrixLoc = m_program->uniformLocation("normalMatrix");
 
     // Create a vertex array object. In OpenGL ES 2.0 and OpenGL 2.x
     // implementations this is optional and support may not be present
@@ -122,15 +120,15 @@ void OGLWidget::loadData(GridReader *gridReader)
             m_data.append(i);
             m_data.append(j);
             m_data.append(i);
-            m_data.append(j + 1);
+            m_data.append(j - 1);
             m_data.append(i + 1);
-            m_data.append(j + 1);
+            m_data.append(j - 1);
 
             // Triangle 2
             m_data.append(i);
             m_data.append(j);
             m_data.append(i + 1);
-            m_data.append(j + 1);
+            m_data.append(j - 1);
             m_data.append(i + 1);
             m_data.append(j);
         }
@@ -150,7 +148,7 @@ void OGLWidget::loadData(GridReader *gridReader)
     }
 
     // Allocate data into VBO
-    m_vbo.allocate(m_data.constData(), m_data.count() * sizeof(GLint));
+    m_vbo.allocate(m_data.constData(), m_data.count() * sizeof(int));
 
     // Store the vertex attribute bindings for the program.
     setupVertexAttribs();
@@ -215,13 +213,6 @@ void OGLWidget::loadData(Grid *grid)
 
 void OGLWidget::paintGL()
 {
-    std::cout << "m_data has " << m_data.size() << " elements now." << std::endl;
-
-    for (int i = 0; i < m_data.size() / 2; i += 2)
-    {
-        std::cout << "Vertex (" <<  m_data.at(i) << ", " << m_data.at(i + 1) << ") - Alive (" << m_data.at(i + (m_data.size() / 2)) << ", " << m_data.at(i + 1 + (m_data.size() / 2)) << ")" << std::endl;
-    }
-
     // Clear screen
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
@@ -240,8 +231,6 @@ void OGLWidget::paintGL()
     m_program->bind();
     m_program->setUniformValue(m_projMatrixLoc, m_proj);
     m_program->setUniformValue(m_modelViewMatrixLoc, m_camera * m_world);
-    QMatrix3x3 normalMatrix = (m_camera * m_world).normalMatrix();
-    m_program->setUniformValue(m_normalMatrixLoc, normalMatrix);
     m_program->setUniformValue(m_eyePosLoc, QVector3D(m_xCamPos, m_yCamPos, m_zCamPos));
 
     // Load new data only on geometry or shader change
