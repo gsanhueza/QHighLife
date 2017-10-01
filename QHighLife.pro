@@ -18,6 +18,7 @@ SOURCES +=  src/main.cpp \
             src/openclmodel.cpp \
             src/gridreader.cpp \
             src/canvas.cpp \
+            src/oglwidget.cpp \
 
 HEADERS +=  src/qhighlife.h \
             src/tutorial.h \
@@ -29,6 +30,7 @@ HEADERS +=  src/qhighlife.h \
             src/openclmodel.h \
             src/gridreader.h \
             src/canvas.h \
+            src/oglwidget.h \
 
 LIBS += -lcuda -lcudart -lOpenCL
 
