@@ -55,7 +55,6 @@ private:
     int m_modelViewMatrixLoc;
     int m_projMatrixLoc;
 
-    int m_normalMatrixLoc;
     int m_lightPosLoc;
     int m_eyePosLoc;
     QMatrix4x4 m_proj;
