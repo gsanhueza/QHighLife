@@ -39,13 +39,13 @@ void OGLWidget::setupVertexAttribs()
     f->glEnableVertexAttribArray(1); // Normal
     // glVertexAttribPointer(GLuint index​, GLint size​, GLenum type​, GLboolean normalized​, GLsizei stride​, const GLvoid * pointer​);
     // index = Vertex(0) or Normal(1), can be more if needed
-    // size = Coordinates(x, y, z) => 3
-    // type = GL_FLOAT, as that's the type of each coordinate
+    // size = Coordinates(x, y) => 2
+    // type = GL_INT, as that's the type of each coordinate
     // normalized = false, as there's no need to normalize here
-    // stride = 0, which implies that vertices are side-to-side (VVVNNN)
-    // pointer = where is the start of the data (in VVVNNN, 0 = start of vertices and GL_FLOAT * size(vertexArray) = start of normals)
+    // stride = 0, which implies that vertices are side-to-side (VVVAAA)
+    // pointer = where is the start of the data (in VVVAAA, 0 = start of vertices and GL_FLOAT * size(vertexArray) = start of alive status)
     f->glVertexAttribPointer(0, 2, GL_INT, GL_FALSE, 0, 0);
-    f->glVertexAttribPointer(1, 1, GL_INT, GL_FALSE, 0, reinterpret_cast<void *>(8 * sizeof(GL_INT) * m_width * m_height));
+    f->glVertexAttribPointer(1, 2, GL_INT, GL_FALSE, 0, reinterpret_cast<void *>(sizeof(int) * m_data.size() / 2));
     m_vbo.release();
 }
 
@@ -60,18 +60,20 @@ void OGLWidget::generateGLProgram()
     m_program = new QOpenGLShaderProgram;
     m_program->addShaderFromSourceCode(QOpenGLShader::Vertex,
         "attribute vec2 vertex;\n"
-        "attribute bool alive;\n"
-        "\n"
+        "attribute vec2 alive;\n"
+        "varying vec2 isAlive;\n"
         "uniform mat4 projMatrix;\n"
         "uniform mat4 modelViewMatrix;\n"
         "uniform mat3 normalMatrix;\n"
         "void main() {\n"
+        "   isAlive = alive;"
         "   gl_Position = projMatrix * modelViewMatrix * vec4(vertex, 0.0, 1.0);\n"
         " }\n"
     );
     m_program->addShaderFromSourceCode(QOpenGLShader::Fragment,
+        "varying vec2 isAlive;\n"
         "void main() {\n"
-        "   gl_Color = vec4(1.0, 0.0, 0.0, 1.0);\n"
+        "   gl_FragColor = vec4(isAlive, 1.0, 1.0);\n"
         "}\n"
     );
     m_program->bindAttributeLocation("vertex", 0);
@@ -116,10 +118,17 @@ void OGLWidget::loadData(GridReader *gridReader)
     {
         for (int i = 0; i < m_width; i++)
         {
+            // Triangle 1
             m_data.append(i);
             m_data.append(j);
             m_data.append(i);
             m_data.append(j + 1);
+            m_data.append(i + 1);
+            m_data.append(j + 1);
+
+            // Triangle 2
+            m_data.append(i);
+            m_data.append(j);
             m_data.append(i + 1);
             m_data.append(j + 1);
             m_data.append(i + 1);
@@ -127,13 +136,16 @@ void OGLWidget::loadData(GridReader *gridReader)
         }
     }
 
-    // Load cell status (alive) from local file
+    // Load cell status (alive) from grid reader
     for (int j = 0; j < m_height; j++)
     {
         for (int i = 0; i < m_width; i++)
         {
-            m_data.append(gridReader->getData().at(j).at(i) == QChar('1') ? 1 : 0);
-            std::cout << "(" << i << ", " << j << ") - " << m_data.back() << std::endl;
+            for (int k = 0; k < 6; k++)                     // Hack that allow us to map this to each triangle
+            {
+                m_data.append(gridReader->getData().at(j).at(i) == QChar('1') ? 1 : 0);
+                m_data.append(0);
+            }
         }
     }
 
@@ -162,10 +174,17 @@ void OGLWidget::loadData(Grid *grid)
     {
         for (int i = 0; i < m_width; i++)
         {
+            // Triangle 1
             m_data.append(i);
             m_data.append(j);
             m_data.append(i);
             m_data.append(j + 1);
+            m_data.append(i + 1);
+            m_data.append(j + 1);
+
+            // Triangle 2
+            m_data.append(i);
+            m_data.append(j);
             m_data.append(i + 1);
             m_data.append(j + 1);
             m_data.append(i + 1);
@@ -173,13 +192,16 @@ void OGLWidget::loadData(Grid *grid)
         }
     }
 
-    // Load cell status (alive) from local file
+    // Load cell status (alive) from grid
     for (int j = 0; j < m_height; j++)
     {
         for (int i = 0; i < m_width; i++)
         {
-            m_data.append(grid->getAt(i, j) ? 1 : 0);
-            std::cout << "(" << i << ", " << j << ") - " << m_data.back() << std::endl;
+            for (int k = 0; k < 6; k++)                     // Hack that allow us to map this to each triangle
+            {
+                m_data.append(0);
+                m_data.append(grid->getAt(i, j) ? 1 : 0);
+            }
         }
     }
 
@@ -193,6 +215,13 @@ void OGLWidget::loadData(Grid *grid)
 
 void OGLWidget::paintGL()
 {
+    std::cout << "m_data has " << m_data.size() << " elements now." << std::endl;
+
+    for (int i = 0; i < m_data.size() / 2; i += 2)
+    {
+        std::cout << "Vertex (" <<  m_data.at(i) << ", " << m_data.at(i + 1) << ") - Alive (" << m_data.at(i + (m_data.size() / 2)) << ", " << m_data.at(i + 1 + (m_data.size() / 2)) << ")" << std::endl;
+    }
+
     // Clear screen
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
@@ -223,7 +252,7 @@ void OGLWidget::paintGL()
     }
 
     // Draw rectangles
-    glDrawArrays(GL_QUADS, 0, m_data.count() / 2); // Last argument = Number of vertices
+    glDrawArrays(GL_TRIANGLES, 0, m_width * m_height * 2);   // Last argument = Number of vertices
 
     m_program->release();
 }
