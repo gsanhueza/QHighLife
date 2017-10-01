@@ -18,8 +18,12 @@
    <iconset>
     <normaloff>../resources/icon.png</normaloff>../resources/icon.png</iconset>
   </property>
-  <widget class="Canvas" name="canvas">
-   <layout class="QGridLayout" name="gridLayout"/>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
+     <widget class="OGLWidget" name="openGLWidget"/>
+    </item>
+   </layout>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -139,13 +143,12 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>Canvas</class>
-   <extends>QWidget</extends>
-   <header>src/canvas.h</header>
-   <container>1</container>
+   <class>OGLWidget</class>
+   <extends>QOpenGLWidget</extends>
+   <header>../src/oglwidget.h</header>
    <slots>
-    <slot>receiveGrid(Grid*)</slot>
     <slot>receiveGridReader(GridReader*)</slot>
+    <slot>receiveGrid(Grid*)</slot>
    </slots>
   </customwidget>
  </customwidgets>
@@ -282,7 +285,7 @@
   <connection>
    <sender>QHighLife</sender>
    <signal>sendGrid(Grid*)</signal>
-   <receiver>canvas</receiver>
+   <receiver>openGLWidget</receiver>
    <slot>receiveGrid(Grid*)</slot>
    <hints>
     <hint type="sourcelabel">
@@ -298,7 +301,7 @@
   <connection>
    <sender>QHighLife</sender>
    <signal>sendGridReader(GridReader*)</signal>
-   <receiver>canvas</receiver>
+   <receiver>openGLWidget</receiver>
    <slot>receiveGridReader(GridReader*)</slot>
    <hints>
     <hint type="sourcelabel">
