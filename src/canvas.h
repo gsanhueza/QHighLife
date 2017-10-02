@@ -21,6 +21,7 @@ public slots:
 
 protected:
     void paintEvent(QPaintEvent *e) override;
+    void resizeEvent(QResizeEvent *event) override;
 
 private:
     void doPainting();

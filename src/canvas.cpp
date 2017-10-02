@@ -52,6 +52,13 @@ void Canvas::doPainting()
     }
 }
 
+void Canvas::resizeEvent(QResizeEvent* event)
+{
+    Q_UNUSED(event);
+    m_cellWidth = this->width() / m_gridWidth;
+    m_cellHeight = this->height() / m_gridHeight;
+}
+
 void Canvas::receiveGridReader(GridReader *gridReader)
 {
     m_grid = nullptr;
