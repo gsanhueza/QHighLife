@@ -10,7 +10,7 @@ OGLWidget::OGLWidget(QWidget* parent)
       m_zRot(0),
       m_xCamPos(0),
       m_yCamPos(0),
-      m_zCamPos(-10),
+      m_zCamPos(-20),
       m_width(0),
       m_height(0),
       m_grid(nullptr),
@@ -44,9 +44,9 @@ void OGLWidget::setupVertexAttribs()
     // type = GL_INT, as that's the type of each coordinate
     // normalized = false, as there's no need to normalize here
     // stride = 0, which implies that vertices are side-to-side (VVVAAA)
-    // pointer = where is the start of the data (in VVVAAA, 0 = start of vertices and GL_FLOAT * size(vertexArray) = start of alive status)
-    f->glVertexAttribPointer(0, 3, GL_INT, GL_FALSE, 0, 0);
-    f->glVertexAttribPointer(1, 3, GL_INT, GL_FALSE, 0, reinterpret_cast<void *>(sizeof(int) * m_data.size() / 2));
+    // pointer = where is the start of the data (in VVVAAA, 0 = start of vertices and sizeof(int) * size(vertexArray) = start of alive status)
+    f->glVertexAttribPointer(0, 2, GL_INT, GL_FALSE, 0, 0);
+    f->glVertexAttribPointer(1, 2, GL_INT, GL_FALSE, 0, reinterpret_cast<void *>(sizeof(int) * m_data.size() / 2));
     m_vbo.release();
 }
 
@@ -59,25 +59,8 @@ void OGLWidget::initializeGL()
 void OGLWidget::generateGLProgram()
 {
     m_program = new QOpenGLShaderProgram;
-    m_program->addShaderFromSourceCode(QOpenGLShader::Vertex,
-        "#version 330 core\n"
-        "attribute vec3 vertex;\n"
-        "attribute vec3 alive;\n"
-        "varying vec3 isAlive;\n"
-        "uniform mat4 projMatrix;\n"
-        "uniform mat4 modelViewMatrix;\n"
-        "void main() {\n"
-        "   isAlive = alive;"
-        "   gl_Position = projMatrix * modelViewMatrix * vec4(vertex, 1.0);\n"
-        " }\n"
-    );
-    m_program->addShaderFromSourceCode(QOpenGLShader::Fragment,
-        "#version 330 core\n"
-        "varying vec3 isAlive;\n"
-        "void main() {\n"
-        "   gl_FragColor = vec4(isAlive, 1.0);\n"
-        "}\n"
-    );
+    m_program->addShaderFromSourceFile(QOpenGLShader::Vertex, "../data/vertex.glsl");
+    m_program->addShaderFromSourceFile(QOpenGLShader::Fragment, "../data/fragment.glsl");
     m_program->bindAttributeLocation("vertex", 0);
     m_program->bindAttributeLocation("alive", 1);
     m_program->link();
@@ -120,30 +103,24 @@ void OGLWidget::loadData(GridReader *gridReader)
         for (int i = 0; i < m_width; i++)
         {
             // Triangle 1
-            m_data.append(i);
-            m_data.append(-j);
-            m_data.append(0);
+            m_data.append(i - (m_width / 2));
+            m_data.append(-j + (m_height / 2) - 1);
 
-            m_data.append(i + 1);
-            m_data.append(-j + 1);
-            m_data.append(0);
+            m_data.append(i + 1 - (m_width / 2));
+            m_data.append(-j + 1 + (m_height / 2) - 1);
 
-            m_data.append(i);
-            m_data.append(-j + 1);
-            m_data.append(0);
+            m_data.append(i - (m_width / 2));
+            m_data.append(-j + 1 + (m_height / 2) - 1);
 
             // Triangle 2
-            m_data.append(i);
-            m_data.append(-j);
-            m_data.append(0);
+            m_data.append(i - (m_width / 2));
+            m_data.append(-j + (m_height / 2) - 1);
 
-            m_data.append(i + 1);
-            m_data.append(-j);
-            m_data.append(0);
+            m_data.append(i + 1 - (m_width / 2));
+            m_data.append(-j + (m_height / 2) - 1);
 
-            m_data.append(i + 1);
-            m_data.append(-j + 1);
-            m_data.append(0);
+            m_data.append(i + 1 - (m_width / 2));
+            m_data.append(-j + 1 + (m_height / 2) - 1);
         }
     }
 
@@ -156,7 +133,6 @@ void OGLWidget::loadData(GridReader *gridReader)
             {
                 m_data.append(gridReader->getData().at(j).at(i) == QChar('1') ? 1 : 0);
                 m_data.append(0);
-                m_data.append(0);
             }
         }
     }
@@ -166,12 +142,6 @@ void OGLWidget::loadData(GridReader *gridReader)
 
     // Store the vertex attribute bindings for the program.
     setupVertexAttribs();
-
-    m_xCamPos = m_width / 2;
-    m_yCamPos = -m_height / 2 + 1;
-    m_zCamPos = -std::max(m_width, m_height) - 2;
-    m_camera.setToIdentity();
-    m_camera.translate(-m_xCamPos, -m_yCamPos, m_zCamPos);
 
     update();
 }
@@ -194,30 +164,24 @@ void OGLWidget::loadData(Grid *grid)
         for (int i = 0; i < m_width; i++)
         {
             // Triangle 1
-            m_data.append(i);
-            m_data.append(-j);
-            m_data.append(0);
+            m_data.append(i - (m_width / 2));
+            m_data.append(-j + (m_height / 2) - 1);
 
-            m_data.append(i + 1);
-            m_data.append(-j + 1);
-            m_data.append(0);
+            m_data.append(i + 1 - (m_width / 2));
+            m_data.append(-j + 1 + (m_height / 2) - 1);
 
-            m_data.append(i);
-            m_data.append(-j + 1);
-            m_data.append(0);
+            m_data.append(i - (m_width / 2));
+            m_data.append(-j + 1 + (m_height / 2) - 1);
 
             // Triangle 2
-            m_data.append(i);
-            m_data.append(-j);
-            m_data.append(0);
+            m_data.append(i - (m_width / 2));
+            m_data.append(-j + (m_height / 2) - 1);
 
-            m_data.append(i + 1);
-            m_data.append(-j);
-            m_data.append(0);
+            m_data.append(i + 1 - (m_width / 2));
+            m_data.append(-j + (m_height / 2) - 1);
 
-            m_data.append(i + 1);
-            m_data.append(-j + 1);
-            m_data.append(0);
+            m_data.append(i + 1 - (m_width / 2));
+            m_data.append(-j + 1 + (m_height / 2) - 1);
         }
     }
 
@@ -230,7 +194,6 @@ void OGLWidget::loadData(Grid *grid)
             {
                 m_data.append(0);
                 m_data.append(grid->getAt(i, j) ? 1 : 0);
-                m_data.append(0);
             }
         }
     }
@@ -240,12 +203,6 @@ void OGLWidget::loadData(Grid *grid)
 
     // Store the vertex attribute bindings for the program.
     setupVertexAttribs();
-
-    m_xCamPos = m_width / 2;
-    m_yCamPos = -m_height / 2 + 1;
-    m_zCamPos = -std::max(m_width, m_height) - 2;
-    m_camera.setToIdentity();
-    m_camera.translate(-m_xCamPos, -m_yCamPos, m_zCamPos);
 
     update();
 }
@@ -296,7 +253,6 @@ void OGLWidget::resizeGL(int w, int h)
 
 void OGLWidget::receiveGridReader(GridReader *gridReader)
 {
-    std::cout << "GridReader received" << std::endl;
     m_gridReader = gridReader;
     m_grid = nullptr;
     m_program = nullptr;
@@ -306,7 +262,6 @@ void OGLWidget::receiveGridReader(GridReader *gridReader)
 
 void OGLWidget::receiveGrid(Grid *grid)
 {
-    std::cout << "Grid received" << std::endl;
     m_grid = grid;
     m_program = nullptr;
     generateGLProgram();
@@ -341,8 +296,6 @@ void OGLWidget::keyPressed(QKeyEvent *event)
         // Reset
         case Qt::Key_Space:
             m_xRot = m_yRot = m_zRot = 0;
-            m_xCamPos = m_width / 2;
-            m_yCamPos = -m_height / 2 + 1;
             m_zCamPos = -std::max(m_width, m_height) - 2;
         default:
             break;
