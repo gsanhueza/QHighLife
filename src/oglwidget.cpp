@@ -10,7 +10,7 @@ OGLWidget::OGLWidget(QWidget* parent)
       m_zRot(0),
       m_xCamPos(0),
       m_yCamPos(0),
-      m_zCamPos(-5),
+      m_zCamPos(-10),
       m_width(0),
       m_height(0),
       m_dataAlreadyLoaded(true),
@@ -122,28 +122,28 @@ void OGLWidget::loadData(GridReader *gridReader)
         {
             // Triangle 1
             m_data.append(i);
-            m_data.append(j);
-            m_data.append(0);
-
-            m_data.append(i);
-            m_data.append(j - 1);
+            m_data.append(-j);
             m_data.append(0);
 
             m_data.append(i + 1);
-            m_data.append(j - 1);
+            m_data.append(-j + 1);
+            m_data.append(0);
+
+            m_data.append(i);
+            m_data.append(-j + 1);
             m_data.append(0);
 
             // Triangle 2
             m_data.append(i);
-            m_data.append(j);
+            m_data.append(-j);
             m_data.append(0);
 
             m_data.append(i + 1);
-            m_data.append(j - 1);
+            m_data.append(-j);
             m_data.append(0);
 
             m_data.append(i + 1);
-            m_data.append(j);
+            m_data.append(-j + 1);
             m_data.append(0);
         }
     }
@@ -189,28 +189,28 @@ void OGLWidget::loadData(Grid *grid)
         {
             // Triangle 1
             m_data.append(i);
-            m_data.append(j);
-            m_data.append(0);
-
-            m_data.append(i);
-            m_data.append(j + 1);
+            m_data.append(-j);
             m_data.append(0);
 
             m_data.append(i + 1);
-            m_data.append(j + 1);
+            m_data.append(-j + 1);
+            m_data.append(0);
+
+            m_data.append(i);
+            m_data.append(-j + 1);
             m_data.append(0);
 
             // Triangle 2
             m_data.append(i);
-            m_data.append(j);
+            m_data.append(-j);
             m_data.append(0);
 
             m_data.append(i + 1);
-            m_data.append(j + 1);
+            m_data.append(-j);
             m_data.append(0);
 
             m_data.append(i + 1);
-            m_data.append(j);
+            m_data.append(-j + 1);
             m_data.append(0);
         }
     }
@@ -260,9 +260,14 @@ void OGLWidget::paintGL()
     m_program->setUniformValue(m_eyePosLoc, QVector3D(m_xCamPos, m_yCamPos, m_zCamPos));
 
     // Load new data only on geometry or shader change
-    if (not m_dataAlreadyLoaded)
+    if (m_gridReader != nullptr)
     {
         loadData(m_gridReader);
+    }
+
+    if (m_grid != nullptr)
+    {
+        loadData(m_grid);
     }
 
     // Draw rectangles as 2 triangles
@@ -281,6 +286,7 @@ void OGLWidget::receiveGridReader(GridReader *gridReader)
 {
     std::cout << "GridReader received" << std::endl;
     m_gridReader = gridReader;
+    m_grid = nullptr;
     m_program = nullptr;
     m_dataAlreadyLoaded = false;
     generateGLProgram();
