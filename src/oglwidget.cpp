@@ -13,7 +13,9 @@ OGLWidget::OGLWidget(QWidget* parent)
       m_zCamPos(-5),
       m_width(0),
       m_height(0),
-      m_dataAlreadyLoaded(false)
+      m_dataAlreadyLoaded(true),
+      m_grid(nullptr),
+      m_gridReader(nullptr)
 {
 }
 
@@ -237,13 +239,6 @@ void OGLWidget::loadData(Grid *grid)
 
 void OGLWidget::paintGL()
 {
-    for (int i = 0; i < m_data.size() / 2; i += 3)
-    {
-        std::cout << "Triangle (" << m_data.at(i) <<  ", " << m_data.at(i + 1) << ", " << m_data.at(i + 2) << ")" << std::endl;
-        std::cout << "Alive    (" << m_data.at(i + (m_data.size() / 2)) <<  ", " << m_data.at(i + 1 + (m_data.size() / 2)) << ", " << m_data.at(i + 2 + (m_data.size() / 2)) << ")" << std::endl;
-        std::cout << std::endl;
-    }
-
     // Clear screen
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
@@ -267,8 +262,7 @@ void OGLWidget::paintGL()
     // Load new data only on geometry or shader change
     if (not m_dataAlreadyLoaded)
     {
-        std::cout << "TODO: Loading data..." << std::endl;
-//         loadData();
+        loadData(m_gridReader);
     }
 
     // Draw rectangles as 2 triangles
@@ -286,7 +280,7 @@ void OGLWidget::resizeGL(int w, int h)
 void OGLWidget::receiveGridReader(GridReader *gridReader)
 {
     std::cout << "GridReader received" << std::endl;
-    loadData(gridReader);
+    m_gridReader = gridReader;
     m_program = nullptr;
     m_dataAlreadyLoaded = false;
     generateGLProgram();
@@ -296,7 +290,7 @@ void OGLWidget::receiveGridReader(GridReader *gridReader)
 void OGLWidget::receiveGrid(Grid *grid)
 {
     std::cout << "Grid received" << std::endl;
-    loadData(grid);
+    m_grid = grid;
     m_program = nullptr;
     m_dataAlreadyLoaded = false;
     generateGLProgram();
