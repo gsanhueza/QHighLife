@@ -44,8 +44,8 @@ void OGLWidget::setupVertexAttribs()
     // normalized = false, as there's no need to normalize here
     // stride = 0, which implies that vertices are side-to-side (VVVAAA)
     // pointer = where is the start of the data (in VVVAAA, 0 = start of vertices and GL_FLOAT * size(vertexArray) = start of alive status)
-    f->glVertexAttribPointer(0, 2, GL_INT, GL_FALSE, 0, 0);
-    f->glVertexAttribPointer(1, 2, GL_INT, GL_FALSE, 0, reinterpret_cast<void *>(sizeof(int) * m_data.size() / 2));
+    f->glVertexAttribPointer(0, 3, GL_INT, GL_FALSE, 0, 0);
+    f->glVertexAttribPointer(1, 3, GL_INT, GL_FALSE, 0, reinterpret_cast<void *>(sizeof(int) * m_data.size() / 2));
     m_vbo.release();
 }
 
@@ -59,20 +59,22 @@ void OGLWidget::generateGLProgram()
 {
     m_program = new QOpenGLShaderProgram;
     m_program->addShaderFromSourceCode(QOpenGLShader::Vertex,
-        "attribute vec2 vertex;\n"
-        "attribute vec2 alive;\n"
-        "varying vec2 isAlive;\n"
+        "#version 330 core\n"
+        "attribute vec3 vertex;\n"
+        "attribute vec3 alive;\n"
+        "varying vec3 isAlive;\n"
         "uniform mat4 projMatrix;\n"
         "uniform mat4 modelViewMatrix;\n"
         "void main() {\n"
         "   isAlive = alive;"
-        "   gl_Position = projMatrix * modelViewMatrix * vec4(vertex, 0.0, 1.0);\n"
+        "   gl_Position = projMatrix * modelViewMatrix * vec4(vertex, 1.0);\n"
         " }\n"
     );
     m_program->addShaderFromSourceCode(QOpenGLShader::Fragment,
-        "varying vec2 isAlive;\n"
+        "#version 330 core\n"
+        "varying vec3 isAlive;\n"
         "void main() {\n"
-        "   gl_FragColor = vec4(isAlive, 1.0, 1.0);\n"
+        "   gl_FragColor = vec4(isAlive, 1.0);\n"
         "}\n"
     );
     m_program->bindAttributeLocation("vertex", 0);
@@ -119,18 +121,28 @@ void OGLWidget::loadData(GridReader *gridReader)
             // Triangle 1
             m_data.append(i);
             m_data.append(j);
+            m_data.append(0);
+
             m_data.append(i);
             m_data.append(j - 1);
+            m_data.append(0);
+
             m_data.append(i + 1);
             m_data.append(j - 1);
+            m_data.append(0);
 
             // Triangle 2
             m_data.append(i);
             m_data.append(j);
+            m_data.append(0);
+
             m_data.append(i + 1);
             m_data.append(j - 1);
+            m_data.append(0);
+
             m_data.append(i + 1);
             m_data.append(j);
+            m_data.append(0);
         }
     }
 
@@ -142,6 +154,7 @@ void OGLWidget::loadData(GridReader *gridReader)
             for (int k = 0; k < 6; k++)                     // Hack that allow us to map this to each triangle
             {
                 m_data.append(gridReader->getData().at(j).at(i) == QChar('1') ? 1 : 0);
+                m_data.append(0);
                 m_data.append(0);
             }
         }
@@ -175,18 +188,28 @@ void OGLWidget::loadData(Grid *grid)
             // Triangle 1
             m_data.append(i);
             m_data.append(j);
+            m_data.append(0);
+
             m_data.append(i);
             m_data.append(j + 1);
+            m_data.append(0);
+
             m_data.append(i + 1);
             m_data.append(j + 1);
+            m_data.append(0);
 
             // Triangle 2
             m_data.append(i);
             m_data.append(j);
+            m_data.append(0);
+
             m_data.append(i + 1);
             m_data.append(j + 1);
+            m_data.append(0);
+
             m_data.append(i + 1);
             m_data.append(j);
+            m_data.append(0);
         }
     }
 
@@ -199,6 +222,7 @@ void OGLWidget::loadData(Grid *grid)
             {
                 m_data.append(0);
                 m_data.append(grid->getAt(i, j) ? 1 : 0);
+                m_data.append(0);
             }
         }
     }
@@ -213,6 +237,13 @@ void OGLWidget::loadData(Grid *grid)
 
 void OGLWidget::paintGL()
 {
+    for (int i = 0; i < m_data.size() / 2; i += 3)
+    {
+        std::cout << "Triangle (" << m_data.at(i) <<  ", " << m_data.at(i + 1) << ", " << m_data.at(i + 2) << ")" << std::endl;
+        std::cout << "Alive    (" << m_data.at(i + (m_data.size() / 2)) <<  ", " << m_data.at(i + 1 + (m_data.size() / 2)) << ", " << m_data.at(i + 2 + (m_data.size() / 2)) << ")" << std::endl;
+        std::cout << std::endl;
+    }
+
     // Clear screen
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glEnable(GL_DEPTH_TEST);
@@ -240,8 +271,8 @@ void OGLWidget::paintGL()
 //         loadData();
     }
 
-    // Draw rectangles
-    glDrawArrays(GL_TRIANGLES, 0, m_width * m_height * 2);   // Last argument = Number of vertices
+    // Draw rectangles as 2 triangles
+    glDrawArrays(GL_TRIANGLES, 0, m_data.count() / 3);   // Last argument = Number of vertices
 
     m_program->release();
 }
