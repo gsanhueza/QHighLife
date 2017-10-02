@@ -13,7 +13,6 @@ OGLWidget::OGLWidget(QWidget* parent)
       m_zCamPos(-10),
       m_width(0),
       m_height(0),
-      m_dataAlreadyLoaded(true),
       m_grid(nullptr),
       m_gridReader(nullptr)
 {
@@ -167,7 +166,13 @@ void OGLWidget::loadData(GridReader *gridReader)
 
     // Store the vertex attribute bindings for the program.
     setupVertexAttribs();
-    m_dataAlreadyLoaded = true;
+
+    m_xCamPos = m_width / 2;
+    m_yCamPos = -m_height / 2 + 1;
+    m_zCamPos = -std::max(m_width, m_height) - 2;
+    m_camera.setToIdentity();
+    m_camera.translate(-m_xCamPos, -m_yCamPos, m_zCamPos);
+
     update();
 }
 
@@ -235,7 +240,13 @@ void OGLWidget::loadData(Grid *grid)
 
     // Store the vertex attribute bindings for the program.
     setupVertexAttribs();
-    m_dataAlreadyLoaded = true;
+
+    m_xCamPos = m_width / 2;
+    m_yCamPos = -m_height / 2 + 1;
+    m_zCamPos = -std::max(m_width, m_height) - 2;
+    m_camera.setToIdentity();
+    m_camera.translate(-m_xCamPos, -m_yCamPos, m_zCamPos);
+
     update();
 }
 
@@ -259,7 +270,6 @@ void OGLWidget::paintGL()
     m_program->bind();
     m_program->setUniformValue(m_projMatrixLoc, m_proj);
     m_program->setUniformValue(m_modelViewMatrixLoc, m_camera * m_world);
-    m_program->setUniformValue(m_eyePosLoc, QVector3D(m_xCamPos, m_yCamPos, m_zCamPos));
 
     // Load new data only on geometry or shader change
     if (m_gridReader != nullptr)
@@ -281,7 +291,7 @@ void OGLWidget::paintGL()
 void OGLWidget::resizeGL(int w, int h)
 {
     m_proj.setToIdentity();
-    m_proj.perspective(45.0f, GLfloat(w) / h, 0.01f, 100.0f);
+    m_proj.perspective(45.0f, GLfloat(w) / h, 0.01f, 200.0f);
 }
 
 void OGLWidget::receiveGridReader(GridReader *gridReader)
@@ -290,7 +300,6 @@ void OGLWidget::receiveGridReader(GridReader *gridReader)
     m_gridReader = gridReader;
     m_grid = nullptr;
     m_program = nullptr;
-    m_dataAlreadyLoaded = false;
     generateGLProgram();
     update();
 }
@@ -300,7 +309,6 @@ void OGLWidget::receiveGrid(Grid *grid)
     std::cout << "Grid received" << std::endl;
     m_grid = grid;
     m_program = nullptr;
-    m_dataAlreadyLoaded = false;
     generateGLProgram();
     update();
 }
@@ -333,8 +341,9 @@ void OGLWidget::keyPressed(QKeyEvent *event)
         // Reset
         case Qt::Key_Space:
             m_xRot = m_yRot = m_zRot = 0;
-            m_xCamPos = m_yCamPos = 0;
-            m_zCamPos = -10;
+            m_xCamPos = m_width / 2;
+            m_yCamPos = -m_height / 2 + 1;
+            m_zCamPos = -std::max(m_width, m_height) - 2;
         default:
             break;
     }
