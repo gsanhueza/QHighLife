@@ -88,7 +88,13 @@ void OpenCLModel::run()
     highlife_kernel.setArg(3, m_grid->getHeight());
 
     // Execute the kernel
-    queue.enqueueNDRangeKernel( highlife_kernel, cl::NullRange, global, local );
+    try {
+        queue.enqueueNDRangeKernel( highlife_kernel, cl::NullRange, global, local );
+    }
+    catch (cl::Error e)
+    {
+        std::cerr << "Error: " << e.what() << ". Input size is not divisible by kernel range." << std::endl;
+    }
 
     // Copy the output data back to the host
     queue.enqueueReadBuffer( buffer_result, CL_TRUE, 0, m_grid->getWidth() * m_grid->getHeight() * sizeof(bool), host_result );
