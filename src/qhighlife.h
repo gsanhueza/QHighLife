@@ -44,9 +44,12 @@ public:
     */
     ~QHighLife();
 
+    void keyPressEvent(QKeyEvent *event) override;
+
 signals:
     void sendGridReader(GridReader *gridReader);
     void sendGrid(Grid *grid);
+    void keyPressed(QKeyEvent *event);
 
 public slots:
 

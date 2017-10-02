@@ -149,6 +149,7 @@
    <slots>
     <slot>receiveGridReader(GridReader*)</slot>
     <slot>receiveGrid(Grid*)</slot>
+    <slot>keyPressed(QKeyEvent*)</slot>
    </slots>
   </customwidget>
  </customwidgets>
@@ -330,10 +331,27 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>QHighLife</sender>
+   <signal>keyPressed(QKeyEvent*)</signal>
+   <receiver>openGLWidget</receiver>
+   <slot>keyPressed(QKeyEvent*)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>639</x>
+     <y>359</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>639</x>
+     <y>363</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <signal>sendGrid(Grid*)</signal>
   <signal>sendGridReader(GridReader*)</signal>
+  <signal>keyPressed(QKeyEvent*)</signal>
   <slot>loadTutorialClicked()</slot>
   <slot>loadAboutClicked()</slot>
   <slot>loadCPUModelClicked()</slot>

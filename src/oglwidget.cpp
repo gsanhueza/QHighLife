@@ -168,6 +168,7 @@ void OGLWidget::loadData(GridReader *gridReader)
     // Store the vertex attribute bindings for the program.
     setupVertexAttribs();
     m_dataAlreadyLoaded = true;
+    update();
 }
 
 void OGLWidget::loadData(Grid *grid)
@@ -235,6 +236,7 @@ void OGLWidget::loadData(Grid *grid)
     // Store the vertex attribute bindings for the program.
     setupVertexAttribs();
     m_dataAlreadyLoaded = true;
+    update();
 }
 
 void OGLWidget::paintGL()
@@ -311,28 +313,28 @@ void OGLWidget::keyPressed(QKeyEvent *event)
     {
         // Camera movement
         case Qt::Key_Plus:
-            m_zCamPos += 0.1;
+            m_zCamPos += 1;
             break;
         case Qt::Key_Minus:
-            m_zCamPos -= 0.1;
+            m_zCamPos -= 1;
             break;
         case Qt::Key_Left:
-            m_xCamPos -= 0.1;
+            m_xCamPos -= 1;
             break;
         case Qt::Key_Right:
-            m_xCamPos += 0.1;
+            m_xCamPos += 1;
             break;
         case Qt::Key_Up:
-            m_yCamPos += 0.1;
+            m_yCamPos += 1;
             break;
         case Qt::Key_Down:
-            m_yCamPos -= 0.1;
+            m_yCamPos -= 1;
             break;
         // Reset
         case Qt::Key_Space:
             m_xRot = m_yRot = m_zRot = 0;
             m_xCamPos = m_yCamPos = 0;
-            m_zCamPos = -5;
+            m_zCamPos = -10;
         default:
             break;
     }

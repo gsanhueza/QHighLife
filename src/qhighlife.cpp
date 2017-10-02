@@ -139,3 +139,8 @@ void QHighLife::loadRunStressTestClicked()
 
     ui->statusbar->showMessage("Stress implementation has run.");
 }
+
+void QHighLife::keyPressEvent(QKeyEvent *event)
+{
+    emit keyPressed(event);
+}
