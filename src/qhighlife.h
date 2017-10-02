@@ -62,6 +62,8 @@ public:
     */
     ~QHighLife();
 
+    void keyPressEvent(QKeyEvent *event) override;
+
 signals:
     /**
     * @brief Signal that emits a GridReader object when loading a .grid file.
@@ -77,6 +79,7 @@ signals:
     * @param grid p_grid: Grid.
     */
     void sendGrid(Grid *grid);
+    void keyPressed(QKeyEvent *event);
 
 public slots:
 

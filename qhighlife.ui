@@ -171,6 +171,7 @@
    <slots>
     <slot>receiveGridReader(GridReader*)</slot>
     <slot>receiveGrid(Grid*)</slot>
+    <slot>keyPressed(QKeyEvent*)</slot>
    </slots>
   </customwidget>
  </customwidgets>
@@ -420,6 +421,7 @@
  <slots>
   <signal>sendGrid(Grid*)</signal>
   <signal>sendGridReader(GridReader*)</signal>
+  <signal>keyPressed(QKeyEvent*)</signal>
   <slot>loadTutorialClicked()</slot>
   <slot>loadAboutClicked()</slot>
   <slot>loadCPUModelClicked()</slot>

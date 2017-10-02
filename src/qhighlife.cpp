@@ -218,3 +218,8 @@ void QHighLife::loadRunStressTestClickedVariantNon32()
 
     ui->statusbar->showMessage(QString("Stress implementation (variant \"non 32\") has run: %1 iterations in %2 seconds.").arg(iterations).arg(seconds));
 }
+
+void QHighLife::keyPressEvent(QKeyEvent *event)
+{
+    emit keyPressed(event);
+}
