@@ -78,9 +78,6 @@
    </property>
   </action>
   <action name="actionLoadCPUModel">
-   <property name="checkable">
-    <bool>false</bool>
-   </property>
    <property name="enabled">
     <bool>false</bool>
    </property>
@@ -89,9 +86,6 @@
    </property>
   </action>
   <action name="actionLoadCUDAModel">
-   <property name="checkable">
-    <bool>false</bool>
-   </property>
    <property name="enabled">
     <bool>false</bool>
    </property>
@@ -100,9 +94,6 @@
    </property>
   </action>
   <action name="actionLoadOpenCLModel">
-   <property name="checkable">
-    <bool>false</bool>
-   </property>
    <property name="enabled">
     <bool>false</bool>
    </property>
