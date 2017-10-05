@@ -58,8 +58,22 @@
     <property name="title">
      <string>&amp;Run</string>
     </property>
+    <widget class="QMenu" name="menuRunStressTest">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="title">
+      <string>Run &amp;stress test</string>
+     </property>
+     <addaction name="actionOriginalImplementation"/>
+     <addaction name="separator"/>
+     <addaction name="actionVariantIf"/>
+     <addaction name="actionVariantNonIf"/>
+     <addaction name="actionVariant32"/>
+     <addaction name="actionVariantNon32"/>
+    </widget>
     <addaction name="actionRunImplementation"/>
-    <addaction name="actionRunStressTest"/>
+    <addaction name="menuRunStressTest"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuModel"/>
@@ -119,12 +133,29 @@
     <string>&amp;Run implementation</string>
    </property>
   </action>
-  <action name="actionRunStressTest">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
+  <action name="actionVariantIf">
    <property name="text">
-    <string>Run &amp;stress test</string>
+    <string>Variant If</string>
+   </property>
+  </action>
+  <action name="actionVariantNonIf">
+   <property name="text">
+    <string>Variant Non-if</string>
+   </property>
+  </action>
+  <action name="actionVariant32">
+   <property name="text">
+    <string>Variant 32</string>
+   </property>
+  </action>
+  <action name="actionVariantNon32">
+   <property name="text">
+    <string>Variant non-32</string>
+   </property>
+  </action>
+  <action name="actionOriginalImplementation">
+   <property name="text">
+    <string>Original implementation</string>
    </property>
   </action>
  </widget>
@@ -303,10 +334,74 @@
    </hints>
   </connection>
   <connection>
-   <sender>actionRunStressTest</sender>
+   <sender>actionOriginalImplementation</sender>
    <signal>triggered()</signal>
    <receiver>QHighLife</receiver>
    <slot>loadRunStressTestClicked()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>639</x>
+     <y>359</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionVariantIf</sender>
+   <signal>triggered()</signal>
+   <receiver>QHighLife</receiver>
+   <slot>loadRunStressTestClickedVariantIf()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>639</x>
+     <y>359</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionVariantNonIf</sender>
+   <signal>triggered()</signal>
+   <receiver>QHighLife</receiver>
+   <slot>loadRunStressTestClickedVariantNonIf()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>639</x>
+     <y>359</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionVariant32</sender>
+   <signal>triggered()</signal>
+   <receiver>QHighLife</receiver>
+   <slot>loadRunStressTestClickedVariant32()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>639</x>
+     <y>359</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionVariantNon32</sender>
+   <signal>triggered()</signal>
+   <receiver>QHighLife</receiver>
+   <slot>loadRunStressTestClickedVariantNon32()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>
@@ -330,5 +425,9 @@
   <slot>loadGridClicked()</slot>
   <slot>loadRunClicked()</slot>
   <slot>loadRunStressTestClicked()</slot>
+  <slot>loadRunStressTestClickedVariantIf()</slot>
+  <slot>loadRunStressTestClickedVariantNonIf()</slot>
+  <slot>loadRunStressTestClickedVariant32()</slot>
+  <slot>loadRunStressTestClickedVariantNon32()</slot>
  </slots>
 </ui>
