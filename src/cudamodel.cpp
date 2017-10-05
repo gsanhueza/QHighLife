@@ -35,3 +35,23 @@ int CUDAModel::runStressTest(int timeInSeconds)
 {
     return cuda_main_stress(m_grid, timeInSeconds);
 }
+
+int CUDAModel::runStressTestVariantIf(int timeInSeconds)
+{
+    return -1;
+}
+
+int CUDAModel::runStressTestVariantNonIf(int timeInSeconds)
+{
+    return -1;
+}
+
+int CUDAModel::runStressTestVariant32(int timeInSeconds)
+{
+    return -1;
+}
+
+int CUDAModel::runStressTestVariantNon32(int timeInSeconds)
+{
+    return -1;
+}

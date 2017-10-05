@@ -178,3 +178,23 @@ int OpenCLModel::runStressTest(int timeInSeconds)
 
     return iterations;
 }
+
+int OpenCLModel::runStressTestVariantIf(int timeInSeconds)
+{
+    return -1;
+}
+
+int OpenCLModel::runStressTestVariantNonIf(int timeInSeconds)
+{
+    return -1;
+}
+
+int OpenCLModel::runStressTestVariant32(int timeInSeconds)
+{
+    return -1;
+}
+
+int OpenCLModel::runStressTestVariantNon32(int timeInSeconds)
+{
+    return -1;
+}

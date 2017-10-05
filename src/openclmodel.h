@@ -19,6 +19,10 @@ public:
     virtual void setup();
     virtual void run();
     virtual int runStressTest(int timeInSeconds);
+    virtual int runStressTestVariantIf(int timeInSeconds);
+    virtual int runStressTestVariantNonIf(int timeInSeconds);
+    virtual int runStressTestVariant32(int timeInSeconds);
+    virtual int runStressTestVariantNon32(int timeInSeconds);
 
 private:
     int m_platform_id;
