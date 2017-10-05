@@ -181,20 +181,22 @@ int OpenCLModel::runStressTest(int timeInSeconds)
 
 int OpenCLModel::runStressTestVariantIf(int timeInSeconds)
 {
+    // TODO Variante If
     return -15;
 }
 
 int OpenCLModel::runStressTestVariantNonIf(int timeInSeconds)
 {
-    return -25;
+    return runStressTest(timeInSeconds);
 }
 
 int OpenCLModel::runStressTestVariant32(int timeInSeconds)
 {
-    return -35;
+    return runStressTest(timeInSeconds);
 }
 
 int OpenCLModel::runStressTestVariantNon32(int timeInSeconds)
 {
+    // TODO Variante No 32
     return -45;
 }

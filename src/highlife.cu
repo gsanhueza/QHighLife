@@ -219,6 +219,7 @@ int cuda_main_stress(Grid *grid, int timeInSeconds)
 }
 
 // VARIANTS
+// TODO Arreglar variante if en el kernel
 extern "C"
 int cuda_main_stress_if(Grid *grid, int timeInSeconds)
 {
