@@ -48,8 +48,32 @@ __device__ int surroundingAliveCells(bool *grid, int i, int j, int w, int h)
     return NW + N + NE + W + E + SW + S + SE;
 }
 
-// Kernel
+// Kernels
 __global__ void computeHighLife(bool *grid, bool *result, int width, int height)
+{
+    int i = (blockDim.x * blockIdx.x) + threadIdx.x;
+    int j = (blockDim.y * blockIdx.y) + threadIdx.y;
+
+    if (i < width and j < height)                           // Caso no-multiplo de 2
+    {
+        // Not 2 or 3 cells surrounding this alive cell = Cell dies
+        if (grid[getPos(i, j, width)] and not(surroundingAliveCells(grid, i, j, width, height) == 2 or surroundingAliveCells(grid, i, j, width, height) == 3))
+        {
+            result[getPos(i, j, width)] = 0;
+        }
+        // Dead cell surrounded by 3 or 6 cells = Cell revives
+        else if (not grid[getPos(i, j, width)] and (surroundingAliveCells(grid, i, j, width, height) == 3 or surroundingAliveCells(grid, i, j, width, height) == 6))
+        {
+            result[getPos(i, j, width)] = 1;
+        }
+        else{
+            result[getPos(i, j, width)] = grid[getPos(i, j, width)];
+        }
+    }
+}
+
+// TODO Hacer variante if del kernel (Hint: Hacer variante de surroundingAliveCells)
+__global__ void computeHighLifeIf(bool *grid, bool *result, int width, int height)
 {
     int i = (blockDim.x * blockIdx.x) + threadIdx.x;
     int j = (blockDim.y * blockIdx.y) + threadIdx.y;
@@ -144,6 +168,145 @@ int cuda_main(Grid *grid)
 extern "C"
 int cuda_main_stress(Grid *grid, int timeInSeconds)
 {
+    // Data filling
+    for (int j = 0; j < GRID_SIZE.y; j++)
+    {
+        for (int i = 0; i < GRID_SIZE.x; i++)
+        {
+            h_grid[getPos(i, j, GRID_SIZE.x)] = grid->getAt(i, j);
+            h_result[getPos(i, j, GRID_SIZE.x)] = 0;
+        }
+    }
+
+    // Copy vectors from host memory to device memory
+    cudaMemcpy(d_grid, h_grid, GRID_SIZE.x * GRID_SIZE.y * sizeof(bool), cudaMemcpyHostToDevice);
+
+    std::chrono::time_point<std::chrono::high_resolution_clock> m_start = std::chrono::high_resolution_clock::now();
+    std::chrono::time_point<std::chrono::high_resolution_clock> m_end = m_start + std::chrono::seconds(timeInSeconds);
+    int iterations = 0;
+
+    while (std::chrono::high_resolution_clock::now() < m_end)
+    {
+        // Optimization: We expect d_grid to be READONLY, and d_result to be WRITEONLY.
+        // We start with d_grid == d_result.
+        // When we finish the computation once, we (theoretically) want to update d_grid. => d_grid will be the same as d_result.
+        // If we (temporarily) use d_result as d_grid in each second computation, we'll get the same "start".
+        // Thus, our final results will be in d_grid. => We have to copy back d_grid to h_result to get the real result.
+        // With this, we can avoid calling cudaMemcpy every iteration.
+
+        // Send kernel: Results will be in d_result
+        computeHighLife<<< NUM_BLOCKS, THREADS_PER_BLOCK>>>(d_grid, d_result, GRID_SIZE.x, GRID_SIZE.y);
+
+        // Send kernel: Results will be in d_grid
+        computeHighLife<<< NUM_BLOCKS, THREADS_PER_BLOCK>>>(d_result, d_grid, GRID_SIZE.x, GRID_SIZE.y);
+
+        iterations += 2;
+    }
+
+    // Copy results from device memory to host memory (Check note above to see why our results are in d_grid instead of d_result.)
+    cudaMemcpy(h_result, d_grid, GRID_SIZE.x * GRID_SIZE.y * sizeof(bool), cudaMemcpyDeviceToHost);
+
+    // Update grid
+    for (int j = 0; j < GRID_SIZE.y; j++)
+    {
+        for (int i = 0; i < GRID_SIZE.x; i++)
+        {
+            grid->setAt(i, j, h_result[getPos(i, j, GRID_SIZE.x)]);
+        }
+    }
+
+    return iterations;
+}
+
+// VARIANTS
+extern "C"
+int cuda_main_stress_if(Grid *grid, int timeInSeconds)
+{
+    // Data filling
+    for (int j = 0; j < GRID_SIZE.y; j++)
+    {
+        for (int i = 0; i < GRID_SIZE.x; i++)
+        {
+            h_grid[getPos(i, j, GRID_SIZE.x)] = grid->getAt(i, j);
+            h_result[getPos(i, j, GRID_SIZE.x)] = 0;
+        }
+    }
+
+    // Copy vectors from host memory to device memory
+    cudaMemcpy(d_grid, h_grid, GRID_SIZE.x * GRID_SIZE.y * sizeof(bool), cudaMemcpyHostToDevice);
+
+    std::chrono::time_point<std::chrono::high_resolution_clock> m_start = std::chrono::high_resolution_clock::now();
+    std::chrono::time_point<std::chrono::high_resolution_clock> m_end = m_start + std::chrono::seconds(timeInSeconds);
+    int iterations = 0;
+
+    while (std::chrono::high_resolution_clock::now() < m_end)
+    {
+        // Optimization: We expect d_grid to be READONLY, and d_result to be WRITEONLY.
+        // We start with d_grid == d_result.
+        // When we finish the computation once, we (theoretically) want to update d_grid. => d_grid will be the same as d_result.
+        // If we (temporarily) use d_result as d_grid in each second computation, we'll get the same "start".
+        // Thus, our final results will be in d_grid. => We have to copy back d_grid to h_result to get the real result.
+        // With this, we can avoid calling cudaMemcpy every iteration.
+
+        // Send kernel: Results will be in d_result
+        computeHighLifeIf<<< NUM_BLOCKS, THREADS_PER_BLOCK>>>(d_grid, d_result, GRID_SIZE.x, GRID_SIZE.y);
+
+        // Send kernel: Results will be in d_grid
+        computeHighLifeIf<<< NUM_BLOCKS, THREADS_PER_BLOCK>>>(d_result, d_grid, GRID_SIZE.x, GRID_SIZE.y);
+
+        iterations += 2;
+    }
+
+    // Copy results from device memory to host memory (Check note above to see why our results are in d_grid instead of d_result.)
+    cudaMemcpy(h_result, d_grid, GRID_SIZE.x * GRID_SIZE.y * sizeof(bool), cudaMemcpyDeviceToHost);
+
+    // Update grid
+    for (int j = 0; j < GRID_SIZE.y; j++)
+    {
+        for (int i = 0; i < GRID_SIZE.x; i++)
+        {
+            grid->setAt(i, j, h_result[getPos(i, j, GRID_SIZE.x)]);
+        }
+    }
+
+    return iterations;
+}
+
+extern "C"
+int cuda_main_stress_non_if(Grid *grid, int timeInSeconds)
+{
+    return cuda_main_stress(grid, timeInSeconds);
+}
+
+extern "C"
+int cuda_main_stress_32(Grid *grid, int timeInSeconds)
+{
+    return cuda_main_stress(grid, timeInSeconds);
+}
+
+extern "C"
+int cuda_main_stress_non_32(Grid *grid, int timeInSeconds)
+{
+    // 81 threads per block
+    THREADS_PER_BLOCK.x = 9;
+    THREADS_PER_BLOCK.y = 9;
+
+    // Set block dimensions
+    NUM_BLOCKS.x = (GRID_SIZE.x + THREADS_PER_BLOCK.x - 1) / THREADS_PER_BLOCK.x;
+    NUM_BLOCKS.y = (GRID_SIZE.y + THREADS_PER_BLOCK.y - 1) / THREADS_PER_BLOCK.y;
+
+    // Host data
+    h_grid   = new bool[GRID_SIZE.x * GRID_SIZE.y];
+    h_result = new bool[GRID_SIZE.x * GRID_SIZE.y];
+
+    // Revert Device data from setup()
+    cudaFree(&d_grid);
+    cudaFree(&d_result);
+
+    // Device data
+    cudaMalloc(&d_grid, GRID_SIZE.x * GRID_SIZE.y * sizeof(bool));
+    cudaMalloc(&d_result, GRID_SIZE.x * GRID_SIZE.y * sizeof(bool));
+
     // Data filling
     for (int j = 0; j < GRID_SIZE.y; j++)
     {
