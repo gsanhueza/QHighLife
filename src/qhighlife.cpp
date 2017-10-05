@@ -172,7 +172,7 @@ void QHighLife::loadRunStressTestClickedVariantIf()
     ui->statusbar->showMessage("Stress implementation (variant \"if\") is running.");
 
     int seconds = 10;
-    int processedCells = m_model->runStressTestVariantIf(seconds);   // FIXME Nueva variante
+    int processedCells = m_model->runStressTestVariantIf(seconds);
     out << processedCells << " iterations in " << seconds << " seconds." << endl;
 
     emit sendGrid(m_model->getGrid());
@@ -185,7 +185,7 @@ void QHighLife::loadRunStressTestClickedVariantNonIf()
     ui->statusbar->showMessage("Stress implementation (variant \"non if\") is running.");
 
     int seconds = 10;
-    int processedCells = m_model->runStressTestVariantNonIf(seconds);   // FIXME Nueva variante
+    int processedCells = m_model->runStressTestVariantNonIf(seconds);
     out << processedCells << " iterations in " << seconds << " seconds." << endl;
 
     emit sendGrid(m_model->getGrid());
@@ -198,7 +198,7 @@ void QHighLife::loadRunStressTestClickedVariant32()
     ui->statusbar->showMessage("Stress implementation (variant \"32\") is running.");
 
     int seconds = 10;
-    int processedCells = m_model->runStressTestVariant32(seconds);   // FIXME Nueva variante
+    int processedCells = m_model->runStressTestVariant32(seconds);
     out << processedCells << " iterations in " << seconds << " seconds." << endl;
 
     emit sendGrid(m_model->getGrid());
@@ -211,7 +211,7 @@ void QHighLife::loadRunStressTestClickedVariantNon32()
     ui->statusbar->showMessage("Stress implementation (variant \"non 32\") is running.");
 
     int seconds = 10;
-    int processedCells = m_model->runStressTestVariantNon32(seconds);   // FIXME Nueva variante
+    int processedCells = m_model->runStressTestVariantNon32(seconds);
     out << processedCells << " iterations in " << seconds << " seconds." << endl;
 
     emit sendGrid(m_model->getGrid());

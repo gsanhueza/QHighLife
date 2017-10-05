@@ -48,6 +48,42 @@ __device__ int surroundingAliveCells(bool *grid, int i, int j, int w, int h)
     return NW + N + NE + W + E + SW + S + SE;
 }
 
+__device__ int surroundingAliveCellsIf(bool *grid, int i, int j, int w, int h)
+{
+    int count = 0;
+    // Positions
+    int Nx = i;
+    int Ex = (i + 1) % w;
+    int Sx = i;
+    int Wx = (i + w - 1) % w;
+
+    int Ny = (j + h - 1) % h;
+    int Ey = j;
+    int Sy = (j + 1) % h;
+    int Wy = j;
+
+    // Cell values
+    if (grid[getPos(Nx, Ny, w)])
+        count++;
+    if (grid[getPos(Ex, Ey, w)])
+        count++;
+    if (grid[getPos(Sx, Sy, w)])
+        count++;
+    if (grid[getPos(Wx, Wy, w)])
+        count++;
+
+    if (grid[getPos(Wx, Ny, w)])
+        count++;
+    if (grid[getPos(Ex, Ny, w)])
+        count++;
+    if (grid[getPos(Wx, Sy, w)])
+        count++;
+    if (grid[getPos(Ex, Sy, w)])
+        count++;
+
+    return count;
+}
+
 // Kernels
 __global__ void computeHighLife(bool *grid, bool *result, int width, int height)
 {
@@ -72,7 +108,6 @@ __global__ void computeHighLife(bool *grid, bool *result, int width, int height)
     }
 }
 
-// TODO Hacer variante if del kernel (Hint: Hacer variante de surroundingAliveCells)
 __global__ void computeHighLifeIf(bool *grid, bool *result, int width, int height)
 {
     int i = (blockDim.x * blockIdx.x) + threadIdx.x;
@@ -81,12 +116,12 @@ __global__ void computeHighLifeIf(bool *grid, bool *result, int width, int heigh
     if (i < width and j < height)                           // Caso no-multiplo de 2
     {
         // Not 2 or 3 cells surrounding this alive cell = Cell dies
-        if (grid[getPos(i, j, width)] and not(surroundingAliveCells(grid, i, j, width, height) == 2 or surroundingAliveCells(grid, i, j, width, height) == 3))
+        if (grid[getPos(i, j, width)] and not(surroundingAliveCellsIf(grid, i, j, width, height) == 2 or surroundingAliveCellsIf(grid, i, j, width, height) == 3))
         {
             result[getPos(i, j, width)] = 0;
         }
         // Dead cell surrounded by 3 or 6 cells = Cell revives
-        else if (not grid[getPos(i, j, width)] and (surroundingAliveCells(grid, i, j, width, height) == 3 or surroundingAliveCells(grid, i, j, width, height) == 6))
+        else if (not grid[getPos(i, j, width)] and (surroundingAliveCellsIf(grid, i, j, width, height) == 3 or surroundingAliveCellsIf(grid, i, j, width, height) == 6))
         {
             result[getPos(i, j, width)] = 1;
         }
@@ -219,7 +254,6 @@ int cuda_main_stress(Grid *grid, int timeInSeconds)
 }
 
 // VARIANTS
-// TODO Arreglar variante if en el kernel
 extern "C"
 int cuda_main_stress_if(Grid *grid, int timeInSeconds)
 {
