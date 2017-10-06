@@ -92,18 +92,20 @@ __global__ void computeHighLife(bool *grid, bool *result, int width, int height)
 
     if (i < width and j < height)                           // Caso no-multiplo de 2
     {
+        bool currentCell = grid[getPos(i, j, width)];
+        int surroundingAliveCellsNumber = surroundingAliveCells(grid, i, j, width, height);
         // Not 2 or 3 cells surrounding this alive cell = Cell dies
-        if (grid[getPos(i, j, width)] and not(surroundingAliveCells(grid, i, j, width, height) == 2 or surroundingAliveCells(grid, i, j, width, height) == 3))
+        if (currentCell and not(surroundingAliveCellsNumber == 2 or surroundingAliveCellsNumber == 3))
         {
             result[getPos(i, j, width)] = 0;
         }
         // Dead cell surrounded by 3 or 6 cells = Cell revives
-        else if (not grid[getPos(i, j, width)] and (surroundingAliveCells(grid, i, j, width, height) == 3 or surroundingAliveCells(grid, i, j, width, height) == 6))
+        else if (not currentCell and (surroundingAliveCellsNumber == 3 or surroundingAliveCellsNumber == 6))
         {
             result[getPos(i, j, width)] = 1;
         }
         else{
-            result[getPos(i, j, width)] = grid[getPos(i, j, width)];
+            result[getPos(i, j, width)] = currentCell;
         }
     }
 }
