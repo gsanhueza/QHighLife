@@ -32,6 +32,42 @@ int surroundingAliveCells(global bool *grid, int i, int j, int w, int h)
     return NW + N + NE + W + E + SW + S + SE;
 }
 
+int surroundingAliveCellsIf(global bool *grid, int i, int j, int w, int h)
+{
+    int count = 0;
+    // Positions
+    int Nx = i;
+    int Ex = (i + 1) % w;
+    int Sx = i;
+    int Wx = (i + w - 1) % w;
+
+    int Ny = (j + h - 1) % h;
+    int Ey = j;
+    int Sy = (j + 1) % h;
+    int Wy = j;
+
+    // Cell values
+    if (grid[getPos(Nx, Ny, w)])
+        count++;
+    if (grid[getPos(Ex, Ey, w)])
+        count++;
+    if (grid[getPos(Sx, Sy, w)])
+        count++;
+    if (grid[getPos(Wx, Wy, w)])
+        count++;
+
+    if (grid[getPos(Wx, Ny, w)])
+        count++;
+    if (grid[getPos(Ex, Ny, w)])
+        count++;
+    if (grid[getPos(Wx, Sy, w)])
+        count++;
+    if (grid[getPos(Ex, Sy, w)])
+        count++;
+
+    return count;
+}
+
 // Kernel
 kernel void computeHighLife(global bool *grid, global bool *result, int width, int height)
 {
@@ -46,24 +82,32 @@ kernel void computeHighLife(global bool *grid, global bool *result, int width, i
 
     if (i < width && j < height)                            // Iterate only over our data
     {
+        bool currentCell = grid[getPos(i, j, width)];
+        int surroundingAliveCellsNumber = surroundingAliveCells(grid, i, j, width, height);
+
+        bool a = currentCell;
+        bool b = surroundingAliveCellsNumber == 2;
+        bool c = surroundingAliveCellsNumber == 3;
+        bool d = surroundingAliveCellsNumber == 6;
+
         // Not 2 or 3 cells surrounding this alive cell = Cell dies
-        if (grid[getPos(i, j, width)] && !(surroundingAliveCells(grid, i, j, width, height) == 2 || surroundingAliveCells(grid, i, j, width, height) == 3))
+        if (a && !(b || c))
         {
             result[getPos(i, j, width)] = 0;
         }
         // Dead cell surrounded by 3 or 6 cells = Cell revives
-        else if (!grid[getPos(i, j, width)] && (surroundingAliveCells(grid, i, j, width, height) == 3 || surroundingAliveCells(grid, i, j, width, height) == 6))
+        else if (!a && (c || d))
         {
             result[getPos(i, j, width)] = 1;
         }
-        else{
-            result[getPos(i, j, width)] = grid[getPos(i, j, width)];
+        else
+        {
+            result[getPos(i, j, width)] = a;
         }
     }
 }
 
 // Kernel
-// FIXME Arreglar para que use el if (Hint: fixear surroundingAliveCells)
 kernel void computeHighLifeIf(global bool *grid, global bool *result, int width, int height)
 {
     //     int i = (blockDim.x * blockIdx.x) + threadIdx.x; // CUDA Style
@@ -77,18 +121,27 @@ kernel void computeHighLifeIf(global bool *grid, global bool *result, int width,
 
     if (i < width && j < height)                            // Iterate only over our data
     {
+        bool currentCell = grid[getPos(i, j, width)];
+        int surroundingAliveCellsNumber = surroundingAliveCellsIf(grid, i, j, width, height);
+
+        bool a = currentCell;
+        bool b = surroundingAliveCellsNumber == 2;
+        bool c = surroundingAliveCellsNumber == 3;
+        bool d = surroundingAliveCellsNumber == 6;
+
         // Not 2 or 3 cells surrounding this alive cell = Cell dies
-        if (grid[getPos(i, j, width)] && !(surroundingAliveCells(grid, i, j, width, height) == 2 || surroundingAliveCells(grid, i, j, width, height) == 3))
+        if (a && !(b || c))
         {
             result[getPos(i, j, width)] = 0;
         }
         // Dead cell surrounded by 3 or 6 cells = Cell revives
-        else if (!grid[getPos(i, j, width)] && (surroundingAliveCells(grid, i, j, width, height) == 3 || surroundingAliveCells(grid, i, j, width, height) == 6))
+        else if (!a && (c || d))
         {
             result[getPos(i, j, width)] = 1;
         }
-        else{
-            result[getPos(i, j, width)] = grid[getPos(i, j, width)];
+        else
+        {
+            result[getPos(i, j, width)] = a;
         }
     }
 }

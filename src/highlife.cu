@@ -51,6 +51,7 @@ __device__ int surroundingAliveCells(bool *grid, int i, int j, int w, int h)
 __device__ int surroundingAliveCellsIf(bool *grid, int i, int j, int w, int h)
 {
     int count = 0;
+
     // Positions
     int Nx = i;
     int Ex = (i + 1) % w;
@@ -90,22 +91,29 @@ __global__ void computeHighLife(bool *grid, bool *result, int width, int height)
     int i = (blockDim.x * blockIdx.x) + threadIdx.x;
     int j = (blockDim.y * blockIdx.y) + threadIdx.y;
 
-    if (i < width and j < height)                           // Caso no-multiplo de 2
+    if (i < width and j < height)                           // Inside the matrix
     {
         bool currentCell = grid[getPos(i, j, width)];
         int surroundingAliveCellsNumber = surroundingAliveCells(grid, i, j, width, height);
+
+        bool a = currentCell;
+        bool b = surroundingAliveCellsNumber == 2;
+        bool c = surroundingAliveCellsNumber == 3;
+        bool d = surroundingAliveCellsNumber == 6;
+
         // Not 2 or 3 cells surrounding this alive cell = Cell dies
-        if (currentCell and not(surroundingAliveCellsNumber == 2 or surroundingAliveCellsNumber == 3))
+        if (a and not (b or c))
         {
             result[getPos(i, j, width)] = 0;
         }
         // Dead cell surrounded by 3 or 6 cells = Cell revives
-        else if (not currentCell and (surroundingAliveCellsNumber == 3 or surroundingAliveCellsNumber == 6))
+        else if (not a and (c or d))
         {
             result[getPos(i, j, width)] = 1;
         }
-        else{
-            result[getPos(i, j, width)] = currentCell;
+        else
+        {
+            result[getPos(i, j, width)] = a;
         }
     }
 }
@@ -115,20 +123,29 @@ __global__ void computeHighLifeIf(bool *grid, bool *result, int width, int heigh
     int i = (blockDim.x * blockIdx.x) + threadIdx.x;
     int j = (blockDim.y * blockIdx.y) + threadIdx.y;
 
-    if (i < width and j < height)                           // Caso no-multiplo de 2
+    if (i < width and j < height)                           // Inside the matrix
     {
+        bool currentCell = grid[getPos(i, j, width)];
+        int surroundingAliveCellsNumber = surroundingAliveCellsIf(grid, i, j, width, height);
+
+        bool a = currentCell;
+        bool b = surroundingAliveCellsNumber == 2;
+        bool c = surroundingAliveCellsNumber == 3;
+        bool d = surroundingAliveCellsNumber == 6;
+
         // Not 2 or 3 cells surrounding this alive cell = Cell dies
-        if (grid[getPos(i, j, width)] and not(surroundingAliveCellsIf(grid, i, j, width, height) == 2 or surroundingAliveCellsIf(grid, i, j, width, height) == 3))
+        if (a and not (b or c))
         {
             result[getPos(i, j, width)] = 0;
         }
         // Dead cell surrounded by 3 or 6 cells = Cell revives
-        else if (not grid[getPos(i, j, width)] and (surroundingAliveCellsIf(grid, i, j, width, height) == 3 or surroundingAliveCellsIf(grid, i, j, width, height) == 6))
+        else if (not a and (c or d))
         {
             result[getPos(i, j, width)] = 1;
         }
-        else{
-            result[getPos(i, j, width)] = grid[getPos(i, j, width)];
+        else
+        {
+            result[getPos(i, j, width)] = a;
         }
     }
 }
