@@ -278,7 +278,7 @@ int OpenCLModel::runStressTestVariantNon32(int timeInSeconds)
 
     // Set kernel dimensions
     cl::NDRange global( m_grid->getWidth(), m_grid->getHeight() );
-    cl::NDRange local( 8, 8 );                              // FIXME Cambiar aqui para el no-32: 64 workitems per workgroup
+    cl::NDRange local( 9, 8 );                              // 72 workitems per workgroup
 
     std::chrono::time_point<std::chrono::high_resolution_clock> m_start = std::chrono::high_resolution_clock::now();
     std::chrono::time_point<std::chrono::high_resolution_clock> m_end = m_start + std::chrono::seconds(timeInSeconds);
@@ -300,7 +300,14 @@ int OpenCLModel::runStressTestVariantNon32(int timeInSeconds)
         highlife_kernel.setArg(3, m_grid->getHeight());
 
         // Execute the kernel, part 1
-        queue.enqueueNDRangeKernel( highlife_kernel, cl::NullRange, global, local );
+        try {
+            queue.enqueueNDRangeKernel( highlife_kernel, cl::NullRange, global, local );
+          }
+        catch (cl::Error e)
+        {
+            std::cerr << "Error: " << e.what() << ". Input size is not divisible by kernel range." << std::endl;
+            break;
+        }
 
         // Set the kernel arguments, part 2
         highlife_kernel.setArg(0, buffer_result);
@@ -309,7 +316,14 @@ int OpenCLModel::runStressTestVariantNon32(int timeInSeconds)
         highlife_kernel.setArg(3, m_grid->getHeight());
 
         // Execute the kernel, part 2
-        queue.enqueueNDRangeKernel( highlife_kernel, cl::NullRange, global, local );
+        try {
+            queue.enqueueNDRangeKernel( highlife_kernel, cl::NullRange, global, local );
+          }
+        catch (cl::Error e)
+        {
+            std::cerr << "Error: " << e.what() << ". Input size is not divisible by kernel range." << std::endl;
+            break;
+        }
 
         iterations += 2;
     }
