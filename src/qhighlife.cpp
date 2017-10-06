@@ -40,7 +40,13 @@ void QHighLife::loadGridClicked()
         ui->actionLoadCUDAModel->setEnabled(true);
         ui->actionLoadOpenCLModel->setEnabled(true);
         ui->actionRunImplementation->setDisabled(true);
-        ui->actionRunStressTest->setDisabled(true);
+
+        ui->menuRunStressTest->setDisabled(true);
+        ui->actionOriginalImplementation->setDisabled(true);
+        ui->actionVariantIf->setDisabled(true);
+        ui->actionVariantNonIf->setDisabled(true);
+        ui->actionVariant32->setDisabled(true);
+        ui->actionVariantNon32->setDisabled(true);
 
         emit sendGridReader(&m_gridreader);
     }
@@ -51,7 +57,13 @@ void QHighLife::loadGridClicked()
         ui->actionLoadCUDAModel->setDisabled(true);
         ui->actionLoadOpenCLModel->setDisabled(true);
         ui->actionRunImplementation->setDisabled(true);
-        ui->actionRunStressTest->setDisabled(true);
+
+        ui->menuRunStressTest->setDisabled(true);
+        ui->actionOriginalImplementation->setDisabled(true);
+        ui->actionVariantIf->setDisabled(true);
+        ui->actionVariantNonIf->setDisabled(true);
+        ui->actionVariant32->setDisabled(true);
+        ui->actionVariantNon32->setDisabled(true);
     }
 }
 
@@ -69,8 +81,13 @@ void QHighLife::loadCPUModelClicked()
 
     emit sendGrid(m_model->getGrid());
 
+    ui->menuRunStressTest->setEnabled(true);
     ui->actionRunImplementation->setEnabled(true);
-    ui->actionRunStressTest->setEnabled(true);
+    ui->actionOriginalImplementation->setEnabled(true);
+    ui->actionVariantIf->setDisabled(true);
+    ui->actionVariantNonIf->setDisabled(true);
+    ui->actionVariant32->setDisabled(true);
+    ui->actionVariantNon32->setDisabled(true);
 }
 
 void QHighLife::loadCUDAModelClicked()
@@ -87,8 +104,13 @@ void QHighLife::loadCUDAModelClicked()
 
     emit sendGrid(m_model->getGrid());
 
+    ui->menuRunStressTest->setEnabled(true);
     ui->actionRunImplementation->setEnabled(true);
-    ui->actionRunStressTest->setEnabled(true);
+    ui->actionOriginalImplementation->setEnabled(true);
+    ui->actionVariantIf->setEnabled(true);
+    ui->actionVariantNonIf->setEnabled(true);
+    ui->actionVariant32->setEnabled(true);
+    ui->actionVariantNon32->setEnabled(true);
 }
 
 void QHighLife::loadOpenCLModelClicked()
@@ -105,8 +127,13 @@ void QHighLife::loadOpenCLModelClicked()
 
     emit sendGrid(m_model->getGrid());
 
+    ui->menuRunStressTest->setEnabled(true);
     ui->actionRunImplementation->setEnabled(true);
-    ui->actionRunStressTest->setEnabled(true);
+    ui->actionOriginalImplementation->setEnabled(true);
+    ui->actionVariantIf->setEnabled(true);
+    ui->actionVariantNonIf->setEnabled(true);
+    ui->actionVariant32->setEnabled(true);
+    ui->actionVariantNon32->setEnabled(true);
 }
 
 void QHighLife::loadTutorialClicked()
@@ -138,4 +165,56 @@ void QHighLife::loadRunStressTestClicked()
     emit sendGrid(m_model->getGrid());
 
     ui->statusbar->showMessage("Stress implementation has run.");
+}
+
+void QHighLife::loadRunStressTestClickedVariantIf()
+{
+    ui->statusbar->showMessage("Stress implementation (variant \"if\") is running.");
+
+    int seconds = 10;
+    int processedCells = m_model->runStressTestVariantIf(seconds);
+    out << processedCells << " iterations in " << seconds << " seconds." << endl;
+
+    emit sendGrid(m_model->getGrid());
+
+    ui->statusbar->showMessage("Stress implementation (variant \"if\") has run.");
+}
+
+void QHighLife::loadRunStressTestClickedVariantNonIf()
+{
+    ui->statusbar->showMessage("Stress implementation (variant \"non if\") is running.");
+
+    int seconds = 10;
+    int processedCells = m_model->runStressTestVariantNonIf(seconds);
+    out << processedCells << " iterations in " << seconds << " seconds." << endl;
+
+    emit sendGrid(m_model->getGrid());
+
+    ui->statusbar->showMessage("Stress implementation (variant \"non if\") has run.");
+}
+
+void QHighLife::loadRunStressTestClickedVariant32()
+{
+    ui->statusbar->showMessage("Stress implementation (variant \"32\") is running.");
+
+    int seconds = 10;
+    int processedCells = m_model->runStressTestVariant32(seconds);
+    out << processedCells << " iterations in " << seconds << " seconds." << endl;
+
+    emit sendGrid(m_model->getGrid());
+
+    ui->statusbar->showMessage("Stress implementation (variant \"32\") has run.");
+}
+
+void QHighLife::loadRunStressTestClickedVariantNon32()
+{
+    ui->statusbar->showMessage("Stress implementation (variant \"non 32\") is running.");
+
+    int seconds = 10;
+    int processedCells = m_model->runStressTestVariantNon32(seconds);
+    out << processedCells << " iterations in " << seconds << " seconds." << endl;
+
+    emit sendGrid(m_model->getGrid());
+
+    ui->statusbar->showMessage("Stress implementation (variant \"non 32\") has run.");
 }

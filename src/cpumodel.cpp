@@ -57,6 +57,26 @@ int CPUModel::runStressTest(int timeInSeconds)
     return iterations;
 }
 
+int CPUModel::runStressTestVariantIf(int timeInSeconds)
+{
+    return -1;
+}
+
+int CPUModel::runStressTestVariantNonIf(int timeInSeconds)
+{
+    return -1;
+}
+
+int CPUModel::runStressTestVariant32(int timeInSeconds)
+{
+    return -1;
+}
+
+int CPUModel::runStressTestVariantNon32(int timeInSeconds)
+{
+    return -1;
+}
+
 int CPUModel::surroundingAliveCells(int i, int j)
 {
     int h = m_grid->getHeight();

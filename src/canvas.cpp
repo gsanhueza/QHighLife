@@ -33,7 +33,7 @@ void Canvas::doPainting()
                 for (int i = 0; i < m_data.at(j).size(); i++)
                 {
                     Qt::GlobalColor color = (m_data.at(j).at(i) == QChar('1')) ? Qt::red : Qt::black;
-                    painter.fillRect(i * m_cellWidth, j * m_cellHeight, m_cellWidth, m_cellHeight, color);
+                    painter.fillRect(i * m_cellWidth, j * m_cellHeight, m_cellWidth - 0.1, m_cellHeight - 0.1, color);
                 }
             }
         }
@@ -46,7 +46,7 @@ void Canvas::doPainting()
             for (int i = 0; i < m_grid->getWidth(); i++)
             {
                 Qt::GlobalColor color = (m_grid->getAt(i, j)) ? Qt::green : Qt::darkGray;
-                painter.fillRect(i * m_cellWidth, j * m_cellHeight, m_cellWidth, m_cellHeight, color);
+                painter.fillRect(i * m_cellWidth, j * m_cellHeight, m_cellWidth - 0.1, m_cellHeight - 0.1, color);
             }
         }
     }

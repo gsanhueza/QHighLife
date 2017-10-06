@@ -98,6 +98,14 @@ public slots:
      */
     void loadRunStressTestClicked();
 
+    void loadRunStressTestClickedVariantIf();
+
+    void loadRunStressTestClickedVariantNonIf();
+
+    void loadRunStressTestClickedVariant32();
+
+    void loadRunStressTestClickedVariantNon32();
+
 private:
     Ui::QHighLife *ui;
     Tutorial *m_tutorial;
