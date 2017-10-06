@@ -63,65 +63,93 @@ public:
     ~QHighLife();
 
 signals:
+    /**
+    * @brief Signal that emits a GridReader object when loading a .grid file.
+    *
+    * @param gridReader p_gridReader: GridReader.
+    */
     void sendGridReader(GridReader *gridReader);
+
+    /**
+    * @brief Signal that emits a Grid object when an implementation has been
+    * selected, or the grid has been updated.
+    *
+    * @param grid p_grid: Grid.
+    */
     void sendGrid(Grid *grid);
 
 public slots:
 
     /**
-     * @brief Receiver of a Qt signal when the Help -> Tutorial action is clicked in the window.
-     *
-     */
+    * @brief Receiver of a Qt signal when the Help -> Tutorial action is clicked in the window.
+    *
+    */
     void loadTutorialClicked();
 
     /**
-     * @brief Receiver of a Qt signal when the Help -> About action is clicked in the window.
-     *
-     */
+    * @brief Receiver of a Qt signal when the Help -> About action is clicked in the window.
+    *
+    */
     void loadAboutClicked();
 
     /**
-     * @brief Receiver of a Qt signal when the File -> Load Grid action is clicked in the window.
-     *
-     */
+    * @brief Receiver of a Qt signal when the File -> Load Grid action is clicked in the window.
+    *
+    */
     void loadGridClicked();
 
     /**
-     * @brief Receiver of a Qt signal when the Model -> Load CPU Model action is clicked in the window.
-     *
-     */
+    * @brief Receiver of a Qt signal when the Model -> Load CPU Model action is clicked in the window.
+    *
+    */
     void loadCPUModelClicked();
 
     /**
-     * @brief Receiver of a Qt signal when the Model -> Load CUDA Model action is clicked in the window.
-     *
-     */
+    * @brief Receiver of a Qt signal when the Model -> Load CUDA Model action is clicked in the window.
+    *
+    */
     void loadCUDAModelClicked();
 
     /**
-     * @brief Receiver of a Qt signal when the Model -> Load OpenCL Model action is clicked in the window.
-     *
-     */
+    * @brief Receiver of a Qt signal when the Model -> Load OpenCL Model action is clicked in the window.
+    *
+    */
     void loadOpenCLModelClicked();
 
     /**
-     * @brief Receiver of a Qt signal when the Run -> Run implementation action is clicked in the window.
-     *
-     */
+    * @brief Receiver of a Qt signal when the Run -> Run implementation action is clicked in the window.
+    *
+    */
     void loadRunClicked();
 
     /**
-     * @brief Receiver of a Qt signal when the Run -> Run stress test action is clicked in the window.
-     *
-     */
+    * @brief Receiver of a Qt signal when the Run -> Run stress test -> Original Implementation action is clicked in the window.
+    *
+    */
     void loadRunStressTestClicked();
 
+    /**
+    * @brief Receiver of a Qt signal when the Run -> Run stress test -> Variant If action is clicked in the window.
+    *
+    */
     void loadRunStressTestClickedVariantIf();
 
+    /**
+    * @brief Receiver of a Qt signal when the Run -> Run stress test -> Variant Non If action is clicked in the window.
+    *
+    */
     void loadRunStressTestClickedVariantNonIf();
 
+    /**
+    * @brief Receiver of a Qt signal when the Run -> Run stress test -> Variant 32 action is clicked in the window.
+    *
+    */
     void loadRunStressTestClickedVariant32();
 
+    /**
+    * @brief Receiver of a Qt signal when the Run -> Run stress test -> Variant Non 32 action is clicked in the window.
+    *
+    */
     void loadRunStressTestClickedVariantNon32();
 
 private:
