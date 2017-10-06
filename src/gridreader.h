@@ -32,9 +32,33 @@ public:
     GridReader();
     ~GridReader();
 
+    /**
+    * @brief Loads a .grid file so it can be updated in the model.
+    *
+    * @param filepath p_filepath: File path of the grid file.
+    * @return bool True if correctly loaded.
+    */
     bool loadFile(QString filepath);
+
+    /**
+    * @brief Returns the detected width of the grid in the file.
+    *
+    * @return int Width.
+    */
     int getDetectedWidth() const;
+
+    /**
+    * @brief Returns the detected height of the grid in the file.
+    *
+    * @return int Height.
+    */
     int getDetectedHeight() const;
+
+    /**
+    * @brief Returns the loaded data.
+    *
+    * @return QVector< QString > A vector of strings, each one of them is a row of the grid.
+    */
     QVector<QString> getData() const;
 
 private:

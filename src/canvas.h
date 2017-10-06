@@ -34,14 +34,42 @@ public:
     ~Canvas();
 
 public slots:
+    /**
+    * @brief Slot that receives a GridReader object when loading a .grid file.
+    *
+    * @param gridReader p_gridReader: GridReader.
+    */
     void receiveGridReader(GridReader *gridReader);
+
+    /**
+    * @brief Slot that receives a Grid object when an implementation has been
+    * selected, or the grid has been updated.
+    *
+    * @param grid p_grid:...
+    */
     void receiveGrid(Grid *grid);
 
 protected:
+    /**
+    * @brief Overriden method that calls the private doPainting() method.
+    *
+    * @param e p_e: Unused event.
+    */
     void paintEvent(QPaintEvent *e) override;
+
+    /**
+    * @brief Overriden method that updates the grid size on the screen when the
+    * window is resized.
+    *
+    * @param event p_event: Unused event.
+    */
     void resizeEvent(QResizeEvent *event) override;
 
 private:
+    /**
+    * @brief Painting method that writes the grid to the screen.
+    *
+    */
     void doPainting();
 
     QVector<QString> m_data;

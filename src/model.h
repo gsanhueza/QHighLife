@@ -31,14 +31,67 @@ public:
     Model(int width, int height);
     virtual ~Model();
 
+    /**
+    * @brief Setups the model (loads the grid in the model).
+    *
+    */
     virtual void setup() = 0;
+
+    /**
+    * @brief Runs the implementation.
+    *
+    */
     virtual void run() = 0;
+
+    /**
+    * @brief Runs the original implementation for the stress test.
+    *
+    * @param timeInSeconds p_timeInSeconds: Amount of seconds for the stress test.
+    */
     virtual int runStressTest(int timeInSeconds) = 0;
+
+    /**
+    * @brief Runs the "Variant If" implementation for the stress test.
+    *
+    * @param timeInSeconds p_timeInSeconds: Amount of seconds for the stress test.
+    */
     virtual int runStressTestVariantIf(int timeInSeconds) = 0;
+
+    /**
+    * @brief Runs the "Variant Non If" implementation for the stress test.
+    * In this case, it's the original implementation.
+    *
+    * @param timeInSeconds p_timeInSeconds: Amount of seconds for the stress test.
+    */
     virtual int runStressTestVariantNonIf(int timeInSeconds) = 0;
+
+    /**
+    * @brief Runs the "Variant 32" implementation for the stress test.
+    * In this case, it's the original implementation.
+    *
+    * @param timeInSeconds p_timeInSeconds: Amount of seconds for the stress test.
+    */
     virtual int runStressTestVariant32(int timeInSeconds) = 0;
+
+    /**
+    * @brief Runs the "Variant Non 32" implementation for the stress test.
+    *
+    * @param timeInSeconds p_timeInSeconds: Amount of seconds for the stress test.
+    */
     virtual int runStressTestVariantNon32(int timeInSeconds) = 0;
+
+    /**
+    * @brief Sets the grid with the loaded data in data.
+    *
+    * @param data p_data: Each row of the loaded grid.
+    */
     virtual void setLoadedGrid(QVector<QString> data);
+
+    /**
+    * @brief Returns the current grid.
+    *
+    * @return Grid* Current grid.
+    */
     Grid* getGrid();
 
     Grid *m_grid;
