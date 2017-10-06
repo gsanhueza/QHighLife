@@ -23,18 +23,27 @@ void CPUModel::run()
     {
         for (int i = 0; i < m_grid->getWidth(); i++)
         {
+            bool currentCell = m_grid->getAt(i, j);
+            int surroundingAliveCellsNumber = surroundingAliveCells(i, j);
+
+            bool a = currentCell;
+            bool b = surroundingAliveCellsNumber == 2;
+            bool c = surroundingAliveCellsNumber == 3;
+            bool d = surroundingAliveCellsNumber == 6;
+
             // Not 2 or 3 cells surrounding this alive cell = Cell dies
-            if (m_grid->getAt(i, j) and not (surroundingAliveCells(i, j) == 2 or surroundingAliveCells(i, j) == 3))
+            if (a && !(b || c))
             {
                 m_result->setAt(i, j, false);
             }
             // Dead cell surrounded by 3 or 6 cells = Cell revives
-            else if (not m_grid->getAt(i, j) and (surroundingAliveCells(i, j) == 3 or surroundingAliveCells(i, j) == 6))
+            else if (!a && (c || d))
             {
                 m_result->setAt(i, j, true);
             }
-            else {
-                m_result->setAt(i, j, m_grid->getAt(i, j));
+            else
+            {
+                m_result->setAt(i, j, a);
             }
         }
     }
@@ -59,21 +68,25 @@ int CPUModel::runStressTest(int timeInSeconds)
 
 int CPUModel::runStressTestVariantIf(int timeInSeconds)
 {
+    Q_UNUSED(timeInSeconds);
     return -1;
 }
 
 int CPUModel::runStressTestVariantNonIf(int timeInSeconds)
 {
+    Q_UNUSED(timeInSeconds);
     return -1;
 }
 
 int CPUModel::runStressTestVariant32(int timeInSeconds)
 {
+    Q_UNUSED(timeInSeconds);
     return -1;
 }
 
 int CPUModel::runStressTestVariantNon32(int timeInSeconds)
 {
+    Q_UNUSED(timeInSeconds);
     return -1;
 }
 
