@@ -278,7 +278,7 @@ int OpenCLModel::runStressTestVariantNon32(int timeInSeconds)
 
     // Set kernel dimensions
     cl::NDRange global( m_grid->getWidth(), m_grid->getHeight() );
-    cl::NDRange local( 9, 8 );                              // 72 workitems per workgroup
+    cl::NDRange local( 9, 9 );                              // 81 workitems per workgroup
 
     std::chrono::time_point<std::chrono::high_resolution_clock> m_start = std::chrono::high_resolution_clock::now();
     std::chrono::time_point<std::chrono::high_resolution_clock> m_end = m_start + std::chrono::seconds(timeInSeconds);

@@ -341,9 +341,9 @@ int cuda_main_stress_32(Grid *grid, int timeInSeconds)
 extern "C"
 int cuda_main_stress_non_32(Grid *grid, int timeInSeconds)
 {
-    // 72 threads per block
+    // 81 threads per block
     THREADS_PER_BLOCK.x = 9;
-    THREADS_PER_BLOCK.y = 8;
+    THREADS_PER_BLOCK.y = 9;
 
     // Set block dimensions
     NUM_BLOCKS.x = (GRID_SIZE.x + THREADS_PER_BLOCK.x - 1) / THREADS_PER_BLOCK.x;
