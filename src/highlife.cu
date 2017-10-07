@@ -181,6 +181,8 @@ void cuda_cleanup()
 {
     delete h_grid;
     delete h_result;
+    cudaFree(&d_grid);
+    cudaFree(&d_result);
 }
 
 // CUDA main
