@@ -12,7 +12,7 @@ QHighLife::QHighLife(QWidget *parent) :
     out(stdout)
 {
     ui->setupUi(this);
-    ui->statusbar->showMessage("Load your initial grid in File, select your desired implementation in Model, and Run it.");
+    ui->statusbar->showMessage(QString("Load your initial grid in File, select your desired implementation in Model, and Run it."));
 
     int screenWidth = QApplication::desktop()->width();
     int screenHeight = QApplication::desktop()->height();
@@ -35,7 +35,7 @@ void QHighLife::loadGridClicked()
 
     if (m_gridreader.loadFile(filepath))
     {
-        ui->statusbar->showMessage("File loaded.");
+        ui->statusbar->showMessage(QString("File loaded."));
         ui->actionLoadCPUModel->setEnabled(true);
         ui->actionLoadCUDAModel->setEnabled(true);
         ui->actionLoadOpenCLModel->setEnabled(true);
@@ -52,7 +52,7 @@ void QHighLife::loadGridClicked()
     }
     else
     {
-        ui->statusbar->showMessage("Cannot load file.");
+        ui->statusbar->showMessage(QString("Cannot load file."));
         ui->actionLoadCPUModel->setDisabled(true);
         ui->actionLoadCUDAModel->setDisabled(true);
         ui->actionLoadOpenCLModel->setDisabled(true);
@@ -69,7 +69,7 @@ void QHighLife::loadGridClicked()
 
 void QHighLife::loadCPUModelClicked()
 {
-    ui->statusbar->showMessage("CPU implementation loaded.");
+    ui->statusbar->showMessage(QString("CPU implementation loaded."));
     if (m_model != nullptr)
     {
         delete m_model;
@@ -92,7 +92,7 @@ void QHighLife::loadCPUModelClicked()
 
 void QHighLife::loadCUDAModelClicked()
 {
-    ui->statusbar->showMessage("CUDA implementation loaded.");
+    ui->statusbar->showMessage(QString("CUDA implementation loaded."));
     if (m_model != nullptr)
     {
         delete m_model;
@@ -115,7 +115,7 @@ void QHighLife::loadCUDAModelClicked()
 
 void QHighLife::loadOpenCLModelClicked()
 {
-    ui->statusbar->showMessage("OpenCL implementation loaded.");
+    ui->statusbar->showMessage(QString("OpenCL implementation loaded."));
     if (m_model != nullptr)
     {
         delete m_model;
@@ -148,7 +148,7 @@ void QHighLife::loadAboutClicked()
 
 void QHighLife::loadRunClicked()
 {
-    ui->statusbar->showMessage("Implementation has run.");
+    ui->statusbar->showMessage(QString("Implementation has run."));
     m_model->run();
 
     emit sendGrid(m_model->getGrid());
@@ -156,65 +156,65 @@ void QHighLife::loadRunClicked()
 
 void QHighLife::loadRunStressTestClicked()
 {
-    ui->statusbar->showMessage("Stress implementation is running.");
+    ui->statusbar->showMessage(QString("Stress implementation is running..."));
 
     int seconds = 10;
-    int processedCells = m_model->runStressTest(seconds);
-    out << processedCells << " iterations in " << seconds << " seconds." << endl;
+    int iterations = m_model->runStressTest(seconds);
+    out << iterations << " iterations in " << seconds << " seconds." << endl;
 
     emit sendGrid(m_model->getGrid());
 
-    ui->statusbar->showMessage("Stress implementation has run.");
+    ui->statusbar->showMessage(QString("Stress implementation has run: %1 iterations in %2 seconds.").arg(iterations).arg(seconds));
 }
 
 void QHighLife::loadRunStressTestClickedVariantIf()
 {
-    ui->statusbar->showMessage("Stress implementation (variant \"if\") is running.");
+    ui->statusbar->showMessage(QString("Stress implementation (variant \"if\") is running..."));
 
     int seconds = 10;
-    int processedCells = m_model->runStressTestVariantIf(seconds);
-    out << processedCells << " iterations in " << seconds << " seconds." << endl;
+    int iterations = m_model->runStressTestVariantIf(seconds);
+    out << iterations << " iterations in " << seconds << " seconds." << endl;
 
     emit sendGrid(m_model->getGrid());
 
-    ui->statusbar->showMessage("Stress implementation (variant \"if\") has run.");
+    ui->statusbar->showMessage(QString("Stress implementation (variant \"if\") has run: %1 iterations in %2 seconds.").arg(iterations).arg(seconds));
 }
 
 void QHighLife::loadRunStressTestClickedVariantNonIf()
 {
-    ui->statusbar->showMessage("Stress implementation (variant \"non if\") is running.");
+    ui->statusbar->showMessage(QString("Stress implementation (variant \"non if\") is running..."));
 
     int seconds = 10;
-    int processedCells = m_model->runStressTestVariantNonIf(seconds);
-    out << processedCells << " iterations in " << seconds << " seconds." << endl;
+    int iterations = m_model->runStressTestVariantNonIf(seconds);
+    out << iterations << " iterations in " << seconds << " seconds." << endl;
 
     emit sendGrid(m_model->getGrid());
 
-    ui->statusbar->showMessage("Stress implementation (variant \"non if\") has run.");
+    ui->statusbar->showMessage(QString("Stress implementation (variant \"non if\") has run: %1 iterations in %2 seconds.").arg(iterations).arg(seconds));
 }
 
 void QHighLife::loadRunStressTestClickedVariant32()
 {
-    ui->statusbar->showMessage("Stress implementation (variant \"32\") is running.");
+    ui->statusbar->showMessage(QString("Stress implementation (variant \"32\") is running..."));
 
     int seconds = 10;
-    int processedCells = m_model->runStressTestVariant32(seconds);
-    out << processedCells << " iterations in " << seconds << " seconds." << endl;
+    int iterations = m_model->runStressTestVariant32(seconds);
+    out << iterations << " iterations in " << seconds << " seconds." << endl;
 
     emit sendGrid(m_model->getGrid());
 
-    ui->statusbar->showMessage("Stress implementation (variant \"32\") has run.");
+    ui->statusbar->showMessage(QString("Stress implementation (variant \"32\") has run: %1 iterations in %2 seconds.").arg(iterations).arg(seconds));
 }
 
 void QHighLife::loadRunStressTestClickedVariantNon32()
 {
-    ui->statusbar->showMessage("Stress implementation (variant \"non 32\") is running.");
+    ui->statusbar->showMessage(QString("Stress implementation (variant \"non 32\") is running..."));
 
     int seconds = 10;
-    int processedCells = m_model->runStressTestVariantNon32(seconds);
-    out << processedCells << " iterations in " << seconds << " seconds." << endl;
+    int iterations = m_model->runStressTestVariantNon32(seconds);
+    out << iterations << " iterations in " << seconds << " seconds." << endl;
 
     emit sendGrid(m_model->getGrid());
 
-    ui->statusbar->showMessage("Stress implementation (variant \"non 32\") has run.");
+    ui->statusbar->showMessage(QString("Stress implementation (variant \"non 32\") has run: %1 iterations in %2 seconds.").arg(iterations).arg(seconds));
 }
