@@ -9,7 +9,7 @@ You need Qt5 and QMake to make it work. Just follow the build instructions.
 
 * mkdir build
 * cd build
-* qmake-qt5 ..
+* qmake ..
 * make
 * ./qhighlife
 
