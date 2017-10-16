@@ -35,11 +35,11 @@ public:
     bool getAt(int x, int y) const;
     void setAt(int x, int y, Cell value);
 
-    bool **getInnerGrid() const;
-    void setInnerGrid(bool **grid);
+private:
+    inline int getPosAt(int i, int j, int n) const;
 
 private:
-    bool **m_grid;
+    bool *m_grid;
     int m_height;
     int m_width;
 };
