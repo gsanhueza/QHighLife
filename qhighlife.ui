@@ -139,27 +139,27 @@
   </action>
   <action name="actionVariantIf">
    <property name="text">
-    <string>Variant If</string>
+    <string>&amp;Variant If</string>
    </property>
   </action>
   <action name="actionVariantNonIf">
    <property name="text">
-    <string>Variant Non-if</string>
+    <string>Variant &amp;Non-if</string>
    </property>
   </action>
   <action name="actionVariant32">
    <property name="text">
-    <string>Variant 32</string>
+    <string>Variant &amp;32</string>
    </property>
   </action>
   <action name="actionVariantNon32">
    <property name="text">
-    <string>Variant non-32</string>
+    <string>Va&amp;riant non-32</string>
    </property>
   </action>
   <action name="actionOriginalImplementation">
    <property name="text">
-    <string>Original implementation</string>
+    <string>&amp;Original implementation</string>
    </property>
   </action>
  </widget>
@@ -414,6 +414,22 @@
     <hint type="destinationlabel">
      <x>639</x>
      <y>359</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>QHighLife</sender>
+   <signal>keyPressed(QKeyEvent*)</signal>
+   <receiver>openGLWidget</receiver>
+   <slot>keyPressed(QKeyEvent*)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>639</x>
+     <y>359</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>639</x>
+     <y>363</y>
     </hint>
    </hints>
   </connection>
