@@ -102,19 +102,8 @@ __global__ void computeHighLife(bool *grid, bool *result, int width, int height)
         bool d = surroundingAliveCellsNumber == 6;
 
         // Not 2 or 3 cells surrounding this alive cell = Cell dies
-        if (a and not (b or c))
-        {
-            result[getPos(i, j, width)] = 0;
-        }
         // Dead cell surrounded by 3 or 6 cells = Cell revives
-        else if (not a and (c or d))
-        {
-            result[getPos(i, j, width)] = 1;
-        }
-        else
-        {
-            result[getPos(i, j, width)] = a;
-        }
+        result[getPos(i, j, width)] = (a and (b or c)) or ((not a) and (c or d));
     }
 }
 
