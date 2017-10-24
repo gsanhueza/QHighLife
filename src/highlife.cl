@@ -91,19 +91,8 @@ kernel void computeHighLife(global bool *grid, global bool *result, int width, i
         bool d = surroundingAliveCellsNumber == 6;
 
         // Not 2 or 3 cells surrounding this alive cell = Cell dies
-        if (a && !(b || c))
-        {
-            result[getPos(i, j, width)] = 0;
-        }
         // Dead cell surrounded by 3 or 6 cells = Cell revives
-        else if (!a && (c || d))
-        {
-            result[getPos(i, j, width)] = 1;
-        }
-        else
-        {
-            result[getPos(i, j, width)] = a;
-        }
+        result[getPos(i, j, width)] = (a && (b || c)) || (!a && (c || d));
     }
 }
 
