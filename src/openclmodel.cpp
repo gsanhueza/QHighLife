@@ -73,23 +73,16 @@ void OpenCLModel::run()
     // Copy the input data to the input buffers using the command queue.
     queue.enqueueWriteBuffer( buffer_grid, CL_FALSE, 0, m_grid->getWidth() * m_grid->getHeight() * sizeof(bool), host_grid );
 
-    // Make kernel
-    cl::Kernel highlife_kernel(program, "computeHighLife");
+    // Make kernel (Check arguments in template)
+    cl::make_kernel<cl::Buffer, cl::Buffer, int, int> highlife_kernel(program, "computeHighLife");
 
     // Set kernel dimensions
     cl::NDRange global( m_grid->getWidth(), m_grid->getHeight() );
     cl::NDRange local( 8, 8 );                          // 64 workitems per workgroup
 
-    // Here are the kernel execution steps
-    // Set the kernel arguments
-    highlife_kernel.setArg(0, buffer_grid);
-    highlife_kernel.setArg(1, buffer_result);
-    highlife_kernel.setArg(2, m_grid->getWidth());
-    highlife_kernel.setArg(3, m_grid->getHeight());
-
-    // Execute the kernel
+    // Set the kernel arguments and execute the kernel
     try {
-        queue.enqueueNDRangeKernel( highlife_kernel, cl::NullRange, global, local );
+        highlife_kernel(cl::EnqueueArgs(queue, global, local), buffer_grid, buffer_result, m_grid->getWidth(), m_grid->getHeight());
     }
     catch (cl::Error e)
     {
@@ -123,8 +116,8 @@ int OpenCLModel::runStressTest(int timeInSeconds)
     // Copy the input data to the input buffers using the command queue.
     queue.enqueueWriteBuffer( buffer_grid, CL_FALSE, 0, m_grid->getWidth() * m_grid->getHeight() * sizeof(bool), host_grid );
 
-    // Make kernel
-    cl::Kernel highlife_kernel(program, "computeHighLife");
+    // Make kernel (Check arguments in template)
+    cl::make_kernel<cl::Buffer, cl::Buffer, int, int> highlife_kernel(program, "computeHighLife");
 
     // Set kernel dimensions
     cl::NDRange global( m_grid->getWidth(), m_grid->getHeight() );
@@ -143,23 +136,8 @@ int OpenCLModel::runStressTest(int timeInSeconds)
         // Thus, our final results will be in buffer_grid. => We have to copy back buffer_grid to h_result to get the real result.
         // With this, we can avoid calling enqueueReadBuffer every iteration.
 
-        // Set the kernel arguments, part 1
-        highlife_kernel.setArg(0, buffer_grid);
-        highlife_kernel.setArg(1, buffer_result);
-        highlife_kernel.setArg(2, m_grid->getWidth());
-        highlife_kernel.setArg(3, m_grid->getHeight());
-
-        // Execute the kernel, part 1
-        queue.enqueueNDRangeKernel( highlife_kernel, cl::NullRange, global, local );
-
-        // Set the kernel arguments, part 2
-        highlife_kernel.setArg(0, buffer_result);
-        highlife_kernel.setArg(1, buffer_grid);
-        highlife_kernel.setArg(2, m_grid->getWidth());
-        highlife_kernel.setArg(3, m_grid->getHeight());
-
-        // Execute the kernel, part 2
-        queue.enqueueNDRangeKernel( highlife_kernel, cl::NullRange, global, local );
+        highlife_kernel(cl::EnqueueArgs(queue, global, local), buffer_grid, buffer_result, m_grid->getWidth(), m_grid->getHeight());
+        highlife_kernel(cl::EnqueueArgs(queue, global, local), buffer_result, buffer_grid, m_grid->getWidth(), m_grid->getHeight());
 
         iterations += 2;
     }
@@ -193,8 +171,8 @@ int OpenCLModel::runStressTestVariantIf(int timeInSeconds)
     // Copy the input data to the input buffers using the command queue.
     queue.enqueueWriteBuffer( buffer_grid, CL_FALSE, 0, m_grid->getWidth() * m_grid->getHeight() * sizeof(bool), host_grid );
 
-    // Make kernel
-    cl::Kernel highlife_kernel(program, "computeHighLifeIf");
+    // Make kernel (Check arguments in template)
+    cl::make_kernel<cl::Buffer, cl::Buffer, int, int> highlife_kernel(program, "computeHighLife");
 
     // Set kernel dimensions
     cl::NDRange global( m_grid->getWidth(), m_grid->getHeight() );
@@ -213,23 +191,8 @@ int OpenCLModel::runStressTestVariantIf(int timeInSeconds)
         // Thus, our final results will be in buffer_grid. => We have to copy back buffer_grid to h_result to get the real result.
         // With this, we can avoid calling enqueueReadBuffer every iteration.
 
-        // Set the kernel arguments, part 1
-        highlife_kernel.setArg(0, buffer_grid);
-        highlife_kernel.setArg(1, buffer_result);
-        highlife_kernel.setArg(2, m_grid->getWidth());
-        highlife_kernel.setArg(3, m_grid->getHeight());
-
-        // Execute the kernel, part 1
-        queue.enqueueNDRangeKernel( highlife_kernel, cl::NullRange, global, local );
-
-        // Set the kernel arguments, part 2
-        highlife_kernel.setArg(0, buffer_result);
-        highlife_kernel.setArg(1, buffer_grid);
-        highlife_kernel.setArg(2, m_grid->getWidth());
-        highlife_kernel.setArg(3, m_grid->getHeight());
-
-        // Execute the kernel, part 2
-        queue.enqueueNDRangeKernel( highlife_kernel, cl::NullRange, global, local );
+        highlife_kernel(cl::EnqueueArgs(queue, global, local), buffer_grid, buffer_result, m_grid->getWidth(), m_grid->getHeight());
+        highlife_kernel(cl::EnqueueArgs(queue, global, local), buffer_result, buffer_grid, m_grid->getWidth(), m_grid->getHeight());
 
         iterations += 2;
     }
@@ -273,8 +236,8 @@ int OpenCLModel::runStressTestVariantNon32(int timeInSeconds)
     // Copy the input data to the input buffers using the command queue.
     queue.enqueueWriteBuffer( buffer_grid, CL_FALSE, 0, m_grid->getWidth() * m_grid->getHeight() * sizeof(bool), host_grid );
 
-    // Make kernel
-    cl::Kernel highlife_kernel(program, "computeHighLife");
+    // Make kernel (Check arguments in template)
+    cl::make_kernel<cl::Buffer, cl::Buffer, int, int> highlife_kernel(program, "computeHighLife");
 
     // Set kernel dimensions
     cl::NDRange global( m_grid->getWidth(), m_grid->getHeight() );
@@ -292,32 +255,9 @@ int OpenCLModel::runStressTestVariantNon32(int timeInSeconds)
         // If we (temporarily) use buffer_result as buffer_grid in each second computation, we'll get the same "start".
         // Thus, our final results will be in buffer_grid. => We have to copy back buffer_grid to h_result to get the real result.
         // With this, we can avoid calling enqueueReadBuffer every iteration.
-
-        // Set the kernel arguments, part 1
-        highlife_kernel.setArg(0, buffer_grid);
-        highlife_kernel.setArg(1, buffer_result);
-        highlife_kernel.setArg(2, m_grid->getWidth());
-        highlife_kernel.setArg(3, m_grid->getHeight());
-
-        // Execute the kernel, part 1
         try {
-            queue.enqueueNDRangeKernel( highlife_kernel, cl::NullRange, global, local );
-          }
-        catch (cl::Error e)
-        {
-            std::cerr << "Error: " << e.what() << ". Input size is not divisible by kernel range." << std::endl;
-            break;
-        }
-
-        // Set the kernel arguments, part 2
-        highlife_kernel.setArg(0, buffer_result);
-        highlife_kernel.setArg(1, buffer_grid);
-        highlife_kernel.setArg(2, m_grid->getWidth());
-        highlife_kernel.setArg(3, m_grid->getHeight());
-
-        // Execute the kernel, part 2
-        try {
-            queue.enqueueNDRangeKernel( highlife_kernel, cl::NullRange, global, local );
+            highlife_kernel(cl::EnqueueArgs(queue, global, local), buffer_grid, buffer_result, m_grid->getWidth(), m_grid->getHeight());
+            highlife_kernel(cl::EnqueueArgs(queue, global, local), buffer_result, buffer_grid, m_grid->getWidth(), m_grid->getHeight());
           }
         catch (cl::Error e)
         {
