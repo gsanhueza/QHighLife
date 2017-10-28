@@ -104,28 +104,33 @@ void OpenCLModel::run()
 
 int OpenCLModel::runStressTest(int timeInSeconds)
 {
+    int width = m_grid->getWidth();
+    int height = m_grid->getHeight();
+
     // Filling data
-    for (int j = 0; j < m_grid->getHeight(); j++)
+    for (int j = 0; j < height; j++)
     {
-        for (int i = 0; i < m_grid->getWidth(); i++)
+        for (int i = 0; i < width; i++)
         {
-            host_grid[getPosCL(i, j, m_grid->getWidth())] = m_grid->getAt(i, j);
+            host_grid[getPosCL(i, j, width)] = m_grid->getAt(i, j);
         }
     }
 
     // Copy the input data to the input buffers using the command queue.
-    queue.enqueueWriteBuffer( buffer_grid, CL_FALSE, 0, m_grid->getWidth() * m_grid->getHeight() * sizeof(bool), host_grid );
+    queue.enqueueWriteBuffer( buffer_grid, CL_FALSE, 0, width * height * sizeof(bool), host_grid );
 
     // Make kernel (Check arguments in template)
-    cl::make_kernel<cl::Buffer, cl::Buffer, int, int> highlife_kernel(program, "computeHighLife");
+    cl::make_kernel<cl::Buffer&, cl::Buffer&, int, int> highlife_kernel(program, "computeHighLife");
 
     // Set kernel dimensions
-    cl::NDRange global( m_grid->getWidth(), m_grid->getHeight() );
+    cl::NDRange global( width, height );
     cl::NDRange local( 8, 8 );                          // 64 workitems per workgroup
 
     std::chrono::time_point<std::chrono::high_resolution_clock> m_start = std::chrono::high_resolution_clock::now();
     std::chrono::time_point<std::chrono::high_resolution_clock> m_end = m_start + std::chrono::seconds(timeInSeconds);
     int iterations = 0;
+
+    cl::EnqueueArgs eargs(queue, global, local);
 
     while (std::chrono::high_resolution_clock::now() < m_end)
     {
@@ -136,21 +141,21 @@ int OpenCLModel::runStressTest(int timeInSeconds)
         // Thus, our final results will be in buffer_grid. => We have to copy back buffer_grid to h_result to get the real result.
         // With this, we can avoid calling enqueueReadBuffer every iteration.
 
-        highlife_kernel(cl::EnqueueArgs(queue, global, local), buffer_grid, buffer_result, m_grid->getWidth(), m_grid->getHeight());
-        highlife_kernel(cl::EnqueueArgs(queue, global, local), buffer_result, buffer_grid, m_grid->getWidth(), m_grid->getHeight());
+        highlife_kernel(eargs, buffer_grid, buffer_result, width, height);
+        highlife_kernel(eargs, buffer_result, buffer_grid, width, height);
 
         iterations += 2;
     }
 
     // Copy the output data back to the host (Check note above to see why our results are in buffer_grid instead of buffer_result.)
-    queue.enqueueReadBuffer( buffer_grid, CL_TRUE, 0, m_grid->getWidth() * m_grid->getHeight() * sizeof(bool), host_result );
+    queue.enqueueReadBuffer( buffer_grid, CL_TRUE, 0, width * height * sizeof(bool), host_result );
 
     // Set the result
-    for (int j = 0; j < m_grid->getHeight(); j++)
+    for (int j = 0; j < height; j++)
     {
-        for (int i = 0; i < m_grid->getWidth(); i++)
+        for (int i = 0; i < width; i++)
         {
-            m_grid->setAt(i, j, host_result[getPosCL(i, j, m_grid->getWidth())]);
+            m_grid->setAt(i, j, host_result[getPosCL(i, j, width)]);
         }
     }
 
