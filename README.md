@@ -16,3 +16,6 @@ You need Qt5.9+ and QMake to make it work. Just follow the build instructions.
 ## How to use this application
 
 Application instructions are in *Help > Tutorial*.
+
+### Use case: Replicator144x144
+* Load grid file: `../data/replicator144x144.grid`
